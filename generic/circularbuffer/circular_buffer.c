@@ -95,7 +95,7 @@ int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
 static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len, int consume)
 {
     int read = 0;
-    if (!(cbuf && data && cbuf->buffer))
+    if (!(cbuf && cbuf->buffer))
         return -1;
 
     len = len < circular_buf_size(cbuf) ? len : circular_buf_size(cbuf);
@@ -110,8 +110,10 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len, int c
 
         chunk = chunk > len ? len : chunk;
 
-        memcpy(data, &cbuf->buffer[cbuf->tail], chunk);
-        data += chunk;
+        if (data) {
+            memcpy(data, &cbuf->buffer[cbuf->tail], chunk);
+            data += chunk;
+        }
         read += chunk;
         len -= chunk;
 

@@ -3,7 +3,7 @@
 #define NTH(x, i) ((x >> i) & 0x1)
 #define SET_NTH(x, i, val) x = ((x & (~((unsigned int)(1 << i)))) | val << i)
 
-void init_digin_filter(digin_filter_t *filter, unsigned int active, unsigned int type)
+void init_digin_filter(debounce_filter_t *filter, unsigned short active, unsigned short type)
 {
     int i;
 
@@ -18,7 +18,7 @@ void init_digin_filter(digin_filter_t *filter, unsigned int active, unsigned int
 }
 
 
-int digin_filter(digin_filter_t *filter, unsigned int input, unsigned long debounce)
+int digin_filter(debounce_filter_t *filter, unsigned short input, unsigned long debounce)
 {
     int i = 0, change = 0;
 
