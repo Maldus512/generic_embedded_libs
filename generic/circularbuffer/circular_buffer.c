@@ -77,13 +77,21 @@ size_t circular_buf_capacity(circular_buf_t *cbuf)
 
 int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
 {
+    int head, tail;
     if (!(cbuf && cbuf->buffer))
         return -1;
 
-    while (len > 0)
+    head = cbuf->head;
+    tail = cbuf->tail;
+    while (!cbuf->full && len > 0)
     {
-        int chunk = len > cbuf->max - cbuf->head ? cbuf->max - cbuf->head : len;
-        memcpy(&cbuf->buffer[cbuf->head], data, chunk);
+        int chunk;
+        if (head >= tail)
+            chunk = len > cbuf->max - head ? cbuf->max - head : len;
+        else
+            chunk = len > tail - head ? tail - head : len;
+        
+        memcpy(&cbuf->buffer[head], data, chunk);
         advance_pointer(cbuf, chunk);
         data += chunk;
         len -= chunk;
@@ -94,24 +102,26 @@ int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
 
 static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len, int consume)
 {
-    int read = 0;
+    int read = 0, head, tail;
     if (!(cbuf && cbuf->buffer))
         return -1;
 
     len = len < circular_buf_size(cbuf) ? len : circular_buf_size(cbuf);
 
+    head = cbuf->head;
+    tail = cbuf->tail;
     while (len > 0)
     {
         int chunk;
-        if (cbuf->head > cbuf->tail)
-            chunk = cbuf->head - cbuf->tail;
+        if (head > tail)
+            chunk = head - tail;
         else
-            chunk = cbuf->max - cbuf->tail;
+            chunk = cbuf->max - tail;
 
         chunk = chunk > len ? len : chunk;
 
         if (data) {
-            memcpy(data, &cbuf->buffer[cbuf->tail], chunk);
+            memcpy(data, &cbuf->buffer[tail], chunk);
             data += chunk;
         }
         read += chunk;
@@ -133,7 +143,13 @@ int circular_buf_peek(circular_buf_t *cbuf, uint8_t *data, int len)
 
 int circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len)
 {
-    return _circular_buf_get(cbuf, data, len, 1);
+    if (data) {
+        return _circular_buf_get(cbuf, data, len, 1);
+    }
+    else {
+        retreat_pointer(cbuf, len);
+        return len;
+    }
 }
 
 int circular_buf_empty(circular_buf_t *cbuf)

@@ -7,9 +7,9 @@ struct circular_buf_t
 {
     uint8_t *buffer;
     int     full;
-    size_t   head;
-    size_t   tail;
-    size_t   max;     // of the buffer
+    int   head;
+    int   tail;
+    int   max;     // of the buffer
 };
 
 /// Opaque circular buffer structure
