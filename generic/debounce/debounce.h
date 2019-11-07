@@ -20,9 +20,9 @@
 
 typedef struct _input_filter
 {
-    unsigned int is_counter;
-    unsigned int active;
-    unsigned int previous_input;
+    unsigned short is_counter;
+    unsigned short active;
+    unsigned short previous_input;
     unsigned int filters[16];
     unsigned int value[16];
 } debounce_filter_t;
@@ -33,7 +33,9 @@ static inline int digital_read(int i, debounce_filter_t *di_filter)
     return di_filter->value[i];
 }
 
-void init_digin_filter(debounce_filter_t *filter, unsigned short active, unsigned short type);
-int  digin_filter(debounce_filter_t *filter, unsigned short input, unsigned long debounce);
+void init_debounce_filter(debounce_filter_t *filter, unsigned short active, unsigned short type);
+int  debounce_filter(debounce_filter_t *filter, unsigned short input, unsigned long debounce);
+void clear_counter(debounce_filter_t *filter, int num);
+void set_debounce_filter(debounce_filter_t *filter, unsigned short set);
 
 #endif /* DIGIN_H */

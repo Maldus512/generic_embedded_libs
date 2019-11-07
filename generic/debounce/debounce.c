@@ -3,7 +3,7 @@
 #define NTH(x, i) ((x >> i) & 0x1)
 #define SET_NTH(x, i, val) x = ((x & (~((unsigned int)(1 << i)))) | val << i)
 
-void init_digin_filter(debounce_filter_t *filter, unsigned short active, unsigned short type)
+void init_debounce_filter(debounce_filter_t *filter, unsigned short active, unsigned short type)
 {
     int i;
 
@@ -17,8 +17,11 @@ void init_digin_filter(debounce_filter_t *filter, unsigned short active, unsigne
     filter->active         = active;
 }
 
+void set_debounce_filter(debounce_filter_t *filter, unsigned short set) {
+    filter->previous_input = set;
+}
 
-int digin_filter(debounce_filter_t *filter, unsigned short input, unsigned long debounce)
+int debounce_filter(debounce_filter_t *filter, unsigned short input, unsigned long debounce)
 {
     int i = 0, change = 0;
 
@@ -40,7 +43,8 @@ int digin_filter(debounce_filter_t *filter, unsigned short input, unsigned long 
 
             if (filter->filters[i] == 0)
             {
-                if (NTH(filter->is_counter, i))
+                // The counter counts rising edges
+                if (NTH(filter->is_counter, i) && NTH(filter->previous_input, i) != NTH(input,i) && NTH(input,i))
                     filter->value[i]++;
                 else
                     filter->value[i] = NTH(input, i);
@@ -51,4 +55,10 @@ int digin_filter(debounce_filter_t *filter, unsigned short input, unsigned long 
         }
     }
     return change;
+}
+
+void clear_counter(debounce_filter_t *filter, int num) {
+    if (NTH(filter->active, num))
+        if (NTH(filter->is_counter, num))
+            filter->value[num] = 0;
 }
