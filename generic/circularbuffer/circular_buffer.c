@@ -75,7 +75,7 @@ size_t circular_buf_capacity(circular_buf_t *cbuf)
     return cbuf->max;
 }
 
-int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
+int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, size_t len)
 {
     int head, tail;
     if (!(cbuf && cbuf->buffer))
@@ -100,7 +100,7 @@ int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
     return 0;
 }
 
-static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len, int consume)
+static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, int consume)
 {
     int read = 0, head, tail;
     if (!(cbuf && cbuf->buffer))
@@ -112,9 +112,9 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len, int c
     tail = cbuf->tail;
     while (len > 0)
     {
-        int chunk;
-        if (head > tail)
-            chunk = head - tail;
+        size_t chunk;
+        if (cbuf->head > cbuf->tail)
+            chunk = cbuf->head - cbuf->tail;
         else
             chunk = cbuf->max - tail;
 
