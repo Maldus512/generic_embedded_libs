@@ -1,11 +1,11 @@
 Language: Cpp
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterControlStatement: true
-  AfterEnum: true
-  AfterFunction: true
-  AfterStruct: true
-  BeforeElse : true 
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterStruct: false
+  BeforeElse : false 
 
 SortIncludes: false
 IndentWidth: 4
@@ -16,3 +16,4 @@ IndentCaseLabels: true
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 AllowShortFunctionsOnASingleLine: false
+AlignConsecutiveMacros: true
