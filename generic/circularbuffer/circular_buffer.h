@@ -3,17 +3,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-struct circular_buf_t
+typedef struct circular_buf_t
 {
     uint8_t *buffer;
     int     full;
-    int   head;
-    int   tail;
-    int   max;     // of the buffer
-};
-
-/// Opaque circular buffer structure
-typedef struct circular_buf_t circular_buf_t;
+    size_t   head;
+    size_t   tail;
+    size_t   max;     // of the buffer
+} circular_buf_t;
 
 /// Pass in a storage buffer and size, returns a circular buffer handle
 /// Requires: buffer is not NULL, size > 0
@@ -27,7 +24,7 @@ void circular_buf_reset(circular_buf_t* cbuf);
 /// Put version 1 continues to add data if the buffer is full
 /// Old data is overwritten
 /// Requires: cbuf is valid and created by circular_buf_init
-int circular_buf_puts(circular_buf_t* cbuf, uint8_t *data, int len);
+int circular_buf_puts(circular_buf_t* cbuf, uint8_t *data, size_t len);
 
 int circular_buf_putc(circular_buf_t * cbuf, uint8_t data);
 

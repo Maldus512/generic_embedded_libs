@@ -1,0 +1,46 @@
+import os
+import multiprocessing
+
+PROGRAM = "testsuite"
+LIBS = "../generic"
+UNITY = "Unity/src/"
+CFLAGS = ["-Wall", "-Wextra", "-g", "-O0"]
+MODULES = ["circularbuffer"]
+RBGEN = "ruby ./Unity/auto/generate_test_runner.rb"
+
+# Creates a Phony target
+def PhonyTargets(
+        target,
+        depends,
+        action,
+        env=None,
+):
+    if not env:
+        env = DefaultEnvironment()
+    t = env.Alias(target, depends, action)
+    env.AlwaysBuild(t)
+
+externalEnvironment = {}
+if 'PATH' in os.environ.keys():
+    externalEnvironment['PATH'] = os.environ['PATH']
+
+env_options = {
+    "ENV": externalEnvironment,
+    "CPPPATH": [UNITY, LIBS],
+    "CCFLAGS": CFLAGS,
+}
+
+env = Environment(**env_options)
+
+sources = Glob("{}*.c".format(UNITY))
+
+for mod in MODULES:
+    sources += Glob("{}/{}/*.c".format(LIBS, mod))
+    tests = Glob("./{}/*.c".format(mod), strings=True)
+    for t in [x for x in tests if not str.endswith(x, "_Runner.c")]:
+        env.Command(t.replace(".c", "_Runner.c"), t, "{} {}".format(RBGEN, t))
+        sources.append(t)
+        sources.append(t.replace(".c", "_Runner.c"))
+
+p = env.Program(PROGRAM, sources)
+PhonyTargets('test', p, "./{}".format(PROGRAM))
