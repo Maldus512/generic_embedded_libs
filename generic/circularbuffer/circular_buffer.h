@@ -27,7 +27,9 @@ void circular_buf_reset(circular_buf_t* cbuf);
 /// Put version 1 continues to add data if the buffer is full
 /// Old data is overwritten
 /// Requires: cbuf is valid and created by circular_buf_init
-int circular_buf_put(circular_buf_t* cbuf, uint8_t *data, int len);
+int circular_buf_puts(circular_buf_t* cbuf, uint8_t *data, int len);
+
+int circular_buf_putc(circular_buf_t * cbuf, uint8_t data);
 
 /// Retrieve a value from the buffer
 /// Requires: cbuf is valid and created by circular_buf_init

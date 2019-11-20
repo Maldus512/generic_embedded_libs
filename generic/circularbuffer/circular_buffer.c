@@ -1,13 +1,16 @@
-
+/* 
+ * Freely inspired by https://github.com/embeddedartistry/embedded-resources/tree/master/examples/c
+ */
 #include <stdint.h>
 #include <string.h>
 #include "circular_buffer.h"
 
 
-static void advance_pointer(circular_buf_t *cbuf, int step)
+static size_t advance_pointer(circular_buf_t *cbuf, int step)
 {
-    if (cbuf->full)
+    if (cbuf->full || step == 0)
     {
+        return cbuf->head;
         cbuf->tail = (cbuf->tail + step) % cbuf->max;
     }
 
@@ -15,12 +18,14 @@ static void advance_pointer(circular_buf_t *cbuf, int step)
 
     // We mark full because we will advance tail on the next time around
     cbuf->full = (cbuf->head == cbuf->tail);
+    return cbuf->head;
 }
 
-static void retreat_pointer(circular_buf_t *cbuf, int step)
+static size_t retreat_pointer(circular_buf_t *cbuf, int step)
 {
     cbuf->full = 0;
     cbuf->tail = (cbuf->tail + step) % cbuf->max;
+    return cbuf->tail;
 }
 
 int circular_buf_init(circular_buf_t *cbuf, uint8_t *buffer, size_t size)
@@ -75,7 +80,25 @@ size_t circular_buf_capacity(circular_buf_t *cbuf)
     return cbuf->max;
 }
 
-int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
+
+int circular_buf_putc(circular_buf_t * cbuf, uint8_t data)
+{
+    int r = -1;
+
+    if (!(cbuf && cbuf->buffer))
+        return -1;
+
+    if(!circular_buf_full(cbuf))
+    {
+        cbuf->buffer[cbuf->head] = data;
+        advance_pointer(cbuf, 1);
+        r = 0;
+    }
+
+    return r;
+}
+
+int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, int len)
 {
     int head, tail;
     if (!(cbuf && cbuf->buffer))
@@ -92,7 +115,7 @@ int circular_buf_put(circular_buf_t *cbuf, uint8_t *data, int len)
             chunk = len > tail - head ? tail - head : len;
         
         memcpy(&cbuf->buffer[head], data, chunk);
-        advance_pointer(cbuf, chunk);
+        head = advance_pointer(cbuf, chunk);
         data += chunk;
         len -= chunk;
     }
@@ -128,7 +151,9 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, int len, int c
         len -= chunk;
 
         if (consume)
-            retreat_pointer(cbuf, chunk);
+            tail = retreat_pointer(cbuf, chunk);
+        else
+            tail = (tail + chunk) % cbuf->max;
     }
 
     return read;
