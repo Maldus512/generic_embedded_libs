@@ -5,6 +5,9 @@
 #include <string.h>
 #include "circular_buffer.h"
 
+/*
+ * INTERNAL FUNCTIONS
+ */
 
 static size_t advance_pointer(circular_buf_t *cbuf, int step) {
     if (cbuf->full || step == 0) {
@@ -25,6 +28,45 @@ static size_t retreat_pointer(circular_buf_t *cbuf, int step) {
     return cbuf->tail;
 }
 
+static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, int consume) {
+    int read = 0, tail, head;
+    size_t size = circular_buf_size(cbuf);
+    if (!(cbuf && cbuf->buffer))
+        return -1;
+
+    len = len < size ? len : size;
+
+    tail = cbuf->tail;
+    head = cbuf->head;
+    while (len > 0) {
+        size_t chunk;
+        if (head > tail)
+            chunk = head - tail;
+        else
+            chunk = cbuf->max - tail;
+
+        chunk = chunk > len ? len : chunk;
+
+        if (data) {
+            memcpy(data, &cbuf->buffer[tail], chunk);
+            data += chunk;
+        }
+        read += chunk;
+        len -= chunk;
+
+        if (consume)
+            tail = retreat_pointer(cbuf, chunk);
+        else
+            tail = (tail + chunk) % cbuf->max;
+    }
+
+    return read;
+}
+
+/*
+ * NEVER THREAD SAFE
+ */
+
 int circular_buf_init(circular_buf_t *cbuf, uint8_t *buffer, size_t size) {
     if (!buffer || size <= 0)
         return 1;
@@ -42,6 +84,24 @@ void circular_buf_reset(circular_buf_t *cbuf) {
         cbuf->tail = 0;
         cbuf->full = 0;
     }
+}
+
+/*
+ * ALWAYS THREAD SAFE
+ */
+
+int is_circular_buf_empty(circular_buf_t *cbuf) {
+    if (!cbuf)
+        return 1;
+
+    return (!cbuf->full && (cbuf->head == cbuf->tail));
+}
+
+int is_circular_buf_full(circular_buf_t *cbuf) {
+    if (!cbuf)
+        return 0;
+
+    return cbuf->full;
 }
 
 size_t circular_buf_size(circular_buf_t *cbuf) {
@@ -68,6 +128,10 @@ size_t circular_buf_capacity(circular_buf_t *cbuf) {
     return cbuf->max;
 }
 
+/*
+ * PRODUCER THREAD
+ * Only reading the tail and writing the head
+ */
 
 int circular_buf_putc(circular_buf_t *cbuf, uint8_t data) {
     int r = -1;
@@ -109,38 +173,10 @@ int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len) {
     return written;
 }
 
-static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, int consume) {
-    int read = 0, tail;
-    if (!(cbuf && cbuf->buffer))
-        return -1;
-
-    len = len < circular_buf_size(cbuf) ? len : circular_buf_size(cbuf);
-
-    tail = cbuf->tail;
-    while (len > 0) {
-        size_t chunk;
-        if (cbuf->head > cbuf->tail)
-            chunk = cbuf->head - cbuf->tail;
-        else
-            chunk = cbuf->max - tail;
-
-        chunk = chunk > len ? len : chunk;
-
-        if (data) {
-            memcpy(data, &cbuf->buffer[tail], chunk);
-            data += chunk;
-        }
-        read += chunk;
-        len -= chunk;
-
-        if (consume)
-            tail = retreat_pointer(cbuf, chunk);
-        else
-            tail = (tail + chunk) % cbuf->max;
-    }
-
-    return read;
-}
+/*
+ *  CONSUMER THREAD
+ *  Only reading the head and writing the tail
+ */
 
 int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data) {
     if (!(cbuf && cbuf->buffer))
@@ -163,21 +199,8 @@ int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len) {
     if (data) {
         return _circular_buf_get(cbuf, data, len, 1);
     } else {
+        // If no pointer is provided the data is dropped
         retreat_pointer(cbuf, len);
         return len;
     }
-}
-
-int is_circular_buf_empty(circular_buf_t *cbuf) {
-    if (!cbuf)
-        return 1;
-
-    return (!cbuf->full && (cbuf->head == cbuf->tail));
-}
-
-int is_circular_buf_full(circular_buf_t *cbuf) {
-    if (!cbuf)
-        return 0;
-
-    return cbuf->full;
 }

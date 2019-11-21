@@ -3,58 +3,110 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct circular_buf_t
-{
+typedef struct circular_buf_t {
     uint8_t *buffer;
-    int     full;
-    size_t   head;
-    size_t   tail;
+    int      full;
+    size_t   head;    // Read only on the consumer side
+    size_t   tail;    // Read only on the producer side
     size_t   max;     // of the buffer
 } circular_buf_t;
 
-/// Pass in a storage buffer and size, returns a circular buffer handle
-/// Requires: buffer is not NULL, size > 0
-/// Ensures: cbuf has been created and is returned in an empty state
-int circular_buf_init(circular_buf_t *cbuf, uint8_t* buffer, size_t size);
+/* NOT THREAD SAFE */
 
-/// Reset the circular buffer to empty, head == tail. Data not cleared
-/// Requires: cbuf is valid and created by circular_buf_init
-void circular_buf_reset(circular_buf_t* cbuf);
+/*
+ * Initializes a circular buffer as empty
+ *  cbuf: pointer to the circular buffer struct that holds the metadata
+ *  buffer: pointer to an adequately sized memory region for the circular buffer
+ *  size: size in bytes for buffer
+ *  returns: 0 on success, other on failure
+ */
+int circular_buf_init(circular_buf_t *cbuf, uint8_t *buffer, size_t size);
 
-/// Put version 1 continues to add data if the buffer is full
-/// Old data is overwritten
-/// Requires: cbuf is valid and created by circular_buf_init
-int circular_buf_puts(circular_buf_t* cbuf, uint8_t *data, size_t len);
+/*
+ * Resets a circular buffer as empty
+ *  cbuf: pointer to the circular buffer struct
+ */
+void circular_buf_reset(circular_buf_t *cbuf);
 
-int circular_buf_putc(circular_buf_t * cbuf, uint8_t data);
+/* PRODUCER THREAD */
 
-/// Retrieve a value from the buffer
-/// Requires: cbuf is valid and created by circular_buf_init
-/// Returns 0 on success, -1 if the buffer is empty
-int circular_buf_gets(circular_buf_t* cbuf, uint8_t * data, int len);
+/*
+ * Places the content of data into the circular buffer (provided there is enough
+ * space left)
+ *  cbuf: pointer to the circular buffer struct
+ *  data: pointer to the data to add to the buffer 
+ *  len: bytes of data to add
+ *  returns: the number of actual bytes written (can be less if there is 
+ * not enough room left)
+ */
+int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len);
 
+/*
+ * Places a single byte into the circular buffer
+ *  cbuf: pointer to the circular buffer struct
+ *  data: byte to add
+ *  returns: 0 on success, other on failure
+ */
+int circular_buf_putc(circular_buf_t *cbuf, uint8_t data);
+
+/* CONSUMER THREAD */
+
+/*
+ * Retrieves and consumes len bytes from the circular buffer
+ *  cbuf: pointer to the circular buffer struct
+ *  data: pointer to where the bytes will be written
+ *  len: bytes of data to read
+ *  returns: the number of actual bytes read (can be less if there is not
+ * enough data in the buffer)
+ */
+int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len);
+
+/*
+ * Retrieves and consumes a single byte from the circular buffer
+ *  cbuf: pointer to the circular buffer struct
+ *  data: pointer to where the byte will be written
+ *  returns: 0 on success, other on failure
+ */
 int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data);
 
+/*
+ * Retrieves len bytes from the circular buffer without consuming them
+ *  cbuf: pointer to the circular buffer struct
+ *  data: pointer to where the bytes will be written
+ *  len: bytes of data to read
+ *  returns: the number of actual bytes read (can be less if there is not
+ * enough data in the buffer)
+ */
 int circular_buf_peek(circular_buf_t *cbuf, uint8_t *data, int len);
 
-/// CHecks if the buffer is empty
-/// Requires: cbuf is valid and created by circular_buf_init
-/// Returns true if the buffer is empty
-int is_circular_buf_empty(circular_buf_t* cbuf);
+/* THREAD SAFE */
 
-/// Checks if the buffer is full
-/// Requires: cbuf is valid and created by circular_buf_init
-/// Returns true if the buffer is full
-int is_circular_buf_full(circular_buf_t* cbuf);
+/*
+ * Checks if the buffer is empty
+ *  cbuf: pointer to the circular buffer struct
+ *  returns: 1 if the buffer is empty, 0 otherwise
+ */
+int is_circular_buf_empty(circular_buf_t *cbuf);
 
-/// Check the capacity of the buffer
-/// Requires: cbuf is valid and created by circular_buf_init
-/// Returns the maximum capacity of the buffer
-size_t circular_buf_capacity(circular_buf_t* cbuf);
+/*
+ * Checks if the buffer is full
+ *  cbuf: pointer to the circular buffer struct
+ *  returns: 1 if the buffer is full, 0 otherwise
+ */
+int is_circular_buf_full(circular_buf_t *cbuf);
 
-/// Check the number of elements stored in the buffer
-/// Requires: cbuf is valid and created by circular_buf_init
-/// Returns the current number of elements in the buffer
-size_t circular_buf_size(circular_buf_t* cbuf);
+/*
+ * Returns the maximum capacity of the circular buffer
+ *  cbuf: pointer to the circular buffer struct
+ *  returns: capacity of the buffer as it was initialized
+ */
+size_t circular_buf_capacity(circular_buf_t *cbuf);
 
-#endif //CIRCULAR_BUFFER_H_
+/*
+ * Returns the number of bytes currently stored in the buffer
+ *  cbuf: pointer to the circular buffer struct
+ *  returns: number of bytes stored
+ */
+size_t circular_buf_size(circular_buf_t *cbuf);
+
+#endif     // CIRCULAR_BUFFER_H_
