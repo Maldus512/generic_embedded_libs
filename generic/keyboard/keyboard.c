@@ -8,7 +8,7 @@ unsigned char get_key_state(raw_key_t *key)
 }
 
 keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned int debounce, unsigned long timestamp,
-                                 unsigned long longpress, unsigned int bitvalue)
+                                 unsigned long longpress, uint32_t bitvalue)
 {
     int             i, found = -1;
     raw_key_t *     key;

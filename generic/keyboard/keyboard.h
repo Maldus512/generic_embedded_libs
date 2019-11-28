@@ -1,5 +1,7 @@
-#ifndef __KEYBOARD_H__
-#define __KEYBOARD_H__
+#ifndef __GENERIC_KEYBOARD_H__
+#define __GENERIC_KEYBOARD_H__
+
+#include <stdint.h>
 
 typedef enum
 {
@@ -12,24 +14,24 @@ typedef enum
 
 typedef struct _raw_key
 {
-    unsigned long time;
-    unsigned int  bitvalue;
-    unsigned char code;
-    unsigned char value;
-    unsigned char oldvalue;
-    unsigned char ignore;
+    uint32_t time;
+    uint32_t  bitvalue;
+    int code;
+    uint8_t value;
+    uint8_t oldvalue;
+    char ignore;
     key_event_t   lastevent;
 } raw_key_t;
 
 
 typedef struct
 {
-    unsigned char code;
+    int code;
     key_event_t   event;
 } keycode_event_t;
 
 keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned int debounce, unsigned long timestamp,
-                                 unsigned long longpress, unsigned int bitvalue);
+                                 unsigned long longpress, uint32_t bitvalue);
 unsigned char   get_key_state(raw_key_t *key);
 void            reset_keys(raw_key_t *keys, int num);
 
