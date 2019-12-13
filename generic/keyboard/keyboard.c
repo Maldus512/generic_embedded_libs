@@ -42,12 +42,12 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned int debounce
     {
         if (timestamp > key->time + longpress)
         {
-            event.event    = KEY_LONGPRESS;
+            event.event    = KEY_LONGCLICK;
             key->lastevent = event.event;
         }
         else if (timestamp > key->time + debounce)
         {
-            current = key->value ? KEY_PRESS : KEY_RELEASE;
+            current = key->value ? KEY_CLICK : KEY_RELEASE;
             if (current != key->lastevent)
             {
                 event.event    = current;

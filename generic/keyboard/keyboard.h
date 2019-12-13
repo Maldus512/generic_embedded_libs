@@ -6,9 +6,9 @@
 typedef enum
 {
     KEY_NOTHING,
-    KEY_PRESS,
+    KEY_CLICK,
     KEY_RELEASE,
-    KEY_LONGPRESS
+    KEY_LONGCLICK
 } key_event_t;
 
 

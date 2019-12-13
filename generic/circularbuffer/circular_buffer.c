@@ -29,7 +29,7 @@ static size_t retreat_pointer(circular_buf_t *cbuf, int step) {
 }
 
 static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, int consume) {
-    int read = 0, tail, head;
+    int    read = 0, tail, head;
     size_t size = circular_buf_size(cbuf);
     if (!(cbuf && cbuf->buffer))
         return -1;
@@ -185,7 +185,9 @@ int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data) {
     if (is_circular_buf_empty(cbuf))
         return -1;
 
-    *data = cbuf->buffer[cbuf->tail];
+    if (data)
+        *data = cbuf->buffer[cbuf->tail];
+
     retreat_pointer(cbuf, 1);
 
     return 0;
