@@ -8,7 +8,8 @@ typedef enum
     KEY_NOTHING,
     KEY_CLICK,
     KEY_RELEASE,
-    KEY_LONGCLICK
+    KEY_LONGCLICK,
+    KEY_LONGPRESS,
 } key_event_t;
 
 
