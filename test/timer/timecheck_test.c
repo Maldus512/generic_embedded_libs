@@ -23,9 +23,9 @@ void test_time_travel() {
 void test_rollback() {
     unsigned long start, time;
     int           i;
-    const int passing = 500;
+    const int     passing = 500;
 
-    start = time = ULONG_MAX - passing/3;
+    start = time = ULONG_MAX - passing / 3;
 
     for (i = 0; i < passing; i++) {
         TEST_ASSERT(!is_expired(start, time++, passing));
@@ -33,4 +33,14 @@ void test_rollback() {
 
     time++;
     TEST_ASSERT(is_expired(start, time, passing));
+}
+
+void test_interval() {
+    TEST_ASSERT_EQUAL(0, time_interval(0, 0));
+    TEST_ASSERT_EQUAL(10, time_interval(0, 10));
+    TEST_ASSERT_EQUAL(10, time_interval(10, 0));
+    TEST_ASSERT_EQUAL(900, time_interval(100, 1000));
+    TEST_ASSERT_EQUAL(21, time_interval(ULONG_MAX - 10, 10));
+    TEST_ASSERT_EQUAL(20, time_interval(ULONG_MAX - 10, ULONG_MAX + 10));
+    TEST_ASSERT_EQUAL(20, time_interval(ULONG_MAX + 10, ULONG_MAX - 10));
 }
