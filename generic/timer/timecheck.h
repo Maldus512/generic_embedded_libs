@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+typedef unsigned long timestamp_t;
 
 #define typecheck(type, x)                                                                                             \
     ({                                                                                                                 \
@@ -12,11 +13,11 @@
         1;                                                                                                             \
     })
 
-#define time_after(a, b) (typecheck(uint32_t, a) && typecheck(uint32_t, b) && ((int32_t)((b) - (a)) < 0))
+#define time_after(a, b)  (typecheck(unsigned long, a) && typecheck(unsigned long, b) && ((long)((b) - (a)) < 0))
 #define time_before(a, b) time_after(b, a)
 
-static inline __attribute__((always_inline)) int is_expired(uint32_t start, uint32_t current, uint32_t delay)
-{
+static inline __attribute__((always_inline)) int is_expired(unsigned long start, unsigned long current,
+                                                            unsigned long delay) {
     return time_after(current, start + delay);
 }
 #endif

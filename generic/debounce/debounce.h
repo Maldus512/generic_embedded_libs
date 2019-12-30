@@ -3,39 +3,66 @@
 /*  HSW snc - Casalecchio di Reno (BO) ITALY                                  */
 /*  ----------------------------------------                                  */
 /*                                                                            */
-/*  modulo: digin.h                                                           */
-/*                                                                            */
-/*      gestione INPUT                                                        */
-/*                                                                            */
 /*  Autore: Massimo ZANNA & Maldus (Mattia MALDINI)                           */
-/*                                                                            */
-/*  Data  : 22/07/2003      REV  : 00.0                                       */
-/*                                                                            */
-/*  U.mod.: 12/05/2018      REV  : 01.0                                       */
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef DIGIN_H
-#define DIGIN_H
+#ifndef __DEBOUNCE_H__
+#define __DEBOUNCE_H__
 
-typedef struct _input_filter
-{
-    unsigned short is_counter;
-    unsigned short active;
-    unsigned short previous_input;
-    unsigned int filters[16];
-    unsigned int value[16];
+#define NUM_INPUTS ((int)sizeof(unsigned int) * 8)
+#define NTH(x, i)  ((x >> i) & 0x1)
+
+typedef struct {
+    unsigned int old_input;
+    unsigned int filters[NUM_INPUTS];
+    unsigned int value;
 } debounce_filter_t;
 
-
-static inline int digital_read(int i, debounce_filter_t *di_filter)
-{
-    return di_filter->value[i];
+/*
+ *  Returns the current value of the i-th input
+ *
+ *  i : input to return
+ *  filter: pointer to the debounce_filter_t struct
+ *  return: 0 or 1
+ */
+static inline int digital_read(int i, debounce_filter_t *filter) {
+    if (i < 0 || i >= NUM_INPUTS)
+        return -1;
+    return NTH(filter->value, i);
 }
 
-void init_debounce_filter(debounce_filter_t *filter, unsigned short active, unsigned short type);
-int  debounce_filter(debounce_filter_t *filter, unsigned short input, unsigned long debounce);
-void clear_counter(debounce_filter_t *filter, int num);
-void set_debounce_filter(debounce_filter_t *filter, unsigned short set);
+/*
+ *  Initializes a debounce filter struct. The struct holds the necessary data to
+ * filter fluctuations in the input. The input is received in the form of a bitmap as
+ * bit as an unsigned int (typically a word in the target system). The struct fields
+ * are not encapsulated to avoid using dynamic memory.
+ *
+ *  filter: pointer to the debounce_filter_t struct
+ */
+void init_debounce_filter(debounce_filter_t *filter);
 
-#endif /* DIGIN_H */
+/*
+ *  Filters fluctuations in the received input. The value held into the structure is modified
+ * only after a change that lasted through at least debounce+1 calls.
+ * The debounce effect is calculated on number of calls instead of time because the
+ * focus of this tool is on stability, not on duration. Therefore, this function should
+ * be called at more-or-less regular intervals.
+ *
+ *  filter: pointer to the debounce_filter_t struct
+ *  input: bitmap containing the current input
+ *  debounce: number of consecutive calls where the input must be different for its
+ * value to change.
+ *  return: returns 1 if there was a change
+ */
+int debounce_filter(debounce_filter_t *filter, unsigned int input, int debounce);
+
+/*
+ *  Sets the saved value for all inputs. Useful to reset the reading.
+ *
+ *  filter: pointer to the debounce_filter_t struct
+ *  set: input values to reset to
+ */
+void set_debounce_filter(debounce_filter_t *filter, unsigned int set);
+
+#endif

@@ -423,7 +423,7 @@ int _int_value(parameter_data_t *p)
     return 0;
 }
 
-int string_to_display(parameter_data_t *ps, int len, int i, int level, char *string, int slen, int language)
+int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language)
 {
     char buffer[128];
 

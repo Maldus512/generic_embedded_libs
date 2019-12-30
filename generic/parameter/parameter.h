@@ -106,8 +106,7 @@ typedef struct _parameter_data_t
     struct _parameter_data_t *(*runTime)(struct _parameter_data_t *, int);
 } parameter_data_t;
 
-void modify_parameter(parameter_data_t *ps, int len, int i, int level, long mod);
-int  string_to_display(parameter_data_t *ps, int len, int i, int level, char *string, int slen, int language);
+int  string_to_display(parameter_data_t *ps, int len, int i, char *string, int language);
 int  next_parameter(parameter_data_t *ps, int len, int *i, int level);
 int  prev_parameter(parameter_data_t *ps, int len, int *i, int level);
 int  number_of_parameters(parameter_data_t *ps, int len, int level);

@@ -5,7 +5,7 @@ PROGRAM = "testsuite"
 LIBS = "../generic"
 UNITY = "Unity/src/"
 CFLAGS = ["-Wall", "-Wextra", "-g", "-O0"]
-MODULES = ["circularbuffer"]
+MODULES = ["circularbuffer", "debounce", "keyboard", "timer"]
 RBGEN = "ruby ./Unity/auto/generate_test_runner.rb"
 
 # Creates a Phony target
@@ -32,15 +32,23 @@ env_options = {
 
 env = Environment(**env_options)
 
-sources = Glob("{}*.c".format(UNITY))
+unity = Glob("{}*.c".format(UNITY))
+libs = Glob("{}/**/*.c".format(LIBS))
+
+EXE = ""
+programs = []
 
 for mod in MODULES:
-    sources += Glob("{}/{}/*.c".format(LIBS, mod))
     tests = Glob("./{}/*.c".format(mod), strings=True)
     for t in [x for x in tests if not str.endswith(x, "_Runner.c")]:
+        sources = unity+libs
         env.Command(t.replace(".c", "_Runner.c"), t, "{} {}".format(RBGEN, t))
         sources.append(t)
         sources.append(t.replace(".c", "_Runner.c"))
+        name = t.replace(".c", "")
+        programs.append(env.Program(name, sources))
+        EXE += "./{} && ".format(name)
 
-p = env.Program(PROGRAM, sources)
-PhonyTargets('test', p, "./{}".format(PROGRAM))
+EXE += "true"
+
+PhonyTargets('test', programs, EXE)

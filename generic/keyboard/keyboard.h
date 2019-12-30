@@ -3,36 +3,38 @@
 
 #include <stdint.h>
 
-typedef enum
-{
-    KEY_NOTHING,
-    KEY_CLICK,
-    KEY_RELEASE,
-    KEY_LONGCLICK,
-    KEY_LONGPRESS,
+typedef enum {
+    KEY_NOTHING,       // Nothing has happened
+    KEY_CLICK,         // The button was pressed for "click" time. Not repeated
+    KEY_LONGCLICK,     // The button was pressed for "longclick" time. Not repeated
+    KEY_LONGPRESS,     // The button was kept pressed after a longclick event
+    KEY_RELEASE,       // The button was released after a click event (long or short)
 } key_event_t;
 
 
-typedef struct _raw_key
-{
-    uint32_t time;
-    uint32_t  bitvalue;
-    int code;
-    uint8_t value;
-    uint8_t oldvalue;
-    char ignore;
-    key_event_t   lastevent;
+// Struct containing information about the key
+typedef struct {
+    unsigned long bitvalue;     // Bit map of the key
+    int           code;         // Key code
+
+    // Internal state, not to be handled outside
+    struct {
+        unsigned long time;
+        uint8_t       value;
+        uint8_t       oldvalue;
+        uint8_t       ignore;
+        key_event_t   lastevent;
+    } _state;
 } raw_key_t;
 
 
-typedef struct
-{
-    int code;
-    key_event_t   event;
+typedef struct {
+    int         code;
+    key_event_t event;
 } keycode_event_t;
 
-keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned int debounce, unsigned long timestamp,
-                                 unsigned long longpress, uint32_t bitvalue);
+keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, unsigned long longclick,
+                                 unsigned long timestamp, unsigned long bitvalue);
 unsigned char   get_key_state(raw_key_t *key);
 void            reset_keys(raw_key_t *keys, int num);
 
