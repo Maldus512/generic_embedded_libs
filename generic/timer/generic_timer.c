@@ -1,208 +1,103 @@
+/*
+ *  Helper functions to manage timers. A timer is simply a structure that keeps track
+ * of total set period, starting time and elapsed time in between pauses, and
+ * timer state (paused, stopped or running).
+ */
 #include "generic_timer.h"
+#include "timecheck.h"
 
-#ifndef MAX_TIMERS
-#define MAX_TIMERS 20
-#endif
-
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
-
-struct _timer_state {
-    unsigned long time_left;
-    unsigned long starting_time;
-    unsigned long total_time;
-    unsigned long elapsed_time;
-    TIMER_STATE   state;
-    char          f_allocated;
-};
-
-static struct _timer_state _t[MAX_TIMERS] = {{
-    .time_left     = 0,
-    .starting_time = 0,
-    .total_time    = 0,
-    .elapsed_time  = 0,
-    .state         = TIMER_STOPPED,
-    .f_allocated   = 0,
-}};
-
-int VALID_TIMER(generic_timer_t timer) {
-    int i, found = 0;
-    for (i = 0; i < MAX_TIMERS; i++) {
-        if (timer == &_t[i]) {
-            found = 1;
-            break;
-        }
-    }
-    return found && timer->f_allocated;
+void init_generic_timer(generic_timer_t *timer) {
+    timer->starting_time = 0;
+    timer->total_time    = 0;
+    timer->elapsed_time  = 0;
+    timer->state         = TIMER_STOPPED;
 }
 
-void _update_timer(unsigned long currenttime, struct _timer_state *t) {
-    unsigned long timeleft, unaccountedtime;
-    switch (t->state) {
-        case TIMER_COUNTING:
-            timeleft        = t->total_time - t->elapsed_time;
-            unaccountedtime = currenttime - t->starting_time;
-            if (t->time_left == 0 || timeleft <= unaccountedtime) {
-                t->time_left    = 0;
-                t->state        = TIMER_REACHED;
-                t->elapsed_time = t->total_time;
-            } else {
-                t->time_left = timeleft - unaccountedtime;
-            }
-            break;
 
-        case TIMER_PAUSED:
-            t->starting_time = currenttime;
-            break;
-
-        case TIMER_ERROR:
-        case TIMER_REACHED:
-        case TIMER_STOPPED:
-            break;
-    }
-}
-
-int start_timer(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return -1;
-
+int start_timer(generic_timer_t *timer, unsigned long timestamp) {
     switch (timer->state) {
         case TIMER_STOPPED:
-            timer->starting_time = currenttime;
-            timer->elapsed_time  = 0;
+        case TIMER_PAUSED:
+            timer->starting_time = timestamp;
             timer->state         = TIMER_COUNTING;
             return 0;
             break;
-        default:
+        case TIMER_COUNTING:     // Cannot start a counting timer
             return -1;
             break;
     }
+    return -1;
 }
 
-void destroy_timer(generic_timer_t timer) {
-    if (!VALID_TIMER(timer))
-        return;
 
-    timer->f_allocated = 0;
-}
-
-void destroy_all_timers() {
-    int i;
-    for (i = 0; i < MAX_TIMERS; i++) {
-        _t[i].f_allocated = 0;
-    }
-}
-
-generic_timer_t create_timer(unsigned long timertime) {
-    int i;
-    for (i = 0; i < MAX_TIMERS; i++) {
-        if (!_t[i].f_allocated) {
-            _t[i].f_allocated  = 1;
-            _t[i].time_left    = timertime;
-            _t[i].elapsed_time = 0;
-            _t[i].state        = TIMER_STOPPED;
-            _t[i].total_time   = timertime;
-            return &_t[i];
-        }
-    }
-    return NULL;
-}
-
-int set_timer(generic_timer_t timer, unsigned long timertime) {
-    if (!VALID_TIMER(timer))
-        return -1;
-
-    timer->time_left    = timertime;
-    timer->elapsed_time = 0;
-    timer->state        = TIMER_STOPPED;
-    timer->total_time   = timertime;
-    return 0;
-}
-
-int stop_timer(generic_timer_t timer) {
-    if (!VALID_TIMER(timer))
-        return -1;
-
-    timer->time_left     = 0;
+int stop_timer(generic_timer_t *timer) {
     timer->starting_time = 0;
+    timer->elapsed_time  = 0;
     timer->state         = TIMER_STOPPED;
-    timer->total_time    = 0;
     return 0;
 }
 
-int reset_timer(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
+
+int pause_timer(generic_timer_t *timer, unsigned long timestamp) {
+    switch (timer->state) {
+        case TIMER_COUNTING:
+            timer->state = TIMER_PAUSED;
+            timer->elapsed_time += time_interval(timer->starting_time, timestamp);
+            return 0;
+        case TIMER_STOPPED:     // Cannot pause a stopped timer
+        case TIMER_PAUSED:      // Cannot pause a paused timer
+            return -1;
+    }
+    return -1;
+}
+
+
+int restart_timer(generic_timer_t *timer, unsigned long timestamp) {
+    stop_timer(timer);
+    return start_timer(timer, timestamp);
+}
+
+
+void change_timer(generic_timer_t *timer, unsigned long period) {
+    timer->total_time = period;
+}
+
+
+int set_timer(generic_timer_t *timer, unsigned long period) {
+    if (timer->state != TIMER_STOPPED)     // Can only set a stopped timer
         return -1;
 
-    timer->time_left     = timer->total_time;
-    timer->starting_time = currenttime;
-    timer->state         = TIMER_STOPPED;
-    timer->elapsed_time  = 0;
+    timer->total_time = period;
     return 0;
 }
 
-unsigned long get_time_left(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return 0;
 
-    _update_timer(currenttime, timer);
-    return timer->time_left;
+TIMER_STATE get_timer_state(generic_timer_t *timer) {
+    return timer->state;
 }
 
-unsigned long get_elapsed_time(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return 0;
 
-    _update_timer(currenttime, timer);
+unsigned long get_elapsed_time(generic_timer_t *timer, unsigned long timestamp) {
     if (timer->state == TIMER_COUNTING)
-        return timer->elapsed_time + (currenttime - timer->starting_time);
+        return timer->elapsed_time + time_interval(timer->starting_time, timestamp);
     else
         return timer->elapsed_time;
 }
 
-int pause_timer(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return -1;
 
-    switch (timer->state) {
-        case TIMER_STOPPED:
-            timer->state = TIMER_PAUSED;
-            return 0;
-            break;
-        case TIMER_COUNTING:
-            _update_timer(currenttime, timer);
-            timer->state = TIMER_PAUSED;
-            timer->elapsed_time += currenttime - timer->starting_time;
-            return 0;
-            break;
-        default:
-            return -1;
-            break;
-    }
+unsigned long get_remaining_time(generic_timer_t *timer, unsigned long timestamp) {
+    unsigned long elapsed = get_elapsed_time(timer, timestamp);
+    return elapsed < timer->total_time ? timer->total_time - elapsed : 0;
 }
 
-int restart_timer(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return -1;
 
-    _update_timer(currenttime, timer);
-    timer->state = TIMER_COUNTING;
-    return 0;
+unsigned long get_total_time(generic_timer_t *timer) {
+    return timer->total_time;
 }
 
-TIMER_STATE get_timer_state(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return -1;
 
-    _update_timer(currenttime, timer);
-    return timer->state;
-}
+int is_timer_reached(generic_timer_t *t, unsigned long timestamp) {
+    unsigned long timeleft = t->total_time - t->elapsed_time;
 
-int is_timer_reached(generic_timer_t timer, unsigned long currenttime) {
-    if (!VALID_TIMER(timer))
-        return -1;
-
-    _update_timer(currenttime, timer);
-    return timer->state == TIMER_REACHED;
+    return is_expired(t->starting_time, timestamp, timeleft);
 }

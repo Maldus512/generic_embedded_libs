@@ -1,93 +1,112 @@
 #ifndef __GENERIC_TIMER_H__
 #define __GENERIC_TIMER_H__
 
+// Three possible states of a timer
 typedef enum {
-    TIMER_ERROR = -1,
     TIMER_STOPPED,
     TIMER_COUNTING,
     TIMER_PAUSED,
-    TIMER_REACHED,
 } TIMER_STATE;
 
-/* Type for timer handles */
-// typedef int generic_timer_t;
-typedef struct _timer_state *generic_timer_t;
-
-
-/*
- * Creates a timer and returns the handle.
- * Returns NULL on failure
- */
-generic_timer_t create_timer();
+// No data hiding to avoid depending on dynamic memory
+typedef struct {
+    unsigned long starting_time;
+    unsigned long elapsed_time;
+    unsigned long total_time;
+    TIMER_STATE   state;
+} generic_timer_t;
 
 /*
- * Starts the specified timer; requires the current time.
- * Returns -1 on failure.
+ *  Initializes the timer struct
+ * timer: pointer to the timer struct to initialize
  */
-int start_timer(generic_timer_t timer, unsigned long currenttime);
+void init_generic_timer(generic_timer_t *timer);
 
 /*
- * Returns the state of the specified timer; requires the current time.
- * Returns -1 on failure.
+ *  Starts the timer.
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: -1 if the timer is already running, 0 otherwise
  */
-TIMER_STATE get_timer_state(generic_timer_t timer, unsigned long currenttime);
+int start_timer(generic_timer_t *timer, unsigned long timestamp);
 
 /*
- * Returns 1 if the specified timer is finished, 0 otherwise; requires the current time.
- * Returns -1 on failure.
+ *  Stops the timer. This resets the elapsed time to 0.
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: -1 if the timer is already stopped, 0 otherwise
  */
-int is_timer_reached(generic_timer_t timer, unsigned long currenttime);
+int stop_timer(generic_timer_t *timer);
 
 /*
- * Returns the missing time before the end is reached. Requires the current time.
+ *  Pauses the timer. This does not change the elapsed time.
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: -1 if the timer is not running, 0 otherwise
  */
-unsigned long get_time_left(generic_timer_t timer, unsigned long currenttime);
+int pause_timer(generic_timer_t *timer, unsigned long timestamp);
 
 /*
- * Pauses the timer, keeping the elapsed time intact. Requires the current time.
- * Returns -1 on failure.
+ *  Restarts the timer (setting the elapsed time to 0).
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: 0
  */
-int pause_timer(generic_timer_t timer, unsigned long currenttime);
+int restart_timer(generic_timer_t *timer, unsigned long timestamp);
 
 /*
- * Restarts a paused timer. Requires the current time.
- * Returns -1 on failure.
+ *  Sets the target period to be reached. It only works on stopped timers.
+ * timer: pointer to the timer struct to initialize
+ * period: period of time the timer should run for
+ * return: -1 if the timer is not stopped, 0 otherwise
  */
-int restart_timer(generic_timer_t timer, unsigned long currenttime);
+int set_timer(generic_timer_t *timer, unsigned long period);
 
 /*
- * Stops the specified timer, resetting it to zero.
- * Returns -1 on failure.
+ *  Similar to `set_timer` but with no restrictions on the timer's state.
+ * timer: pointer to the timer struct to initialize
+ * period: period of time the timer should run for
  */
-int stop_timer(generic_timer_t timer);
+void change_timer(generic_timer_t *timer, unsigned long period);
 
 /*
- * Resets the timer to the initial value. It also stops it
- * Returns -1 on failure.
+ *  Returns the state of the timer.
+ * timer: pointer to the timer struct to initialize
+ * return: current state of the timer
  */
-int reset_timer(generic_timer_t timer, unsigned long currenttime);
+TIMER_STATE get_timer_state(generic_timer_t *timer);
 
 /*
- * Returns time that has passed since start of the timer. Requires current time.
- * Returns -1 on failure.
+ *  Returns the set period for the timer
+ * timer: pointer to the timer struct to initialize
+ * return: total set period
  */
-unsigned long get_elapsed_time(generic_timer_t timer, unsigned long currenttime);
+unsigned long get_total_time(generic_timer_t *timer);
 
 /*
- * Sets the specified timer to a new alarm; it also puts it in stopped state
- * and resets the elapsed time.
- * Returns -1 on failure.
+ *  Returns the elapsed time. Note that the elapsed time keeps counting regardless
+ * of whether the timer has reached its set period or not.
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: elapsed time
  */
-int set_timer(generic_timer_t timer, unsigned long timertime);
+unsigned long get_elapsed_time(generic_timer_t *timer, unsigned long timestamp);
 
 /*
- * Deallocates the specified timer.
+ *  Returns the remaining time from the set period. If the set period has been reached,
+ * always returns 0.
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: remaining time
  */
-void destroy_timer(generic_timer_t timer);
+unsigned long get_remaining_time(generic_timer_t *timer, unsigned long timestamp);
 
 /*
- * Deallocates all timers.
+ *  Returns 1 if the set period has been reached, 0 otherwise.
+ * timer: pointer to the timer struct to initialize
+ * timestamp: current time
+ * return: 1 if the timer has reached its end, 0 otherwise
  */
-void destroy_all_timers();
+int is_timer_reached(generic_timer_t *timer, unsigned long timestamp);
 
 #endif
