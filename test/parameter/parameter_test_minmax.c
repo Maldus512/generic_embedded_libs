@@ -20,16 +20,15 @@ struct limit_t {
     int min, max;
 } limiti;
 
-parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int,
-     {.sint = {0, 0, 0, &parametri.intpar, &limiti.min, &limiti.max}},
-     generic_format,
-     NULL,
-     LVL_UTENTE,
-     0,
-     NULL,
-     NULL},
-};
+parameter_data_t p[NUM_PARAMETRI] = {{
+    signed_int,
+    {.sint = {0, 0, 0, &parametri.intpar, &limiti.min, &limiti.max}},
+    generic_format,
+    NULL,
+    LVL_UTENTE,
+    {0},
+    0,
+}};
 
 void setUp() {
     memset(&parametri, 0, sizeof(struct parametri_t));

@@ -24,12 +24,12 @@ struct parametri_t {
 } parametri;
 
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {0, 10, 5, &parametri.user1}}, generic_format, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {signed_int, {.sint = {0, 10, 5, &parametri.user2}}, generic_format, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {signed_int, {.sint = {0, 10, 5, &parametri.maintainer1}}, generic_format, NULL, LVL_TECNICO, 0, NULL, NULL},
-    {signed_int, {.sint = {0, 10, 5, &parametri.maintainer2}}, generic_format, NULL, LVL_TECNICO, 0, NULL, NULL},
-    {signed_int, {.sint = {0, 10, 5, &parametri.manufacturer1}}, generic_format, NULL, LVL_COSTRUTTORE, 0, NULL, NULL},
-    {signed_int, {.sint = {0, 10, 5, &parametri.manufacturer1}}, generic_format, NULL, LVL_COSTRUTTORE, 0, NULL, NULL},
+    {signed_int, {.sint = {0, 10, 5, &parametri.user1}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {0, 10, 5, &parametri.user2}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {0, 10, 5, &parametri.maintainer1}}, generic_format, NULL, LVL_TECNICO, {0}, 0},
+    {signed_int, {.sint = {0, 10, 5, &parametri.maintainer2}}, generic_format, NULL, LVL_TECNICO, {0}, 0},
+    {signed_int, {.sint = {0, 10, 5, &parametri.manufacturer1}}, generic_format, NULL, LVL_COSTRUTTORE, {0}, 0},
+    {signed_int, {.sint = {0, 10, 5, &parametri.manufacturer1}}, generic_format, NULL, LVL_COSTRUTTORE, {0}, 0},
 };
 
 void setUp() {

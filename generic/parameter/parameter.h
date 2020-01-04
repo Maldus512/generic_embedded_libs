@@ -72,26 +72,123 @@ typedef union {
 } _data_type_t;
 
 typedef struct _parameter_data_t {
-    tipovariabile t;
-    _data_type_t  d;
+    tipovariabile t;     // Variable type
 
-    char **      format;
-    char ***     string_value;
-    unsigned int lvl;
-    unsigned int multiplier;     // TODO: deve diventare un'unita' (per i float)
-    void (*runtime_operator)(struct _parameter_data_t *, int);
-    int (*runtime_consider)(struct _parameter_data_t *);
+    _data_type_t d;     // Data union, depends on the variable type
+
+    // Strings to display. They should be char arrays
+    char ** format;           // Format; array on languages
+    char ***string_value;     // Values; array of values on array of languages.
+    // If string_value is not NULL the parameter's value is used to index this string array for the
+    // value to display
+
+    int lvl;
+
+    struct {
+        void (*runtime_operator)(struct _parameter_data_t *, int);
+        int (*runtime_consider)(void *);
+        void *userdata;
+    } runtime;
+
+    float multiplier;
 } parameter_data_t;
 
-int  string_to_display(parameter_data_t *ps, int len, int i, char *string, int language);
-int  next_parameter(parameter_data_t *ps, int len, int *i, int level);
-int  prev_parameter(parameter_data_t *ps, int len, int *i, int level);
-int  number_of_parameters(parameter_data_t *ps, int len, int level);
-int  first_parameter(parameter_data_t *ps, int len, int level);
+/*
+ *  Copies the value to display of the parameter (following the format and string_value fields)
+ * int string. The result depends on language
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  i : index of the parameter
+ *  language: language to use
+ *  return: lenght of the copied string
+ */
+int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language);
+
+/*
+ *  Moves the parameter index forward, stepping through any parameter that is not included in the
+ * specified access level.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  i : pointer to the index of the parameter. The function modifies it.
+ *  level: access level bitmap
+ *  return: new index (also modified by the pointer)
+ */
+int next_parameter(parameter_data_t *ps, int len, int *i, int level);
+
+/*
+ *  Moves the parameter index backwards, stepping through any parameter that is not included in the
+ * specified access level.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  i : pointer to the index of the parameter. The function modifies it.
+ *  level: access level bitmap
+ *  return: new index (also modified by the pointer)
+ */
+int prev_parameter(parameter_data_t *ps, int len, int *i, int level);
+
+/*
+ *  Returns the counted number of parameters included in the specified access level.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  level: access level bitmap
+ *  return: number of parameters
+ */
+int number_of_parameters(parameter_data_t *ps, int len, int level);
+
+/*
+ *  Finds the index of the first parameter included in the specified access level.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  level: access level bitmap
+ *  return: index of the first parameter
+ */
+int first_parameter(parameter_data_t *ps, int len, int level);
+
+/*
+ *  Modifies the parameter according to its restrictions. mod should be a positive
+ * or negative integer depending on the direction of the change. mod refers to the
+ * multiplier field, that indicates the unit of the parameter.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  i : index of the parameter. The function modifies it.
+ *  mod : modifier to apply to the parameter.
+ */
 void parameter_operator(parameter_data_t *ps, int len, int i, int mod);
-int  get_parameter_index_from_num(parameter_data_t *p, int len, int num, int level);
-int  get_parameter_num_from_index(parameter_data_t *p, int len, int index, int level);
+
+/*
+ *  Returns the index of the nth parameter (according to the access level)
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  num: number of the parameter
+ *  level: access level bitmap
+ *  return: index of the nth parameter
+ */
+int get_parameter_index_from_num(parameter_data_t *p, int len, int num, int level);
+
+/*
+ *  Returns the number of the indexed parameter in the list of parameters included in
+ * the specified access level.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  index: index of the parameter
+ *  level: access level bitmap
+ *  return: number of the indexed parameter
+ */
+int get_parameter_num_from_index(parameter_data_t *p, int len, int index, int level);
+
+/*
+ *  Initializes all parameters to their default value.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ */
 void init_to_default(parameter_data_t *ps, int len);
-int  check_for_defaults(parameter_data_t *ps, int len);
+/*
+ *  Initializes any parameter that is out of the specified range to its
+ * default value. Returns 1 if any such parameter is found.
+ *  ps: array of parameter_data_t structs.
+ *  len: lenght of ps
+ *  return: 1 or 0
+ */
+int check_for_defaults(parameter_data_t *ps, int len);
 
 #endif

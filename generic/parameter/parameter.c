@@ -2,8 +2,11 @@
 #include <string.h>
 #include "parameter.h"
 
-static int check_level(parameter_data_t *p, int rlvl) {
-    return (p->lvl & rlvl) > 0;
+static int is_visible(parameter_data_t *p, int rlvl) {
+    if (p->runtime.runtime_consider)     // If the user has specified a runtime behavior...
+        return p->runtime.runtime_consider(NULL);
+    else     // Otherwise, consider only the level bitmap
+        return (p->lvl & rlvl) > 0;
 }
 
 static int checkSCH(parameter_data_t p, char v) {
@@ -110,7 +113,7 @@ void init_to_default(parameter_data_t *ps, int len) {
 int first_parameter(parameter_data_t *p, int len, int level) {
     int index = 0;
 
-    while (index < len && !check_level(&p[index], level))
+    while (index < len && !is_visible(&p[index], level))
         index++;
 
     if (index >= len)
@@ -157,7 +160,7 @@ int number_of_parameters(parameter_data_t *p, int len, int level) {
     int num = 0, i = 0;
 
     for (i = 0; i < len; i++) {
-        if (check_level(&p[i], level))
+        if (is_visible(&p[i], level))
             num++;
     }
 
@@ -170,7 +173,7 @@ int next_parameter(parameter_data_t *p, int len, int *i, int level) {
 
     do {
         *i = (*i + 1) % len;
-    } while (*i != initial && (!check_level(&p[*i], level)));
+    } while (*i != initial && (!is_visible(&p[*i], level)));
 
     return *i;
 }
@@ -180,7 +183,7 @@ int prev_parameter(parameter_data_t *p, int len, int *i, int level) {
 
     do {
         *i = *i > 0 ? *i - 1 : len - 1;
-    } while (*i != initial && (!check_level(&p[*i], level)));
+    } while (*i != initial && (!is_visible(&p[*i], level)));
 
     return *i;
 }
@@ -245,17 +248,14 @@ int check_for_defaults(parameter_data_t *ps, int len) {
 }
 
 void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
-    float ftmod;
+    float multiplier = ps[i].multiplier > 0 ? ps[i].multiplier : 1;
 
     if (i > len || i < 0)
         return;
 
-    if (ps[i].runtime_operator != NULL) {
-        ps[i].runtime_operator(&ps[i], mod);
+    if (ps[i].runtime.runtime_operator != NULL) {
+        ps[i].runtime.runtime_operator(&ps[i], mod);
     } else {
-        if (ps[i].multiplier > 1)
-            mod *= ps[i].multiplier;
-
         switch (ps[i].t) {
             case signed_char: {
                 char v = (char)(*(ps[i].d.sch.var));
@@ -266,7 +266,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 char min, max;
                 min = ps[i].d.sch.pmin != NULL ? *ps[i].d.sch.pmin : ps[i].d.sch.min;
                 max = ps[i].d.sch.pmax != NULL ? *ps[i].d.sch.pmax : ps[i].d.sch.max;
-                v += mod;
+                v += mod * multiplier;
 
                 if (!checkSCH(ps[i], v))
                     (*(ps[i].d.sch.var)) = mod > 0 ? min : max;
@@ -284,7 +284,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 unsigned char min, max;
                 min = ps[i].d.uch.pmin != NULL ? *ps[i].d.uch.pmin : ps[i].d.uch.min;
                 max = ps[i].d.uch.pmax != NULL ? *ps[i].d.uch.pmax : ps[i].d.uch.max;
-                v += mod;
+                v += mod * multiplier;
 
                 if (!checkUCH(ps[i], v))
                     (*(ps[i].d.uch.var)) = mod > 0 ? min : max;
@@ -303,7 +303,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 int min, max;
                 min = ps[i].d.sint.pmin != NULL ? *ps[i].d.sint.pmin : ps[i].d.sint.min;
                 max = ps[i].d.sint.pmax != NULL ? *ps[i].d.sint.pmax : ps[i].d.sint.max;
-                v += mod;
+                v += mod * multiplier;
 
                 if (!checkSINT(ps[i], v))
                     (*(ps[i].d.sint.var)) = mod > 0 ? min : max;
@@ -320,7 +320,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 unsigned int min, max;
                 min = ps[i].d.uint.pmin != NULL ? *ps[i].d.uint.pmin : ps[i].d.uint.min;
                 max = ps[i].d.uint.pmax != NULL ? *ps[i].d.uint.pmax : ps[i].d.uint.max;
-                v += mod;
+                v += mod * multiplier;
 
                 if (checkUINT(ps[i], v) != 1)
                     (*(ps[i].d.uint.var)) = mod > 0 ? min : max;
@@ -338,7 +338,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 long min, max;
                 min = ps[i].d.sl.pmin != NULL ? *ps[i].d.sl.pmin : ps[i].d.sl.min;
                 max = ps[i].d.sl.pmax != NULL ? *ps[i].d.sl.pmax : ps[i].d.sl.max;
-                v += mod;
+                v += mod * multiplier;
 
                 if (!checkSL(ps[i], v))
                     (*(ps[i].d.sl.var)) = mod > 0 ? min : max;
@@ -355,7 +355,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 unsigned long min, max;
                 min = ps[i].d.ul.pmin != NULL ? *ps[i].d.ul.pmin : ps[i].d.ul.min;
                 max = ps[i].d.ul.pmax != NULL ? *ps[i].d.ul.pmax : ps[i].d.ul.max;
-                v += mod;
+                v += mod * multiplier;
 
                 if (!checkUL(ps[i], v))
                     (*(ps[i].d.ul.var)) = mod > 0 ? min : max;
@@ -369,17 +369,13 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 if (!checkFT(ps[i], v))
                     v = ps[i].d.ft.def;
 
-                ftmod = (float)mod;
-                if (ps[i].multiplier > 1)
-                    mod *= ps[i].multiplier;
-
                 float min, max;
                 min = ps[i].d.ft.pmin != NULL ? *ps[i].d.ft.pmin : ps[i].d.ft.min;
                 max = ps[i].d.ft.pmax != NULL ? *ps[i].d.ft.pmax : ps[i].d.ft.max;
-                v += ftmod;
+                v += mod * multiplier;
 
-                if (checkUL(ps[i], v) != 1)
-                    (*(ps[i].d.ft.var)) = ftmod > 0 ? min : max;
+                if (!checkFT(ps[i], v))
+                    (*(ps[i].d.ft.var)) = mod > 0 ? min : max;
                 else
                     (*(ps[i].d.ft.var)) = v;
             } break;

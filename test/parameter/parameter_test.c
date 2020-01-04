@@ -23,14 +23,14 @@ struct parametri_t {
 } parametri;
 
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, generic_format, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, generic_format, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, generic_format, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, generic_format, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, generic_format_float, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, generic_format_float, NULL, LVL_UTENTE, 0, NULL, NULL},
-    {signed_char, {.sch = {0, 1, 0, &parametri.ab1}}, abilitato, (char ***)sino, LVL_UTENTE, 0, NULL, NULL},
-    {signed_char, {.sch = {0, 1, 0, &parametri.ab2}}, abilitato, (char ***)sino, LVL_UTENTE, 0, NULL, NULL},
+    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
+    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
+    {signed_char, {.sch = {0, 1, 0, &parametri.ab1}}, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
+    {signed_char, {.sch = {0, 1, 0, &parametri.ab2}}, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
 };
 
 void setUp() {
@@ -106,7 +106,7 @@ void test_num_index() {
     int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
     TEST_ASSERT_EQUAL(0, index);
 
-    int num = get_parameter_num_from_index(p, NUM_PARAMETRI, index, LVL_UTENTE); 
+    int num = get_parameter_num_from_index(p, NUM_PARAMETRI, index, LVL_UTENTE);
     TEST_ASSERT_EQUAL(0, num);
 
     index = get_parameter_index_from_num(p, NUM_PARAMETRI, 4, LVL_UTENTE);
@@ -122,15 +122,15 @@ void test_movement() {
     int num = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
     TEST_ASSERT_EQUAL(NUM_PARAMETRI, num);
 
-    for (int i = 0;  i < num; i++) {
+    for (int i = 0; i < num; i++) {
         next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
     }
     TEST_ASSERT_EQUAL(0, index);
 
     prev_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(num-1, index);
+    TEST_ASSERT_EQUAL(num - 1, index);
 
-    for (int i = 0;  i < num-1; i++) {
+    for (int i = 0; i < num - 1; i++) {
         prev_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
     }
     TEST_ASSERT_EQUAL(0, index);
@@ -148,7 +148,7 @@ void test_parameter_operator() {
     parameter_operator(p, NUM_PARAMETRI, index, +1);
     parameter_operator(p, NUM_PARAMETRI, index, +1);
     TEST_ASSERT_EQUAL(10, parametri.intpar1);
-    
+
     parameter_operator(p, NUM_PARAMETRI, index, +1);
     TEST_ASSERT_EQUAL(1, parametri.intpar1);
 }
