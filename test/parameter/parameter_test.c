@@ -23,14 +23,14 @@ struct parametri_t {
 } parametri;
 
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
-    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
-    {signed_char, {.sch = {0, 1, 0, &parametri.ab1}}, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
-    {signed_char, {.sch = {0, 1, 0, &parametri.ab2}}, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, NULL, NULL, NULL, LVL_UTENTE, {0}, 0},
+    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, NULL, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
+    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, NULL, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
+    {signed_char, {.sch = {0, 1, 0, &parametri.ab1}}, NULL, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
+    {signed_char, {.sch = {0, 1, 0, &parametri.ab2}}, NULL, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
 };
 
 void setUp() {
@@ -74,9 +74,9 @@ void test_string_to_display() {
     index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
 
     string_to_display(p, NUM_PARAMETRI, index, string, 0);
-    TEST_ASSERT_EQUAL_STRING("Valore: 15", string);
+    TEST_ASSERT_EQUAL_STRING("15", string);
     string_to_display(p, NUM_PARAMETRI, index, string, 1);
-    TEST_ASSERT_EQUAL_STRING("Value:  15", string);
+    TEST_ASSERT_EQUAL_STRING("15", string);
 
     index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
     index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);

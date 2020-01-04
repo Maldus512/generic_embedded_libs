@@ -31,9 +31,9 @@ void runtime2(parameter_data_t *par, int mod) {
 }
 
 int toVis(void *ud) {
-    if (ud == (void*)1)
+    if (ud == (void *)1)
         return unlock1;
-    else if (ud == (void*)2)
+    else if (ud == (void *)2)
         return unlock2;
 
     TEST_ABORT();
@@ -41,10 +41,10 @@ int toVis(void *ud) {
 }
 
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, generic_format, NULL, LVL_UTENTE, {NULL, toVis, (void*)1}, 0},
-    {signed_int, {.sint = {0, 10, 1, &parametri.intpar3}}, generic_format, NULL, LVL_UTENTE, {runtime1, toVis, (void*)2}, 0},
-    {signed_int, {.sint = {0, 10, 1, &parametri.intpar4}}, generic_format, NULL, LVL_UTENTE, {runtime2, NULL, NULL}, 0},
+    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, NULL, generic_format, NULL, LVL_UTENTE, {NULL, toVis, (void *)1}, 0},
+    {signed_int, {.sint = {0, 10, 1, &parametri.intpar3}}, NULL, generic_format, NULL, LVL_UTENTE, {runtime1, toVis, (void *)2}, 0},
+    {signed_int, {.sint = {0, 10, 1, &parametri.intpar4}}, NULL, generic_format, NULL, LVL_UTENTE, {runtime2, NULL, NULL}, 0},
 };
 
 void setUp() {
@@ -87,14 +87,14 @@ void test_runtime_operator() {
 
 void test_skip() {
     unlock1 = unlock2 = 0;
-    int num = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
+    int num           = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
     TEST_ASSERT_EQUAL(2, num);
 
     unlock1 = 1;
-    num = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
+    num     = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
     TEST_ASSERT_EQUAL(3, num);
 
     unlock2 = 1;
-    num = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
+    num     = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
     TEST_ASSERT_EQUAL(4, num);
 }

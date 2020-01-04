@@ -20,10 +20,10 @@ struct parametri_t {
 } parametri;
 
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 15, 5, &parametri.intpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 4},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, generic_format, NULL, LVL_UTENTE, {0}, 0.1},
-    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, generic_format, NULL, LVL_UTENTE, {0}, 50},
-    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, generic_format_float, NULL, LVL_UTENTE, {0}, 0.01},
+    {signed_int, {.sint = {1, 15, 5, &parametri.intpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 4},
+    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0.1},
+    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 50},
+    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, NULL, generic_format_float, NULL, LVL_UTENTE, {0}, 0.01},
 };
 
 void setUp() {

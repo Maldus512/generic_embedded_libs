@@ -403,41 +403,71 @@ static int _int_value(parameter_data_t *p) {
     return 0;
 }
 
-int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language) {
-    char buffer[128];
+int get_description(parameter_data_t *ps, int len, int i, char *string, int language) {
+    if (ps[i].description) {
+        strcpy(string, ps[i].description[language]);
+        return strlen(string);
+    } else {
+        return 0;
+    }
+}
 
-    if (i < 0 || i > len)
+int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language) {
+    if (i < 0 || i >= len)
         return -1;
 
     char *(*pt)[LANGUAGES] = (char *(*)[LANGUAGES])ps[i].string_value;
 
     if (ps[i].string_value != NULL) {
-        sprintf(buffer, ps[i].format[language], pt[_int_value(&ps[i])][language]);
+        if (ps[i].format)
+            sprintf(string, ps[i].format[language], pt[_int_value(&ps[i])][language]);
+        else
+            strcpy(string, pt[_int_value(&ps[i])][language]);
     } else {
         switch (ps[i].t) {
             case signed_char:
-                sprintf(buffer, ps[i].format[language], (char)*ps[i].d.sch.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (char)*ps[i].d.sch.var);
+                else
+                    sprintf(string, "%i", (char)*ps[i].d.sch.var);
                 break;
             case unsigned_char:
-                sprintf(buffer, ps[i].format[language], (unsigned char)*ps[i].d.uch.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (unsigned char)*ps[i].d.uch.var);
+                else
+                    sprintf(string, "%i", (unsigned char)*ps[i].d.uch.var);
                 break;
             case signed_int:
-                sprintf(buffer, ps[i].format[language], (int)*ps[i].d.sint.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (int)*ps[i].d.sint.var);
+                else
+                    sprintf(string, "%i", (char)*ps[i].d.sint.var);
                 break;
             case unsigned_int:
-                sprintf(buffer, ps[i].format[language], (unsigned int)*ps[i].d.uint.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (unsigned int)*ps[i].d.uint.var);
+                else
+                    sprintf(string, "%u", (unsigned int)*ps[i].d.uint.var);
                 break;
             case signed_long:
-                sprintf(buffer, ps[i].format[language], (long)*ps[i].d.sl.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (long)*ps[i].d.sl.var);
+                else
+                    sprintf(string, "%ld", (long)*ps[i].d.sl.var);
                 break;
             case unsigned_long:
-                sprintf(buffer, ps[i].format[language], (unsigned long)*ps[i].d.ul.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (unsigned long)*ps[i].d.ul.var);
+                else
+                    sprintf(string, "%lu", (unsigned long)*ps[i].d.ul.var);
                 break;
             case signed_float:
-                sprintf(buffer, ps[i].format[language], (float)*ps[i].d.ft.var);
+                if (ps[i].format)
+                    sprintf(string, ps[i].format[language], (float)*ps[i].d.ft.var);
+                else
+                    sprintf(string, "%.f", (float)*ps[i].d.ft.var);
                 break;
         }
     }
-    strcpy(string, buffer);
     return strlen(string);
 }

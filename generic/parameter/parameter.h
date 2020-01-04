@@ -77,6 +77,7 @@ typedef struct _parameter_data_t {
     _data_type_t d;     // Data union, depends on the variable type
 
     // Strings to display. They should be char arrays
+    char ** description;      // Description; array on languages
     char ** format;           // Format; array on languages
     char ***string_value;     // Values; array of values on array of languages.
     // If string_value is not NULL the parameter's value is used to index this string array for the
@@ -190,5 +191,7 @@ void init_to_default(parameter_data_t *ps, int len);
  *  return: 1 or 0
  */
 int check_for_defaults(parameter_data_t *ps, int len);
+
+int get_description(parameter_data_t *ps, int len, int i, char *string, int language);
 
 #endif
