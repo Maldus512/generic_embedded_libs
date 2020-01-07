@@ -37,5 +37,6 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
                                  unsigned long timestamp, unsigned long bitvalue);
 unsigned char   get_key_state(raw_key_t *key);
 void            reset_keys(raw_key_t *keys, int num);
+unsigned long   get_click_time(raw_key_t *keys, int num, int code, unsigned long timestamp);
 
 #endif

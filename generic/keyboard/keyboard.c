@@ -1,4 +1,5 @@
 #include "keyboard.h"
+#include "timer/timecheck.h"
 
 #define NTH(x, i) ((x >> i) & 0x1)
 
@@ -22,7 +23,7 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
             break;
         }
         // If the key was pressed but it's not anymore
-        else if (keys[i]._state.oldvalue && (keys[i].bitvalue & bitvalue) == 0) {
+        else if (keys[i]._state.oldvalue && keys[i].bitvalue != bitvalue) {
             keys[i]._state.value = 0;
             found                = i;
             event.code           = keys[i].code;
@@ -32,7 +33,7 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
         else if (keys[i]._state.lastevent != KEY_RELEASE && keys[i]._state.lastevent != KEY_NOTHING) {
             found      = i;
             event.code = keys[i].code;
-            // Do not break; favor clicks over releases
+            break;
         }
     }
 
@@ -42,14 +43,14 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
     key = &keys[found];
 
     if (key->_state.value == key->_state.oldvalue && !key->_state.ignore) {
-        if (timestamp > key->_state.time + longclick) {
+        if (is_expired(key->_state.time, timestamp, longclick)) {
             if (key->_state.lastevent == KEY_LONGCLICK || key->_state.lastevent == KEY_LONGPRESS)
                 event.event = KEY_LONGPRESS;
             else
                 event.event = KEY_LONGCLICK;
 
             key->_state.lastevent = event.event;
-        } else if (timestamp > key->_state.time + click) {
+        } else if (is_expired(key->_state.time, timestamp, click)) {
             current = key->_state.value ? KEY_CLICK : KEY_RELEASE;
             if (current != key->_state.lastevent) {
                 event.event           = current;
@@ -73,4 +74,16 @@ void reset_keys(raw_key_t *keys, int num) {
         keys[i]._state.oldvalue  = keys[i]._state.value;
         keys[i]._state.ignore    = 1;
     }
+}
+
+unsigned long get_click_time(raw_key_t *keys, int num, int code, unsigned long timestamp) {
+    int i = 0;
+    for (i = 0; i < num; i++) {
+        if (keys[i].code == code &&
+            (keys[i]._state.lastevent == KEY_CLICK || keys[i]._state.lastevent == KEY_LONGCLICK ||
+             keys[i]._state.lastevent == KEY_LONGPRESS))
+            return time_interval(keys[i]._state.time, timestamp);
+    }
+
+    return 0;
 }
