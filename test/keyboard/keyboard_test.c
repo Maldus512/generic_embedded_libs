@@ -3,17 +3,17 @@
 #include "keyboard/keyboard.h"
 #include "unity.h"
 
+#define ONEFIVEBMP 0x11
 
 enum { P_ONE = 0, P_TWO, P_THREE, P_FOUR, P_FIVE, P_ONEFIVE, P_NUM };
 
-raw_key_t orig_keys[P_NUM] = {{.bitvalue = 0x01, .code = P_ONE},   {.bitvalue = 0x02, .code = P_TWO},
-                              {.bitvalue = 0x04, .code = P_THREE}, {.bitvalue = 0x08, .code = P_FOUR},
-                              {.bitvalue = 0x10, .code = P_FIVE},  {.bitvalue = 0x11, .code = P_ONEFIVE}};
-
-raw_key_t keys[P_NUM];
+raw_key_t keys[P_NUM] = {
+    {.bitvalue = ONEFIVEBMP, .code = P_ONEFIVE}, {.bitvalue = 0x01, .code = P_ONE},  {.bitvalue = 0x02, .code = P_TWO},
+    {.bitvalue = 0x04, .code = P_THREE},         {.bitvalue = 0x08, .code = P_FOUR}, {.bitvalue = 0x10, .code = P_FIVE},
+};
 
 void setUp() {
-    memcpy(keys, orig_keys, sizeof(raw_key_t) * P_NUM);
+    reset_keys(keys, P_NUM);
 }
 
 void tearDown() {}
@@ -73,4 +73,59 @@ void test_longclick() {
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 2044, 0);
     TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
+}
+
+void test_click_time() {
+    keyboard_routine(keys, P_NUM, 40, 2000, 0, 0x01);
+    // As long as the key was not clicked the click time is always 0
+    TEST_ASSERT_EQUAL(0, get_click_time(keys, P_NUM, P_ONE, 0));
+    TEST_ASSERT_EQUAL(0, get_click_time(keys, P_NUM, P_ONE, 30));
+    TEST_ASSERT_EQUAL(0, get_click_time(keys, P_NUM, P_ONE, 100));
+
+    keyboard_routine(keys, P_NUM, 40, 2000, 50, 0x01);
+    TEST_ASSERT_EQUAL(0, get_click_time(keys, P_NUM, P_ONE, 0));
+    TEST_ASSERT_EQUAL(30, get_click_time(keys, P_NUM, P_ONE, 30));
+    TEST_ASSERT_EQUAL(100, get_click_time(keys, P_NUM, P_ONE, 100));
+
+    keyboard_routine(keys, P_NUM, 40, 2000, 4000, 0x01);
+    TEST_ASSERT_EQUAL(0, get_click_time(keys, P_NUM, P_ONE, 0));
+    TEST_ASSERT_EQUAL(3000, get_click_time(keys, P_NUM, P_ONE, 3000));
+    TEST_ASSERT_EQUAL(10000, get_click_time(keys, P_NUM, P_ONE, 10000));
+}
+
+void test_multiclick() {
+    keycode_event_t event;
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 0, ONEFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 50, ONEFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 60, 0x1);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 120, 0x1);
+    TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 120, 0x1);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 180, 0x1);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 180, 0);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 250, 0);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 300, 0x1);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keyboard_routine(keys, P_NUM, 40, 2000, 350, 0x1);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
+    TEST_ASSERT_EQUAL(P_ONE, event.code);
 }
