@@ -37,8 +37,7 @@ void setUp() {
     memset(global_buffer, 0, BUFSIZE);
 }
 
-void tearDown() {
-}
+void tearDown() {}
 
 void test_initialization() {
     circular_buf_t cbuf;
@@ -113,4 +112,27 @@ void test_underflow() {
     TEST_ASSERT_EQUAL(BUFSIZE / 2, circular_buf_puts(&cbuf, buffer, BUFSIZE / 2));
     TEST_ASSERT_EQUAL(BUFSIZE / 2, circular_buf_gets(&cbuf, buffer, BUFSIZE));
     TEST_ASSERT_EQUAL(0, circular_buf_gets(&cbuf, buffer, BUFSIZE));
+}
+
+void test_multiple() {
+    uint8_t        buffer[300];
+    uint8_t        packet[6], read[6];
+    circular_buf_t cbuf;
+    int            i;
+    circular_buf_init(&cbuf, buffer, BUFSIZE);
+
+    packet[0] = 0xAA;
+    packet[1] = 0;
+    packet[2] = 1;
+    packet[3] = 5;
+    circular_buf_puts(&cbuf, packet, 6);
+    circular_buf_gets(&cbuf, read, 6);
+    TEST_ASSERT_EQUAL(5, read[3]);
+
+    packet[3] = 6;
+    for (i = 0; i < 300; i++) {
+        circular_buf_puts(&cbuf, packet, 6);
+        circular_buf_gets(&cbuf, read, 6);
+        TEST_ASSERT_EQUAL(6, read[3]);
+    }
 }

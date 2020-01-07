@@ -404,6 +404,9 @@ static int _int_value(parameter_data_t *p) {
 }
 
 int get_description(parameter_data_t *ps, int len, int i, char *string, int language) {
+    if (i >= len)
+        return -1;
+
     if (ps[i].description) {
         strcpy(string, ps[i].description[language]);
         return strlen(string);

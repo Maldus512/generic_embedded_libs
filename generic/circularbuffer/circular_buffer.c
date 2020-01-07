@@ -12,7 +12,6 @@
 static size_t advance_pointer(circular_buf_t *cbuf, int step) {
     if (cbuf->full || step == 0) {
         return cbuf->head;
-        cbuf->tail = (cbuf->tail + step) % cbuf->max;
     }
 
     cbuf->head = (cbuf->head + step) % cbuf->max;
@@ -23,8 +22,8 @@ static size_t advance_pointer(circular_buf_t *cbuf, int step) {
 }
 
 static size_t retreat_pointer(circular_buf_t *cbuf, int step) {
-    cbuf->full = 0;
     cbuf->tail = (cbuf->tail + step) % cbuf->max;
+    cbuf->full = 0;
     return cbuf->tail;
 }
 
@@ -198,11 +197,9 @@ int circular_buf_peek(circular_buf_t *cbuf, uint8_t *data, int len) {
 }
 
 int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len) {
-    if (data) {
-        return _circular_buf_get(cbuf, data, len, 1);
-    } else {
-        // If no pointer is provided the data is dropped
-        retreat_pointer(cbuf, len);
-        return len;
-    }
+    return _circular_buf_get(cbuf, data, len, 1);
+}
+
+int circular_buf_drop(circular_buf_t *cbuf, int len) {
+    return _circular_buf_get(cbuf, NULL, len, 1);
 }

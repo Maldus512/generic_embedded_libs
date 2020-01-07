@@ -6,9 +6,9 @@
 typedef struct circular_buf_t {
     uint8_t *buffer;
     int      full;
-    size_t   head;    // Read only on the consumer side
-    size_t   tail;    // Read only on the producer side
-    size_t   max;     // of the buffer
+    size_t   head;     // Read only on the consumer side
+    size_t   tail;     // Read only on the producer side
+    size_t   max;      // of the buffer
 } circular_buf_t;
 
 /* NOT THREAD SAFE */
@@ -34,9 +34,9 @@ void circular_buf_reset(circular_buf_t *cbuf);
  * Places the content of data into the circular buffer (provided there is enough
  * space left)
  *  cbuf: pointer to the circular buffer struct
- *  data: pointer to the data to add to the buffer 
+ *  data: pointer to the data to add to the buffer
  *  len: bytes of data to add
- *  returns: the number of actual bytes written (can be less if there is 
+ *  returns: the number of actual bytes written (can be less if there is
  * not enough room left)
  */
 int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len);
@@ -60,6 +60,8 @@ int circular_buf_putc(circular_buf_t *cbuf, uint8_t data);
  * enough data in the buffer)
  */
 int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len);
+
+int circular_buf_drop(circular_buf_t *cbuf, int len);
 
 /*
  * Retrieves and consumes a single byte from the circular buffer
