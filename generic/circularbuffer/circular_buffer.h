@@ -5,10 +5,10 @@
 
 typedef struct circular_buf_t {
     uint8_t *buffer;
-    int      full;
-    size_t   head;     // Read only on the consumer side
-    size_t   tail;     // Read only on the producer side
-    size_t   max;      // of the buffer
+    size_t   bufsize;     // Size of the buffer
+    // The corresponding circular buffer capacity is bufsize - 1
+    size_t head;     // Read only on the consumer side
+    size_t tail;     // Read only on the producer side
 } circular_buf_t;
 
 /* NOT THREAD SAFE */
@@ -61,6 +61,13 @@ int circular_buf_putc(circular_buf_t *cbuf, uint8_t data);
  */
 int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len);
 
+/*
+ *  Drops len bytes from the circular buffer. Same as using circular_buf_gets
+ * with a NULL pointer
+ *  cbuf: pointer to the circular buffer struct
+ *  len: bytes of data to read
+ *  returns: the number of actual bytes dropped
+ */
 int circular_buf_drop(circular_buf_t *cbuf, int len);
 
 /*
@@ -98,7 +105,8 @@ int is_circular_buf_empty(circular_buf_t *cbuf);
 int is_circular_buf_full(circular_buf_t *cbuf);
 
 /*
- * Returns the maximum capacity of the circular buffer
+ * Returns the maximum capacity of the circular buffer. It is equal to the
+ * original buffer size - 1.
  *  cbuf: pointer to the circular buffer struct
  *  returns: capacity of the buffer as it was initialized
  */

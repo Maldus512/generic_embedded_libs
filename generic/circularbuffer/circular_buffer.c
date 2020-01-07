@@ -10,20 +10,20 @@
  */
 
 static size_t advance_pointer(circular_buf_t *cbuf, int step) {
-    if (cbuf->full || step == 0) {
+    if (is_circular_buf_full(cbuf) || step == 0) {
         return cbuf->head;
     }
 
-    cbuf->head = (cbuf->head + step) % cbuf->max;
+    cbuf->head = (cbuf->head + step) % cbuf->bufsize;
 
     // We mark full because we will advance tail on the next time around
-    cbuf->full = (cbuf->head == cbuf->tail);
+    // cbuf->full = (cbuf->head == cbuf->tail);
     return cbuf->head;
 }
 
 static size_t retreat_pointer(circular_buf_t *cbuf, int step) {
-    cbuf->tail = (cbuf->tail + step) % cbuf->max;
-    cbuf->full = 0;
+    cbuf->tail = (cbuf->tail + step) % cbuf->bufsize;
+    // cbuf->full = 0;
     return cbuf->tail;
 }
 
@@ -42,7 +42,7 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, in
         if (head > tail)
             chunk = head - tail;
         else
-            chunk = cbuf->max - tail;
+            chunk = cbuf->bufsize - tail;
 
         chunk = chunk > len ? len : chunk;
 
@@ -56,7 +56,7 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, in
         if (consume)
             tail = retreat_pointer(cbuf, chunk);
         else
-            tail = (tail + chunk) % cbuf->max;
+            tail = (tail + chunk) % cbuf->bufsize;
     }
 
     return read;
@@ -70,8 +70,8 @@ int circular_buf_init(circular_buf_t *cbuf, uint8_t *buffer, size_t size) {
     if (!buffer || size <= 0)
         return 1;
 
-    cbuf->buffer = buffer;
-    cbuf->max    = size;
+    cbuf->buffer  = buffer;
+    cbuf->bufsize = size;
     circular_buf_reset(cbuf);
 
     return 0;
@@ -81,7 +81,7 @@ void circular_buf_reset(circular_buf_t *cbuf) {
     if (cbuf) {
         cbuf->head = 0;
         cbuf->tail = 0;
-        cbuf->full = 0;
+        // cbuf->full = 0;
     }
 }
 
@@ -93,27 +93,27 @@ int is_circular_buf_empty(circular_buf_t *cbuf) {
     if (!cbuf)
         return 1;
 
-    return (!cbuf->full && (cbuf->head == cbuf->tail));
+    return (!is_circular_buf_full(cbuf) && (cbuf->head == cbuf->tail));
 }
 
 int is_circular_buf_full(circular_buf_t *cbuf) {
     if (!cbuf)
         return 0;
 
-    return cbuf->full;
+    return ((cbuf->head + 1) % cbuf->bufsize) == cbuf->tail;
 }
 
 size_t circular_buf_size(circular_buf_t *cbuf) {
     if (!cbuf)
         return 0;
 
-    size_t size = cbuf->max;
+    size_t size = cbuf->bufsize;
 
-    if (!cbuf->full) {
+    if (!is_circular_buf_full(cbuf)) {
         if (cbuf->head >= cbuf->tail) {
             size = (cbuf->head - cbuf->tail);
         } else {
-            size = (cbuf->max + cbuf->head - cbuf->tail);
+            size = (cbuf->bufsize + cbuf->head - cbuf->tail);
         }
     }
 
@@ -124,7 +124,7 @@ size_t circular_buf_capacity(circular_buf_t *cbuf) {
     if (!cbuf)
         return 0;
 
-    return cbuf->max;
+    return cbuf->bufsize - 1;
 }
 
 /*
@@ -155,12 +155,16 @@ int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len) {
 
     head = cbuf->head;
     tail = cbuf->tail;
-    while (!cbuf->full && len > 0) {
+    while (!is_circular_buf_full(cbuf) && len > 0) {
         int chunk;
-        if (head >= tail)
-            chunk = len > cbuf->max - head ? cbuf->max - head : len;
-        else
-            chunk = len > tail - head ? tail - head : len;
+        if (head >= tail) {
+            if (tail == 0)  // If the tail is at the beginning of the array I have to make sure they won't collide
+                chunk = len > cbuf->bufsize - head - 1 ? cbuf->bufsize - head - 1 : len;
+            else
+                chunk = len > cbuf->bufsize - head ? cbuf->bufsize - head : len;
+        } else {
+            chunk = len > tail - head ? tail - head - 1 : len;
+        }
 
         memcpy(&cbuf->buffer[head], data, chunk);
         head = advance_pointer(cbuf, chunk);

@@ -43,7 +43,7 @@ void test_initialization() {
     circular_buf_t cbuf;
     circular_buf_init(&cbuf, global_buffer, BUFSIZE);
     TEST_ASSERT_EQUAL(0, circular_buf_size(&cbuf));
-    TEST_ASSERT_EQUAL(BUFSIZE, circular_buf_capacity(&cbuf));
+    TEST_ASSERT_EQUAL(BUFSIZE - 1, circular_buf_capacity(&cbuf));
 }
 
 void test_single_put_get() {
@@ -99,7 +99,9 @@ void test_overflow() {
     circular_buf_init(&cbuf, global_buffer, BUFSIZE);
 
     TEST_ASSERT_EQUAL(BUFSIZE / 2, circular_buf_puts(&cbuf, buffer, BUFSIZE / 2));
-    TEST_ASSERT_EQUAL(BUFSIZE / 2, circular_buf_puts(&cbuf, buffer, BUFSIZE / 2));
+    TEST_ASSERT(!is_circular_buf_full(&cbuf));
+    TEST_ASSERT_EQUAL(BUFSIZE / 2 - 1, circular_buf_puts(&cbuf, buffer, BUFSIZE / 2));
+    TEST_ASSERT(is_circular_buf_full(&cbuf));
     TEST_ASSERT_EQUAL(0, circular_buf_puts(&cbuf, buffer, BUFSIZE / 2));
     TEST_ASSERT(is_circular_buf_full(&cbuf));
 }
