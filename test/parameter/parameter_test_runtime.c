@@ -6,7 +6,7 @@
 #define LANGUAGES 2
 #endif
 
-#define NUM_PARAMETRI 4
+#define NUM_PARAMETRI 5
 
 #define LVL_UTENTE 0x1
 
@@ -14,7 +14,7 @@ char *     generic_format[LANGUAGES] = {"Valore: %i", "Value:  %i"};
 static int f1 = 0, f2 = 0, unlock1 = 0, unlock2 = 0;
 
 struct parametri_t {
-    int intpar1, intpar2, intpar3, intpar4;
+    int intpar1, intpar2, intpar3, intpar4, intpar5;
 } parametri;
 
 void runtime1(parameter_data_t *par, int mod) {
@@ -40,11 +40,34 @@ int toVis(void *ud) {
     return 0;
 }
 
+int specialFormat(parameter_data_t *par, char *string) {
+    static int x = 0;
+    sprintf(string, "num %i", x++);
+    TEST_ASSERT_EQUAL(9, *par->d.sint.var);
+    return 0;
+}
+
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, NULL, generic_format, NULL, LVL_UTENTE, {NULL, toVis, (void *)1}, 0},
-    {signed_int, {.sint = {0, 10, 1, &parametri.intpar3}}, NULL, generic_format, NULL, LVL_UTENTE, {runtime1, toVis, (void *)2}, 0},
-    {signed_int, {.sint = {0, 10, 1, &parametri.intpar4}}, NULL, generic_format, NULL, LVL_UTENTE, {runtime2, NULL, NULL}, 0},
+    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
+    {signed_int,
+     {.sint = {0, 100, 15, &parametri.intpar2}},
+     {.format = generic_format},
+     LVL_UTENTE,
+     {NULL, toVis, (void *)1},
+     0},
+    {signed_int,
+     {.sint = {0, 10, 1, &parametri.intpar3}},
+     {.format = generic_format},
+     LVL_UTENTE,
+     {runtime1, toVis, (void *)2},
+     0},
+    {signed_int,
+     {.sint = {0, 10, 1, &parametri.intpar4}},
+     {.format = generic_format},
+     LVL_UTENTE,
+     {runtime2, NULL, NULL},
+     0},
+    {signed_int, {.sint = {1, 10, 9, &parametri.intpar5}}, {.special_format = specialFormat}, LVL_UTENTE, {0}, 0},
 };
 
 void setUp() {
@@ -97,4 +120,17 @@ void test_skip() {
     unlock2 = 1;
     num     = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
     TEST_ASSERT_EQUAL(4, num);
+}
+
+void test_special_format() {
+    char string[128];
+    init_to_default(p, NUM_PARAMETRI);
+    int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
+    prev_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+
+    string_to_display(p, NUM_PARAMETRI, index, string, 0);
+    TEST_ASSERT_EQUAL_STRING("num 0", string);
+
+    string_to_display(p, NUM_PARAMETRI, index, string, 0);
+    TEST_ASSERT_EQUAL_STRING("num 1", string);
 }

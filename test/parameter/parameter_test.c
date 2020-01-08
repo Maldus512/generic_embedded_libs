@@ -23,14 +23,24 @@ struct parametri_t {
 } parametri;
 
 parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, NULL, NULL, NULL, LVL_UTENTE, {0}, 0},
-    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, NULL, generic_format, NULL, LVL_UTENTE, {0}, 0},
-    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, NULL, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
-    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, NULL, generic_format_float, NULL, LVL_UTENTE, {0}, 0},
-    {signed_char, {.sch = {0, 1, 0, &parametri.ab1}}, NULL, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
-    {signed_char, {.sch = {0, 1, 0, &parametri.ab2}}, NULL, abilitato, (char ***)sino, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
+    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, {0}, LVL_UTENTE, {0}, 0},
+    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
+    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
+    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, {.format = generic_format_float}, LVL_UTENTE, {0}, 0},
+    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, {.format = generic_format_float}, LVL_UTENTE, {0}, 0},
+    {signed_char,
+     {.sch = {0, 1, 0, &parametri.ab1}},
+     {.format = abilitato, .string_value = (char ***)sino},
+     LVL_UTENTE,
+     {0},
+     0},
+    {signed_char,
+     {.sch = {0, 1, 0, &parametri.ab2}},
+     {.format = abilitato, .string_value = (char ***)sino},
+     LVL_UTENTE,
+     {0},
+     0},
 };
 
 void setUp() {

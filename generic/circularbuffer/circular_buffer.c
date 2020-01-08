@@ -93,7 +93,7 @@ int is_circular_buf_empty(circular_buf_t *cbuf) {
     if (!cbuf)
         return 1;
 
-    return (!is_circular_buf_full(cbuf) && (cbuf->head == cbuf->tail));
+    return cbuf->head == cbuf->tail;
 }
 
 int is_circular_buf_full(circular_buf_t *cbuf) {
@@ -158,7 +158,7 @@ int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len) {
     while (!is_circular_buf_full(cbuf) && len > 0) {
         int chunk;
         if (head >= tail) {
-            if (tail == 0)  // If the tail is at the beginning of the array I have to make sure they won't collide
+            if (tail == 0)     // If the tail is at the beginning of the array I have to make sure they won't collide
                 chunk = len > cbuf->bufsize - head - 1 ? cbuf->bufsize - head - 1 : len;
             else
                 chunk = len > cbuf->bufsize - head ? cbuf->bufsize - head : len;

@@ -407,8 +407,8 @@ int get_description(parameter_data_t *ps, int len, int i, char *string, int lang
     if (i >= len)
         return -1;
 
-    if (ps[i].description) {
-        strcpy(string, ps[i].description[language]);
+    if (ps[i].display.description) {
+        strcpy(string, ps[i].display.description[language]);
         return strlen(string);
     } else {
         return 0;
@@ -419,54 +419,56 @@ int string_to_display(parameter_data_t *ps, int len, int i, char *string, int la
     if (i < 0 || i >= len)
         return -1;
 
-    char *(*pt)[LANGUAGES] = (char *(*)[LANGUAGES])ps[i].string_value;
+    char *(*pt)[LANGUAGES] = (char *(*)[LANGUAGES])ps[i].display.string_value;
 
-    if (ps[i].string_value != NULL) {
-        if (ps[i].format)
-            sprintf(string, ps[i].format[language], pt[_int_value(&ps[i])][language]);
+    if (ps[i].display.special_format != NULL) {
+        return ps[i].display.special_format(&ps[i], string);
+    } else if (ps[i].display.string_value != NULL) {
+        if (ps[i].display.format)
+            sprintf(string, ps[i].display.format[language], pt[_int_value(&ps[i])][language]);
         else
             strcpy(string, pt[_int_value(&ps[i])][language]);
     } else {
         switch (ps[i].t) {
             case signed_char:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (char)*ps[i].d.sch.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (char)*ps[i].d.sch.var);
                 else
                     sprintf(string, "%i", (char)*ps[i].d.sch.var);
                 break;
             case unsigned_char:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (unsigned char)*ps[i].d.uch.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (unsigned char)*ps[i].d.uch.var);
                 else
                     sprintf(string, "%i", (unsigned char)*ps[i].d.uch.var);
                 break;
             case signed_int:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (int)*ps[i].d.sint.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (int)*ps[i].d.sint.var);
                 else
                     sprintf(string, "%i", (char)*ps[i].d.sint.var);
                 break;
             case unsigned_int:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (unsigned int)*ps[i].d.uint.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (unsigned int)*ps[i].d.uint.var);
                 else
                     sprintf(string, "%u", (unsigned int)*ps[i].d.uint.var);
                 break;
             case signed_long:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (long)*ps[i].d.sl.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (long)*ps[i].d.sl.var);
                 else
                     sprintf(string, "%ld", (long)*ps[i].d.sl.var);
                 break;
             case unsigned_long:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (unsigned long)*ps[i].d.ul.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (unsigned long)*ps[i].d.ul.var);
                 else
                     sprintf(string, "%lu", (unsigned long)*ps[i].d.ul.var);
                 break;
             case signed_float:
-                if (ps[i].format)
-                    sprintf(string, ps[i].format[language], (float)*ps[i].d.ft.var);
+                if (ps[i].display.format)
+                    sprintf(string, ps[i].display.format[language], (float)*ps[i].d.ft.var);
                 else
                     sprintf(string, "%.f", (float)*ps[i].d.ft.var);
                 break;

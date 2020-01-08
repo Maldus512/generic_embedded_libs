@@ -23,9 +23,7 @@ struct limit_t {
 parameter_data_t p[NUM_PARAMETRI] = {{
     signed_int,
     {.sint = {0, 0, 0, &parametri.intpar, &limiti.min, &limiti.max}},
-    NULL,
-    generic_format,
-    NULL,
+    {.format = generic_format},
     LVL_UTENTE,
     {0},
     0,
