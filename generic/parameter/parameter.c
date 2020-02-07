@@ -403,6 +403,67 @@ static int _int_value(parameter_data_t *p) {
     return 0;
 }
 
+unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
+    unsigned long res;
+    if (i >= len)
+        return -1;
+
+    switch (ps[i].t) {
+        case signed_char: {
+            char min, max;
+            min = ps[i].d.sch.pmin != NULL ? *ps[i].d.sch.pmin : ps[i].d.sch.min;
+            max = ps[i].d.sch.pmax != NULL ? *ps[i].d.sch.pmax : ps[i].d.sch.max;
+            res = max - min;
+            break;
+        }
+        case unsigned_char: {
+            unsigned char min, max;
+            min = ps[i].d.uch.pmin != NULL ? *ps[i].d.uch.pmin : ps[i].d.uch.min;
+            max = ps[i].d.uch.pmax != NULL ? *ps[i].d.uch.pmax : ps[i].d.uch.max;
+            res = max - min;
+            break;
+        }
+
+        case signed_int: {
+            int min, max;
+            min = ps[i].d.sint.pmin != NULL ? *ps[i].d.sint.pmin : ps[i].d.sint.min;
+            max = ps[i].d.sint.pmax != NULL ? *ps[i].d.sint.pmax : ps[i].d.sint.max;
+            res = max - min;
+            break;
+        }
+
+        case unsigned_int: {
+            unsigned int min, max;
+            min = ps[i].d.uint.pmin != NULL ? *ps[i].d.uint.pmin : ps[i].d.uint.min;
+            max = ps[i].d.uint.pmax != NULL ? *ps[i].d.uint.pmax : ps[i].d.uint.max;
+            res = max - min;
+            break;
+        }
+
+        case signed_long: {
+            long min, max;
+            min = ps[i].d.sl.pmin != NULL ? *ps[i].d.sl.pmin : ps[i].d.sl.min;
+            max = ps[i].d.sl.pmax != NULL ? *ps[i].d.sl.pmax : ps[i].d.sl.max;
+            res = max - min;
+            break;
+        }
+
+        case unsigned_long: {
+            unsigned long min, max;
+            min = ps[i].d.ul.pmin != NULL ? *ps[i].d.ul.pmin : ps[i].d.ul.min;
+            max = ps[i].d.ul.pmax != NULL ? *ps[i].d.ul.pmax : ps[i].d.ul.max;
+            res = max - min;
+            break;
+        }
+
+        case signed_float:
+            res = 0;
+            break;
+    }
+
+    return res;
+}
+
 int get_description(parameter_data_t *ps, int len, int i, char *string, int language) {
     if (i >= len)
         return -1;
@@ -413,6 +474,18 @@ int get_description(parameter_data_t *ps, int len, int i, char *string, int lang
     } else {
         return 0;
     }
+}
+
+int get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language) {
+    if (i >= len)
+        return -1;
+
+    if (ps[i].display.string_value != NULL) {
+        char *(*pt)[LANGUAGES] = (char *(*)[LANGUAGES])ps[i].display.string_value;
+        strcpy(string, pt[value][language]);
+    }
+
+    return 0;
 }
 
 int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language) {

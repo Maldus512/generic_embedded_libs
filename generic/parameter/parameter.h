@@ -107,6 +107,10 @@ typedef struct _parameter_data_t {
  */
 int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language);
 
+unsigned long get_num_values(parameter_data_t *ps, int len, int i);
+
+int get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
+
 /*
  *  Moves the parameter index forward, stepping through any parameter that is not included in the
  * specified access level.
