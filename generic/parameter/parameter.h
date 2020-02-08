@@ -109,6 +109,8 @@ int string_to_display(parameter_data_t *ps, int len, int i, char *string, int la
 
 unsigned long get_num_values(parameter_data_t *ps, int len, int i);
 
+void *parameter_get_userdata(parameter_data_t *ps, int len, int i);
+
 int get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
 
 /*

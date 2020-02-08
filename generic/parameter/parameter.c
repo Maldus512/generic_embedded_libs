@@ -247,6 +247,34 @@ int check_for_defaults(parameter_data_t *ps, int len) {
     return res;
 }
 
+void *parameter_get_userdata(parameter_data_t *ps, int len, int i) {
+    if (i > len || i < 0)
+        return NULL;
+    return ps[i].runtime.userdata;
+}
+
+void parameter_set_value(parameter_data_t *ps, int len, int i, unsigned int value) {
+    if (i > len || i < 0)
+        return;
+
+    switch (ps[i].t) {
+        case unsigned_int: {
+            unsigned int min, max;
+            min = ps[i].d.uint.pmin != NULL ? *ps[i].d.uint.pmin : ps[i].d.uint.min;
+            max = ps[i].d.uint.pmax != NULL ? *ps[i].d.uint.pmax : ps[i].d.uint.max;
+
+            if (checkUINT(ps[i], value) != 1)
+                (*(ps[i].d.uint.var)) = value > 0 ? min : max;
+            else
+                (*(ps[i].d.uint.var)) = value;
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
 void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
     float multiplier = ps[i].multiplier > 0 ? ps[i].multiplier : 1;
 
@@ -420,7 +448,7 @@ unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
             unsigned char min, max;
             min = ps[i].d.uch.pmin != NULL ? *ps[i].d.uch.pmin : ps[i].d.uch.min;
             max = ps[i].d.uch.pmax != NULL ? *ps[i].d.uch.pmax : ps[i].d.uch.max;
-            res = max - min;
+            res = max - min + 1;
             break;
         }
 
@@ -428,7 +456,7 @@ unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
             int min, max;
             min = ps[i].d.sint.pmin != NULL ? *ps[i].d.sint.pmin : ps[i].d.sint.min;
             max = ps[i].d.sint.pmax != NULL ? *ps[i].d.sint.pmax : ps[i].d.sint.max;
-            res = max - min;
+            res = max - min + 1;
             break;
         }
 
@@ -436,7 +464,7 @@ unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
             unsigned int min, max;
             min = ps[i].d.uint.pmin != NULL ? *ps[i].d.uint.pmin : ps[i].d.uint.min;
             max = ps[i].d.uint.pmax != NULL ? *ps[i].d.uint.pmax : ps[i].d.uint.max;
-            res = max - min;
+            res = max - min + 1;
             break;
         }
 
@@ -444,7 +472,7 @@ unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
             long min, max;
             min = ps[i].d.sl.pmin != NULL ? *ps[i].d.sl.pmin : ps[i].d.sl.min;
             max = ps[i].d.sl.pmax != NULL ? *ps[i].d.sl.pmax : ps[i].d.sl.max;
-            res = max - min;
+            res = max - min + 1;
             break;
         }
 
@@ -452,7 +480,7 @@ unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
             unsigned long min, max;
             min = ps[i].d.ul.pmin != NULL ? *ps[i].d.ul.pmin : ps[i].d.ul.min;
             max = ps[i].d.ul.pmax != NULL ? *ps[i].d.ul.pmax : ps[i].d.ul.max;
-            res = max - min;
+            res = max - min + 1;
             break;
         }
 
