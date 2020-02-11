@@ -5,6 +5,8 @@
 #define LANGUAGES 1
 #endif
 
+typedef void *parameter_user_data_t;
+
 typedef enum {
     unsigned_long = 0,
     signed_long   = 1,
@@ -13,9 +15,7 @@ typedef enum {
     unsigned_int  = 4,
     signed_int    = 5,
     signed_float  = 6,
-} tipovariabile;
-
-
+} parameter_variable_type_t;
 
 typedef struct {
     char  min, max, def;
@@ -72,8 +72,8 @@ typedef union {
 } _data_type_t;
 
 typedef struct _parameter_data_t {
-    tipovariabile t;     // Variable type
-    _data_type_t  d;     // Data union, depends on the variable type
+    parameter_variable_type_t t;     // Variable type
+    _data_type_t              d;     // Data union, depends on the variable type
 
     // Strings to display. They should be char arrays
     struct {
@@ -90,7 +90,7 @@ typedef struct _parameter_data_t {
     struct {
         void (*runtime_operator)(struct _parameter_data_t *, int);
         int (*runtime_consider)(void *);
-        void *userdata;
+        parameter_user_data_t userdata;
     } runtime;
 
     float multiplier;
@@ -106,12 +106,6 @@ typedef struct _parameter_data_t {
  *  return: lenght of the copied string
  */
 int string_to_display(parameter_data_t *ps, int len, int i, char *string, int language);
-
-unsigned long get_num_values(parameter_data_t *ps, int len, int i);
-
-void *parameter_get_userdata(parameter_data_t *ps, int len, int i);
-
-int get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
 
 /*
  *  Moves the parameter index forward, stepping through any parameter that is not included in the
@@ -200,6 +194,10 @@ void init_to_default(parameter_data_t *ps, int len);
  */
 int check_for_defaults(parameter_data_t *ps, int len);
 
-int get_description(parameter_data_t *ps, int len, int i, char *string, int language);
+int                   parameter_get_description(parameter_data_t *ps, int len, int i, char *string, int language);
+unsigned long         parameter_get_num_values(parameter_data_t *ps, int len, int i);
+parameter_user_data_t parameter_get_userdata(parameter_data_t *ps, int len, int i);
+int parameter_get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
+parameter_variable_type_t parameter_type(parameter_data_t *ps, int len, int i);
 
 #endif

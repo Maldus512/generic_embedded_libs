@@ -253,27 +253,12 @@ void *parameter_get_userdata(parameter_data_t *ps, int len, int i) {
     return ps[i].runtime.userdata;
 }
 
-void parameter_set_value(parameter_data_t *ps, int len, int i, unsigned int value) {
+parameter_variable_type_t parameter_type(parameter_data_t *ps, int len, int i) {
     if (i > len || i < 0)
-        return;
+        return -1;
 
-    switch (ps[i].t) {
-        case unsigned_int: {
-            unsigned int min, max;
-            min = ps[i].d.uint.pmin != NULL ? *ps[i].d.uint.pmin : ps[i].d.uint.min;
-            max = ps[i].d.uint.pmax != NULL ? *ps[i].d.uint.pmax : ps[i].d.uint.max;
-
-            if (checkUINT(ps[i], value) != 1)
-                (*(ps[i].d.uint.var)) = value > 0 ? min : max;
-            else
-                (*(ps[i].d.uint.var)) = value;
-            break;
-        }
-        default:
-            break;
-    }
+    return ps[i].t;
 }
-
 
 void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
     float multiplier = ps[i].multiplier > 0 ? ps[i].multiplier : 1;

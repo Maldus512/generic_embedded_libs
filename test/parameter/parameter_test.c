@@ -67,6 +67,25 @@ void test_default() {
     assert_default();
 }
 
+void test_types() {
+    int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(signed_int, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(signed_int, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(unsigned_int, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(unsigned_int, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(signed_float, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(signed_float, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(signed_char, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+    TEST_ASSERT_EQUAL(signed_char, parameter_type(p, NUM_PARAMETRI, index));
+    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
+}
 
 void test_string_to_display() {
     int  index = 0;

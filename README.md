@@ -23,4 +23,4 @@ $ scons test
 
 ## TODO
 
-- parameter: use `void*` for max pointers instead of unions. Direct min and max values should stay unions. Add functions to set and get the value directly (using void pointers to exchange said value)
+- fix the naming convention
