@@ -20,3 +20,7 @@ A suite of Unity-automated tests is included in the `test` folder. To check the 
 ```
 $ scons test
 ```
+
+## TODO
+
+- parameter: use `void*` for max pointers instead of unions. Direct min and max values should stay unions. Add functions to set and get the value directly (using void pointers to exchange said value)
