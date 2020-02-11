@@ -1,9 +1,11 @@
 #ifndef __GENERIC_TIMER_H__
 #define __GENERIC_TIMER_H__
 
+#define NULL_TIMER  {.starting_time = 0, .elapsed_time = 0, .total_time = 0, .state = TIMER_STOPPED}
+
 // Three possible states of a timer
 typedef enum {
-    TIMER_STOPPED,
+    TIMER_STOPPED = 0,
     TIMER_COUNTING,
     TIMER_PAUSED,
 } TIMER_STATE;
