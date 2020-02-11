@@ -247,7 +247,7 @@ int check_for_defaults(parameter_data_t *ps, int len) {
     return res;
 }
 
-void *parameter_get_userdata(parameter_data_t *ps, int len, int i) {
+parameter_user_data_t parameter_get_userdata(parameter_data_t *ps, int len, int i) {
     if (i > len || i < 0)
         return NULL;
     return ps[i].runtime.userdata;

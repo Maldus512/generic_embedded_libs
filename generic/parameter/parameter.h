@@ -5,7 +5,11 @@
 #define LANGUAGES 1
 #endif
 
+#ifndef PARAMETER_USER_DATA
 typedef void *parameter_user_data_t;
+#else
+typedef PARAMETER_USER_DATA parameter_user_data_t;
+#endif
 
 typedef enum {
     unsigned_long = 0,
