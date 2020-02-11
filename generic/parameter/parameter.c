@@ -416,7 +416,7 @@ static int _int_value(parameter_data_t *p) {
     return 0;
 }
 
-unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
+unsigned long parameter_get_num_values(parameter_data_t *ps, int len, int i) {
     unsigned long res;
     if (i >= len)
         return -1;
@@ -477,7 +477,7 @@ unsigned long get_num_values(parameter_data_t *ps, int len, int i) {
     return res;
 }
 
-int get_description(parameter_data_t *ps, int len, int i, char *string, int language) {
+int parameter_get_description(parameter_data_t *ps, int len, int i, char *string, int language) {
     if (i >= len)
         return -1;
 
@@ -489,7 +489,7 @@ int get_description(parameter_data_t *ps, int len, int i, char *string, int lang
     }
 }
 
-int get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language) {
+int parameter_get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language) {
     if (i >= len)
         return -1;
 
