@@ -198,9 +198,9 @@ void init_to_default(parameter_data_t *ps, int len);
  */
 int check_for_defaults(parameter_data_t *ps, int len);
 
-int                   parameter_get_description(parameter_data_t *ps, int len, int i, char *string, int language);
-unsigned long         parameter_get_num_values(parameter_data_t *ps, int len, int i);
-parameter_user_data_t parameter_get_userdata(parameter_data_t *ps, int len, int i);
+int           parameter_get_description(parameter_data_t *ps, int len, int i, char *string, int language);
+unsigned long parameter_get_num_values(parameter_data_t *ps, int len, int i);
+int           parameter_get_userdata(parameter_data_t *ps, int len, int i, parameter_user_data_t *data);
 int parameter_get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
 parameter_variable_type_t parameter_type(parameter_data_t *ps, int len, int i);
 

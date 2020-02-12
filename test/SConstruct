@@ -5,7 +5,7 @@ PROGRAM = "testsuite"
 LIBS = "../generic"
 UNITY = "Unity/src/"
 CFLAGS = ["-Wall", "-Wextra", "-g", "-O0", "-DLANGUAGES=2"]
-MODULES = ["collections", "circularbuffer", "debounce", "keyboard", "timer", "parameter"]
+MODULES = ["pagemanager", "collections", "circularbuffer", "debounce", "keyboard", "timer", "parameter"]
 RBGEN = "ruby ./Unity/auto/generate_test_runner.rb"
 
 # Creates a Phony target
@@ -26,7 +26,7 @@ if 'PATH' in os.environ.keys():
 
 env_options = {
     "ENV": externalEnvironment,
-    "CPPPATH": [UNITY, LIBS],
+    "CPPPATH": [UNITY, LIBS, '.'],
     "CCFLAGS": CFLAGS,
 }
 

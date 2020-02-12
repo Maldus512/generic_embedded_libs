@@ -247,10 +247,11 @@ int check_for_defaults(parameter_data_t *ps, int len) {
     return res;
 }
 
-parameter_user_data_t parameter_get_userdata(parameter_data_t *ps, int len, int i) {
+int parameter_get_userdata(parameter_data_t *ps, int len, int i, parameter_user_data_t *data) {
     if (i > len || i < 0)
-        return NULL;
-    return ps[i].runtime.userdata;
+        return -1;
+    *data = ps[i].runtime.userdata;
+    return 0;
 }
 
 parameter_variable_type_t parameter_type(parameter_data_t *ps, int len, int i) {
