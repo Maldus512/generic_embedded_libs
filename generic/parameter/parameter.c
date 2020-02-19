@@ -563,3 +563,51 @@ int string_to_display(parameter_data_t *ps, int len, int i, char *string, int la
     }
     return strlen(string);
 }
+
+
+int parameter_clone_data(parameter_data_t *dest, parameter_data_t *ps, int len, int index, void *subst) {
+    if (index < 0 || index >= len)
+        return -1;
+
+    *dest = ps[index];
+
+    switch (dest->t) {
+        case signed_char:
+            *((signed char *)subst) = *(dest->d.sch.var);
+            dest->d.sch.var         = subst;
+            break;
+        case unsigned_char:
+            *((unsigned char *)subst) = *(dest->d.uch.var);
+            dest->d.uch.var           = subst;
+            break;
+        case signed_int:
+            *((signed int *)subst) = *(dest->d.sint.var);
+            dest->d.sint.var       = subst;
+            break;
+        case unsigned_int:
+            *((unsigned int *)subst) = *(dest->d.uint.var);
+            dest->d.uint.var         = subst;
+            break;
+        case signed_long:
+            *((signed long *)subst) = *(dest->d.sl.var);
+            dest->d.sl.var          = subst;
+            break;
+        case unsigned_long:
+            *((unsigned long *)subst) = *(dest->d.ul.var);
+            dest->d.ul.var            = subst;
+            break;
+        case signed_float:
+            *((float *)subst) = *(dest->d.ft.var);
+            dest->d.ft.var    = subst;
+            break;
+    }
+    return 0;
+}
+
+int parameter_set_uint_value(parameter_data_t *ps, int len, int index, unsigned int value) {
+    if (index < 0 || index >= len)
+        return -1;
+
+    *ps[index].d.uint.var = value;
+    return 0;
+}

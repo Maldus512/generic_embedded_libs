@@ -11,6 +11,15 @@ typedef void *parameter_user_data_t;
 typedef PARAMETER_USER_DATA parameter_user_data_t;
 #endif
 
+#define par_op(par, op)                     parameter_operator(par, 1, 0, op)
+#define par_get_desc(par, str, lang)        parameter_get_description(par, 1, 0, str, lang)
+#define par_get_udata(par, udata)           parameter_get_userdata(par, 1, 0, udata)
+#define par_get_num_values(par)             parameter_get_num_values(par, 1, 0)
+#define par_get_string(par, str, val, lang) parameter_get_string_value(par, 1, 0, str, val, lang)
+#define par_set_uint(par, val)              parameter_set_uint_value(par, 1, 0, val)
+#define par_get_uint(par)                   (*((par)->d.uint.var))
+#define par_set_default(par)                init_to_default(par, 1)
+
 typedef enum {
     unsigned_long = 0,
     signed_long   = 1,
@@ -203,5 +212,8 @@ unsigned long parameter_get_num_values(parameter_data_t *ps, int len, int i);
 int           parameter_get_userdata(parameter_data_t *ps, int len, int i, parameter_user_data_t *data);
 int parameter_get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
 parameter_variable_type_t parameter_type(parameter_data_t *ps, int len, int i);
+
+int parameter_set_uint_value(parameter_data_t *ps, int len, int i, unsigned int value);
+int parameter_clone_data(parameter_data_t *dest, parameter_data_t *ps, int len, int index, void *subst);
 
 #endif
