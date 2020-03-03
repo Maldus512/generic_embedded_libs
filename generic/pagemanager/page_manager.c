@@ -82,7 +82,7 @@ void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp
             pman->current_page.destroy_page(pman->current_page.data);
 
         pman->current_page      = page;
-        pman->current_page.data = pman->current_page.create_page(model, timestamp, pman->current_page.extra);
+        pman->current_page.data = pman->current_page.create_page(model, timestamp, NULL);
         pman->current_page.update_page(model, pman->current_page.data);
     }
 }
