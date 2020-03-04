@@ -56,8 +56,8 @@ void assert_default() {
     TEST_ASSERT_EQUAL(15, parametri.intpar2);
     TEST_ASSERT_EQUAL(200, parametri.uintpar1);
     TEST_ASSERT_EQUAL(512, parametri.uintpar2);
-    TEST_ASSERT_EQUAL(3.14, parametri.fpar1);
-    TEST_ASSERT_EQUAL(.14, parametri.fpar2);
+    TEST_ASSERT_EQUAL_FLOAT(3.14, parametri.fpar1);
+    TEST_ASSERT_EQUAL_FLOAT(.14, parametri.fpar2);
     TEST_ASSERT_EQUAL(0, parametri.ab1);
     TEST_ASSERT_EQUAL(0, parametri.ab2);
 }
