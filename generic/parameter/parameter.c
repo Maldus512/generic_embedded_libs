@@ -324,6 +324,7 @@ int check_for_defaults(parameter_data_t *ps, int len) {
                 }
                 break;
         }
+        par_correct(&ps[i]);     // Min and Max take priority over the default value
     }
 
     return res;
