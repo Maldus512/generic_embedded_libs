@@ -3,6 +3,8 @@
 
 #define NULL_TIMER  {.starting_time = 0, .elapsed_time = 0, .total_time = 0, .state = TIMER_STOPPED}
 
+#define setngo(timer, duration, timestamp) set_timer(timer, duration); start_timer(timer, timestamp)
+
 // Three possible states of a timer
 typedef enum {
     TIMER_STOPPED = 0,

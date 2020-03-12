@@ -97,7 +97,21 @@ unsigned long get_total_time(generic_timer_t *timer) {
 
 
 int is_timer_reached(generic_timer_t *t, unsigned long timestamp) {
-    unsigned long timeleft = t->total_time - t->elapsed_time;
-
-    return is_expired(t->starting_time, timestamp, timeleft);
+    switch(t->state) {
+        case TIMER_STOPPED:
+            return 0;
+            
+        case TIMER_COUNTING: {
+            if (t->total_time > t->elapsed_time) {
+                unsigned long timeleft = t->total_time - t->elapsed_time;
+                return is_expired(t->starting_time, timestamp, timeleft);
+            } else {
+                return 1;
+            }
+        }
+        
+        case TIMER_PAUSED:
+            return t->elapsed_time >= t->total_time; 
+    }
+    return 0;
 }
