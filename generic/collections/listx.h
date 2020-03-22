@@ -6,7 +6,6 @@ CPLv2 */
 #ifndef NULL
 #define NULL ((void *) 0)
 #endif
-typedef unsigned int    size_tt;
 
 /*
     Macro che restituisce il puntatore all'istanza della struttura che contiene
@@ -44,7 +43,9 @@ typedef unsigned int    size_tt;
 
     return: offset in byte dall'inizio della struttura TYPE al campo MEMBER
 */
-#define offsetof(TYPE, MEMBER) ((size_tt) &((TYPE *)0)->MEMBER)
+#ifndef offsetof
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#endif
 
 /*
     La struttura list_head e' una semplice coppia di puntatore, per implementare

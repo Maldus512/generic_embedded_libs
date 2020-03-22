@@ -11,6 +11,17 @@ typedef void *parameter_user_data_t;
 typedef PARAMETER_USER_DATA parameter_user_data_t;
 #endif
 
+#define par_op(par, op)                     parameter_operator(par, 1, 0, op)
+#define par_get_desc(par, str, lang)        parameter_get_description(par, 1, 0, str, lang)
+#define par_get_udata(par, udata)           parameter_get_userdata(par, 1, 0, udata)
+#define par_get_num_values(par)             parameter_get_num_values(par, 1, 0)
+#define par_get_string(par, str, val, lang) parameter_get_string_value(par, 1, 0, str, val, lang)
+#define par_set_uint(par, val)              parameter_set_uint_value(par, 1, 0, val)
+#define par_get_uint(par)                   (*((par)->d.uint.var))
+#define par_set_default(par)                init_to_default(par, 1)
+#define par_limits(par)                     parameter_is_inside_limits(par, 1, 0)
+#define par_correct(par)                    parameter_correct(par, 1, 0);
+
 typedef enum {
     unsigned_long = 0,
     signed_long   = 1,
@@ -86,7 +97,7 @@ typedef struct _parameter_data_t {
         char ***string_value;     // Values; array of values on array of languages.
         // If string_value is not NULL the parameter's value is used to index this string array for the
         // value to display
-        int (*special_format)(struct _parameter_data_t *, char *);
+        int (*special_format)(struct _parameter_data_t *, char *, int);
     } display;
 
     int lvl;
@@ -198,10 +209,16 @@ void init_to_default(parameter_data_t *ps, int len);
  */
 int check_for_defaults(parameter_data_t *ps, int len);
 
+int           parameter_correct(parameter_data_t *ps, int len, int i);
+int           parameter_is_inside_limits(parameter_data_t *ps, int len, int i);
+int           parameter_set_from_data(parameter_data_t *src, parameter_data_t *ps, int len, int index);
 int           parameter_get_description(parameter_data_t *ps, int len, int i, char *string, int language);
 unsigned long parameter_get_num_values(parameter_data_t *ps, int len, int i);
 int           parameter_get_userdata(parameter_data_t *ps, int len, int i, parameter_user_data_t *data);
 int parameter_get_string_value(parameter_data_t *ps, int len, int i, char *string, unsigned int value, int language);
 parameter_variable_type_t parameter_type(parameter_data_t *ps, int len, int i);
+
+int parameter_set_uint_value(parameter_data_t *ps, int len, int i, unsigned int value);
+int parameter_clone_data(parameter_data_t *dest, parameter_data_t *ps, int len, int index, void *subst);
 
 #endif

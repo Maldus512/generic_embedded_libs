@@ -24,3 +24,4 @@ $ scons test
 ## TODO
 
 - fix the naming convention
+- Add `page_close` and `page_open` methods to page manager (to preserve page state)

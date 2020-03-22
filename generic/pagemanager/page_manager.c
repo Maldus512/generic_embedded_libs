@@ -60,7 +60,6 @@ void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp
             pman->current_page.destroy_page(pman->current_page.data, pman->current_page.extra);
 
         pman->current_page = page;
-
         if (pman->current_page.open_page)
             pman->current_page.open_page(model, timestamp, timestamp);
         pman->current_page.update_page(model, pman->current_page.data);
