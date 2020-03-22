@@ -5,10 +5,13 @@ PROGRAM = "testsuite"
 LIBS = "../generic"
 UNITY = "Unity/src/"
 CFLAGS = ["-Wall", "-Wextra", "-g", "-O0", "-DLANGUAGES=2"]
-MODULES = ["pagemanager", "collections", "circularbuffer", "debounce", "keyboard", "timer", "parameter"]
+MODULES = ["pid", "pagemanager", "collections", "serializer",
+           "debounce", "keyboard", "timer", "parameter"]
 RBGEN = "ruby ./Unity/auto/generate_test_runner.rb"
 
 # Creates a Phony target
+
+
 def PhonyTargets(
         target,
         depends,
@@ -19,6 +22,7 @@ def PhonyTargets(
         env = DefaultEnvironment()
     t = env.Alias(target, depends, action)
     env.AlwaysBuild(t)
+
 
 externalEnvironment = {}
 if 'PATH' in os.environ.keys():

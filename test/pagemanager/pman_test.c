@@ -10,30 +10,33 @@
 int model;
 
 pman_page_data_t create_page1(pman_model_t model, unsigned long timestamp, void *extra) {
+    (void)timestamp;
+    (void)extra;
     TEST_ASSERT_EQUAL(1, model);
     return 0;
 }
 
 pman_update_t process_event1(pman_model_t model, pman_page_data_t data, pman_event_t event, unsigned long timestamp) {
+    (void)model;
+    (void)data;
+    (void)event;
+    (void)timestamp;
     return 0;
 }
 
 page_manager_t pman;
 
 pman_page_t pages[] = {{.id            = PAGE1,
-                        .type          = PMAN_PAGE_TYPE_NORMAL,
                         .create_page   = create_page1,
                         .destroy_page  = null_destroy,
                         .update_page   = null_update,
                         .process_event = process_event1},
                        {.id            = PAGE2,
-                        .type          = PMAN_PAGE_TYPE_NORMAL,
                         .create_page   = create_page1,
                         .destroy_page  = null_destroy,
                         .update_page   = null_update,
                         .process_event = process_event1},
                        {.id            = PAGE3,
-                        .type          = PMAN_PAGE_TYPE_NORMAL,
                         .create_page   = create_page1,
                         .destroy_page  = null_destroy,
                         .update_page   = null_update,
