@@ -30,7 +30,7 @@ typedef struct {
     struct navigation_stack navq;
 } page_manager_t;
 
-void init_page_manager(page_manager_t *pman);
+void init_page_manager(page_manager_t *pman, pman_page_t page);
 
 void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp);
 void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp);

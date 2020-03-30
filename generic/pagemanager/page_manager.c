@@ -2,8 +2,8 @@
 
 STACK_DEFINITION(navigation_stack, pman_page_t);
 
-void init_page_manager(page_manager_t *pman) {
-    memset(&pman->current_page, 0, sizeof(pman_page_t));
+void init_page_manager(page_manager_t *pman, pman_page_t page) {
+    pman->current_page = page;
     navigation_stack_init(&pman->navq);
 }
 
