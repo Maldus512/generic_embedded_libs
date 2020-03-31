@@ -1,5 +1,5 @@
 #include <string.h>
-#include "circularbuffer/circular_buffer.h"
+#include "collections/circular_buffer.h"
 #include "unity.h"
 
 #define BUFSIZE 64
