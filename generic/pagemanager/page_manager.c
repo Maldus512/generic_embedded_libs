@@ -15,14 +15,15 @@ pman_update_t pman_process_page_event(page_manager_t *pman, pman_model_t model, 
 
 void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp,
                             void *extra) {
-    if (pman->initialized) {
+    // If it is the first page or a popup do not add it to the navigation stack
+    if (pman->initialized && !page.popup) {
         pman_page_t *curpage;
         curpage = &pman->current_page;
         if (navigation_stack_is_full(&pman->navq))
             navigation_stack_pop(&pman->navq, NULL);
 
-        // Se non sono un popup chiudo la pagina corrente
-        if (!page.popup && curpage && curpage->close_page)
+        // Close the previous page
+        if (curpage && curpage->close_page)
             curpage->close_page(curpage->data, timestamp);
 
         navigation_stack_push(&pman->navq, curpage);
