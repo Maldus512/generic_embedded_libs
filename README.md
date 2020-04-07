@@ -20,3 +20,8 @@ A suite of Unity-automated tests is included in the `test` folder. To check the 
 ```
 $ scons test
 ```
+
+## TODO
+
+- fix the naming convention
+- Add `page_close` and `page_open` methods to page manager (to preserve page state)

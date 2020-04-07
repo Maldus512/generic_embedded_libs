@@ -1,5 +1,5 @@
 // unit tests
-#include "queue/queue.h"
+#include "collections/queue.h"
 #include "unity.h"
 #include <stdint.h>
 #include <stdbool.h>
