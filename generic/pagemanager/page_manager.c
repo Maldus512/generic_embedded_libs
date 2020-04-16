@@ -25,6 +25,18 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
                 curpage->close_page(curpage->data, timestamp);
             if (curpage->destroy_page)
                 curpage->destroy_page(curpage->data, curpage->extra);
+
+            // If I am on a popup and the next page is not a popup I have to close also the previous page, which was
+            // left open
+            if (!newpage.popup) {
+                pman_page_t previous;
+                if (navigation_stack_pop(&pman->navq, &previous) == POP_RESULT_SUCCESS) {
+                    if (previous.close_page)
+                        previous.close_page(previous.data, timestamp);
+
+                    navigation_stack_push(&pman->navq, &previous);
+                }
+            }
         }
         // Close the previous (non-popup) page, but not if the next page is a popup
         else if (!newpage.popup && curpage->close_page)
@@ -67,8 +79,7 @@ void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp
 
         pman->current_page = page;
         // If the current page was a popup we did not close, so there is no need to open again
-        if (!popup && pman->current_page.open_page) //TODO: What if we move to page -> popup -> page -> back?
-                                                    // The first page needs to be closed when we move to the second....
+        if (!popup && pman->current_page.open_page)
             pman->current_page.open_page(model, pman->current_page.data, timestamp);
         pman->current_page.update_page(model, pman->current_page.data);
     }
