@@ -3,10 +3,10 @@
 #define NTH(x, i)          ((x >> i) & 0x1)
 #define SET_NTH(x, i, val) x = ((x & (~((unsigned int)(1 << i)))) | val << i)
 
-void init_pulse_filter(pulse_filter_t *filter, pulse_type_t type) {
+void init_pulse_filter(pulse_filter_t *filter, pulse_type_t type, unsigned int init) {
     int i;
 
-    filter->old_input = type == COUNT_HIGH_PULSE ? 0 : (unsigned int)0xFFFFFFFF;
+    filter->old_input = init;
     filter->type      = type;
     for (i = 0; i < PULSE_NUM; i++)
         pulse_clear(i, filter);
@@ -45,4 +45,11 @@ int pulse_filter(pulse_filter_t *filter, unsigned int input, int debounce) {
         }
     }
     return change;
+}
+
+
+int pulse_level(int i, pulse_filter_t *filter) {
+    if (i < 0 || i >= PULSE_NUM)
+        return -1;
+    return NTH(filter->old_input, i);
 }
