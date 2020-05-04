@@ -1,3 +1,20 @@
+/******************************************************************************/
+/*                                                                            */
+/*  HSW snc - Casalecchio di Reno (BO) ITALY                                  */
+/*  ----------------------------------------                                  */
+/*                                                                            */
+/*  modulo: timecheck.h                                                       */
+/*                                                                            */
+/*      gestione check timer                                                  */
+/*                                                                            */
+/*  Autore: Maldus (Mattia MALDINI) & Massimo ZANNA                           */
+/*                                                                            */
+/*  Data  : 31/01/2020      REV  : 00.0                                       */
+/*                                                                            */
+/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*                                                                            */
+/******************************************************************************/
+
 #ifndef __TIMECHECK_H__
 #define __TIMECHECK_H__
 
@@ -16,16 +33,17 @@ typedef unsigned long timestamp_t;
 #define time_after(a, b)  (typecheck(unsigned long, a) && typecheck(unsigned long, b) && ((long)((b) - (a)) < 0))
 #define time_before(a, b) time_after(b, a)
 
-static inline __attribute__((always_inline)) unsigned long time_interval(unsigned long a, unsigned long b) {
+static inline __attribute__((always_inline)) unsigned long time_interval(unsigned long a, unsigned long b)
+{
     if (time_after(a, b))
         return -((unsigned long)b - (unsigned long)a);
     else
         return (unsigned long)b - (unsigned long)a;
 }
 
-static inline __attribute__((always_inline)) int is_expired(unsigned long start, unsigned long current,
-                                                            unsigned long delay) {
+static inline __attribute__((always_inline)) int is_expired(unsigned long start, unsigned long current, unsigned long delay)
+{
     return time_after(current, start + delay);
 }
 
-#endif
+#endif      /* __TIMECHECK_H__ */ 

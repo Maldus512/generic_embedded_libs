@@ -29,6 +29,15 @@ static inline int pulse_count(int i, pulse_filter_t *filter) {
 }
 
 /*
+ *  Returns the current pulse level for the i-th counter.
+ *
+ *  i: i-th counter
+ *  filter: pointer to the pulse_type_t struct
+ *  return: 0 or 1, or -1 if the index is out of range
+ */
+int pulse_level(int i, pulse_filter_t *filter);
+
+/*
  *  Clears the pulse count for the i-th counter
  *
  *  i: i-th counter to clear
@@ -47,7 +56,7 @@ static inline void pulse_clear(int i, pulse_filter_t *filter) {
  *  filter: pointer to the pulse_type_t struct
  *  type: type of the pulses to count (high-to-low or low-to-high)
  */
-void init_pulse_filter(pulse_filter_t *filter, pulse_type_t type);
+void init_pulse_filter(pulse_filter_t *filter, pulse_type_t type, unsigned int init);
 
 /*
  *  Function to call periodically to enact the filtering of irrelevant fluctuations.
