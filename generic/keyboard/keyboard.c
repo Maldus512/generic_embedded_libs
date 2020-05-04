@@ -61,6 +61,11 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
         key->_state.ignore   = 0;
         key->_state.oldvalue = key->_state.value;
         key->_state.time     = timestamp;
+
+        if (key->_state.value) {
+            event.event           = KEY_PRESS;
+            key->_state.lastevent = event.event;
+        }
     }
 
     return event;

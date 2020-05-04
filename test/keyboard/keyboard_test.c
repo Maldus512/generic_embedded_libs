@@ -23,7 +23,7 @@ void click_release(unsigned long bitmap, int code, int period) {
     unsigned long   longclick = period * 10;
 
     event = keyboard_routine(keys, P_NUM, period, longclick, 0, bitmap);
-    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
 
     event = keyboard_routine(keys, P_NUM, period, longclick, period, bitmap);
     TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
@@ -57,7 +57,7 @@ void test_longclick() {
     keycode_event_t event;
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 0, 0x01);
-    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 2001, 0x01);
     TEST_ASSERT_EQUAL(KEY_LONGCLICK, event.event);
@@ -97,7 +97,7 @@ void test_multiclick() {
     keycode_event_t event;
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 0, ONEFIVEBMP);
-    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 50, ONEFIVEBMP);
     TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
@@ -123,7 +123,7 @@ void test_multiclick() {
     TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 300, 0x1);
-    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
 
     event = keyboard_routine(keys, P_NUM, 40, 2000, 350, 0x1);
     TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
