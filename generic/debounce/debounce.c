@@ -2,7 +2,7 @@
 
 #define SET_NTH(x, i, val) x = ((x & (~((unsigned int)(1 << i)))) | val << i)
 
-void init_debounce_filter(debounce_filter_t *filter) {
+void debounce_filter_init(debounce_filter_t *filter) {
     int i;
 
     filter->value = 0;
@@ -12,7 +12,7 @@ void init_debounce_filter(debounce_filter_t *filter) {
     filter->old_input = 0;
 }
 
-void set_debounce_filter(debounce_filter_t *filter, unsigned int set) {
+void debounce_filter_set(debounce_filter_t *filter, unsigned int set) {
     filter->old_input = set;
 }
 
