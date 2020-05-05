@@ -12,7 +12,7 @@ void tearDown() {
 
 void test_init() {
     int i = 0;
-    init_pulse_filter(&filter, COUNT_HIGH_PULSE);
+    pulse_filter_init(&filter, COUNT_HIGH_PULSE, 0);
 
     for (i = 0; i < 16; i++)
         TEST_ASSERT_EQUAL(0, pulse_count(i, &filter));
@@ -21,7 +21,7 @@ void test_init() {
 void do_100_pulses(pulse_type_t type, int debounce) {
     int num = sizeof(unsigned int) * 8;
     int res, i, j, z;
-    init_pulse_filter(&filter, type);
+    pulse_filter_init(&filter, type, type == COUNT_HIGH_PULSE ? 0 : 0xFFFFFFFF);
 
     for (i = 0; i < num; i++) {
         for (j = 0; j < 100; j++) {
