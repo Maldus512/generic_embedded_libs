@@ -40,7 +40,8 @@ int toVis(void *ud) {
     return 0;
 }
 
-int specialFormat(parameter_data_t *par, char *string) {
+int specialFormat(parameter_data_t *par, char *string, int lang) {
+    (void)lang;
     static int x = 0;
     sprintf(string, "num %i", x++);
     TEST_ASSERT_EQUAL(9, *par->d.sint.var);

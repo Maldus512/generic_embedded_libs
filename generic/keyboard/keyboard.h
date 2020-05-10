@@ -4,7 +4,9 @@
 #include <stdint.h>
 
 typedef enum {
-    KEY_NOTHING,       // Nothing has happened
+    KEY_NOTHING,     // Nothing has happened
+    KEY_PRESS,       // The button was pressed initially. Not repeated
+    KEY_PRESSING,
     KEY_CLICK,         // The button was pressed for "click" time. Not repeated
     KEY_LONGCLICK,     // The button was pressed for "longclick" time. Not repeated
     KEY_LONGPRESS,     // The button was kept pressed after a longclick event
