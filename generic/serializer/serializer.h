@@ -3,6 +3,15 @@
 
 #include <stdint.h>
 
+
+#define UNPACK_UINT16_BE(var, buffer)                                                                                  \
+    ({                                                                                                                 \
+        uint16_t tmp;                                                                                                  \
+        int      size = deserialize_uint16_be(&tmp, (buffer));                                                         \
+        var           = tmp;                                                                                           \
+        size;                                                                                                          \
+    })
+
 static inline __attribute__((always_inline)) int serialize_uint8(uint8_t *buf, uint8_t val) {
     buf[0] = val;
     return 1;
