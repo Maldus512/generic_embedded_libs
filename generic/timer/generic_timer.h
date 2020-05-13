@@ -1,7 +1,26 @@
+/******************************************************************************/
+/*                                                                            */
+/*  HSW snc - Casalecchio di Reno (BO) ITALY                                  */
+/*  ----------------------------------------                                  */
+/*                                                                            */
+/*  modulo: generic_timer.h                                                   */
+/*                                                                            */
+/*      gestione timer generici in millis                                     */
+/*                                                                            */
+/*  Autore: Maldus (Mattia MALDINI) & Massimo ZANNA                           */
+/*                                                                            */
+/*  Data  : 31/01/2020      REV  : 00.0                                       */
+/*                                                                            */
+/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*                                                                            */
+/******************************************************************************/
+
 #ifndef __GENERIC_TIMER_H__
 #define __GENERIC_TIMER_H__
 
 #define NULL_TIMER  {.starting_time = 0, .elapsed_time = 0, .total_time = 0, .state = TIMER_STOPPED}
+
+#define setngo(timer, duration, timestamp) set_timer(timer, duration); start_timer(timer, timestamp)
 
 // Three possible states of a timer
 typedef enum {
@@ -111,4 +130,4 @@ unsigned long get_remaining_time(generic_timer_t *timer, unsigned long timestamp
  */
 int is_timer_reached(generic_timer_t *timer, unsigned long timestamp);
 
-#endif
+#endif  /* __GENERIC_TIMER_H__ */

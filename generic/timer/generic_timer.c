@@ -1,3 +1,19 @@
+/******************************************************************************/
+/*                                                                            */
+/*  HSW snc - Casalecchio di Reno (BO) ITALY                                  */
+/*  ----------------------------------------                                  */
+/*                                                                            */
+/*  modulo: generic_timer.c                                                   */
+/*                                                                            */
+/*      gestione timer generici in millis                                     */
+/*                                                                            */
+/*  Autore: Maldus (Mattia MALDINI) & Massimo ZANNA                           */
+/*                                                                            */
+/*  Data  : 31/01/2020      REV  : 00.0                                       */
+/*                                                                            */
+/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*                                                                            */
+/******************************************************************************/
 /*
  *  Helper functions to manage timers. A timer is simply a structure that keeps track
  * of total set period, starting time and elapsed time in between pauses, and
@@ -6,12 +22,15 @@
 #include "generic_timer.h"
 #include "timecheck.h"
 
+
+
 void init_generic_timer(generic_timer_t *timer) {
     timer->starting_time = 0;
     timer->total_time    = 0;
     timer->elapsed_time  = 0;
     timer->state         = TIMER_STOPPED;
 }
+
 
 
 int start_timer(generic_timer_t *timer, unsigned long timestamp) {
@@ -30,12 +49,14 @@ int start_timer(generic_timer_t *timer, unsigned long timestamp) {
 }
 
 
+
 int stop_timer(generic_timer_t *timer) {
     timer->starting_time = 0;
     timer->elapsed_time  = 0;
     timer->state         = TIMER_STOPPED;
     return 0;
 }
+
 
 
 int pause_timer(generic_timer_t *timer, unsigned long timestamp) {
@@ -52,15 +73,18 @@ int pause_timer(generic_timer_t *timer, unsigned long timestamp) {
 }
 
 
+
 int restart_timer(generic_timer_t *timer, unsigned long timestamp) {
     stop_timer(timer);
     return start_timer(timer, timestamp);
 }
 
 
+
 void change_timer(generic_timer_t *timer, unsigned long period) {
     timer->total_time = period;
 }
+
 
 
 int set_timer(generic_timer_t *timer, unsigned long period) {
@@ -72,9 +96,11 @@ int set_timer(generic_timer_t *timer, unsigned long period) {
 }
 
 
+
 TIMER_STATE get_timer_state(generic_timer_t *timer) {
     return timer->state;
 }
+
 
 
 unsigned long get_elapsed_time(generic_timer_t *timer, unsigned long timestamp) {
@@ -85,10 +111,12 @@ unsigned long get_elapsed_time(generic_timer_t *timer, unsigned long timestamp) 
 }
 
 
+
 unsigned long get_remaining_time(generic_timer_t *timer, unsigned long timestamp) {
     unsigned long elapsed = get_elapsed_time(timer, timestamp);
     return elapsed < timer->total_time ? timer->total_time - elapsed : 0;
 }
+
 
 
 unsigned long get_total_time(generic_timer_t *timer) {
@@ -96,8 +124,23 @@ unsigned long get_total_time(generic_timer_t *timer) {
 }
 
 
-int is_timer_reached(generic_timer_t *t, unsigned long timestamp) {
-    unsigned long timeleft = t->total_time - t->elapsed_time;
 
-    return is_expired(t->starting_time, timestamp, timeleft);
+int is_timer_reached(generic_timer_t *t, unsigned long timestamp) {
+    switch(t->state) {
+        case TIMER_STOPPED:
+            return 0;
+            
+        case TIMER_COUNTING: {
+            if (t->total_time > t->elapsed_time) {
+                unsigned long timeleft = t->total_time - t->elapsed_time;
+                return is_expired(t->starting_time, timestamp, timeleft);
+            } else {
+                return 1;
+            }
+        }
+        
+        case TIMER_PAUSED:
+            return t->elapsed_time >= t->total_time; 
+    }
+    return 0;
 }

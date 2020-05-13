@@ -417,7 +417,7 @@ void parameter_operator(parameter_data_t *ps, int len, int i, int mod) {
                 unsigned int min, max;
                 min = ps[i].d.uint.pmin != NULL ? *ps[i].d.uint.pmin : ps[i].d.uint.min;
                 max = ps[i].d.uint.pmax != NULL ? *ps[i].d.uint.pmax : ps[i].d.uint.max;
-                v += mod * multiplier;
+                v += (int)(mod * multiplier);
 
                 if (checkUINT(ps[i], v))
                     (*(ps[i].d.uint.var)) = mod > 0 ? min : max;

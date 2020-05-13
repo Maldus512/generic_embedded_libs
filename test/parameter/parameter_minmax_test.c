@@ -53,8 +53,6 @@ void test_minmax() {
     limiti.min = 10;
     limiti.max = 50;
     TEST_ASSERT(check_for_defaults(p, NUM_PARAMETRI));
-    TEST_ASSERT_EQUAL(0, parametri.intpar);
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
     TEST_ASSERT_EQUAL(10, parametri.intpar);
 
     init_to_default(p, NUM_PARAMETRI);
