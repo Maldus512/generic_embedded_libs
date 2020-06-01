@@ -8,7 +8,15 @@
     ({                                                                                                                 \
         uint16_t tmp;                                                                                                  \
         int      size = deserialize_uint16_be(&tmp, (buffer));                                                         \
-        var           = tmp;                                                                                           \
+        (var)         = tmp;                                                                                           \
+        size;                                                                                                          \
+    })
+
+#define UNPACK_UINT8(var, buffer)                                                                                  \
+    ({                                                                                                                 \
+        uint8_t tmp;                                                                                                  \
+        int      size = deserialize_uint8(&tmp, (buffer));                                                         \
+        (var)         = tmp;                                                                                           \
         size;                                                                                                          \
     })
 
