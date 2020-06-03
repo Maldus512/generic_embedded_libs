@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define KEY_DEFINITION(b, c)                                                                                           \
+    { .bitvalue = b, .code = c }
+
 typedef enum {
     KEY_NOTHING,     // Nothing has happened
     KEY_PRESS,       // The button was pressed initially. Not repeated
