@@ -4,6 +4,6 @@
 typedef int control_type_t;
 typedef int output_type_t;
 
-#define PID_HISTORY_SIZE 32
+#define PID_HISTORY_SIZE 100
 
 #endif

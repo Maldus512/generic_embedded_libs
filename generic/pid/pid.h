@@ -11,13 +11,13 @@ typedef struct {
 
     control_type_t input;
     control_type_t sp;
-} pid_t;
+} pid_ctrl_t;
 
-void          init_pid(pid_t *pid);
-void          pid_tune(pid_t *pid, float kp, float ki, float kd);
-void          pid_add_input(pid_t *pid, control_type_t input);
-void          pid_set_sp(pid_t *pid, control_type_t sp);
-output_type_t pid_compute(pid_t *pid);
-void          pid_clear_history(pid_t *pid);
+void          pid_init(pid_ctrl_t *pid);
+void          pid_ctrl_tune(pid_ctrl_t *pid, float kp, float ki, float kd);
+void          pid_add_input(pid_ctrl_t *pid, control_type_t input);
+void          pid_set_sp(pid_ctrl_t *pid, control_type_t sp);
+output_type_t pid_compute(pid_ctrl_t *pid);
+void          pid_clear_history(pid_ctrl_t *pid);
 
 #endif
