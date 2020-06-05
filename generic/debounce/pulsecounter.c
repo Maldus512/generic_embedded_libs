@@ -3,7 +3,7 @@
 #define NTH(x, i)          ((x >> i) & 0x1)
 #define SET_NTH(x, i, val) x = ((x & (~((unsigned int)(1 << i)))) | val << i)
 
-void init_pulse_filter(pulse_filter_t *filter, pulse_type_t type, unsigned int init) {
+void pulse_filter_init(pulse_filter_t *filter, pulse_type_t type, unsigned int init) {
     int i;
 
     filter->old_input = init;

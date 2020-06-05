@@ -26,7 +26,7 @@ typedef struct {
  *  filter: pointer to the debounce_filter_t struct
  *  return: 0 or 1
  */
-static inline int digital_read(int i, debounce_filter_t *filter) {
+static inline int debounce_read(int i, debounce_filter_t *filter) {
     if (i < 0 || i >= NUM_INPUTS)
         return -1;
     return NTH(filter->value, i);
@@ -40,7 +40,7 @@ static inline int digital_read(int i, debounce_filter_t *filter) {
  *
  *  filter: pointer to the debounce_filter_t struct
  */
-void init_debounce_filter(debounce_filter_t *filter);
+void debounce_filter_init(debounce_filter_t *filter);
 
 /*
  *  Filters fluctuations in the received input. The value held into the structure is modified
@@ -63,6 +63,6 @@ int debounce_filter(debounce_filter_t *filter, unsigned int input, int debounce)
  *  filter: pointer to the debounce_filter_t struct
  *  set: input values to reset to
  */
-void set_debounce_filter(debounce_filter_t *filter, unsigned int set);
+void debounce_filter_set(debounce_filter_t *filter, unsigned int set);
 
 #endif
