@@ -60,3 +60,14 @@ void test_pi() {
     pid_add_input(pid, 0);
     TEST_ASSERT_NOT_EQUAL(0, pid_compute(pid));
 }
+
+
+void test_field_data() {
+    pid_ctrl_tune(pid, 0.5, 0.1, 0);
+    pid_set_sp(pid, 180);
+
+    pid_add_input(pid, 0);
+    TEST_ASSERT_EQUAL(108, pid_compute(pid));
+    pid_add_input(pid, 0);
+    TEST_ASSERT_EQUAL(126, pid_compute(pid));
+}
