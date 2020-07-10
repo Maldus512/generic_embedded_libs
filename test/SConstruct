@@ -2,7 +2,7 @@ import os
 import multiprocessing
 
 PROGRAM = "testsuite"
-LIBS = "../generic"
+LIBS = "../gel"
 UNITY = "Unity/src/"
 CFLAGS = ["-Wall", "-Wextra", "-g", "-O0", "-DLANGUAGES=2"]
 MODULES = ["pid", "pagemanager", "collections", "serializer",

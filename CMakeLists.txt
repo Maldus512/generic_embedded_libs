@@ -1,5 +1,5 @@
 idf_component_register(
-    SRC_DIRS "generic/keyboard" "generic/debounce" "generic/watcher"
-    INCLUDE_DIRS "." "generic"
+    SRC_DIRS "gel/keyboard" "gel/debounce" "gel/watcher"
+    INCLUDE_DIRS "." "gel"
     )
 
