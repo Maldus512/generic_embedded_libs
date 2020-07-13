@@ -1,7 +1,7 @@
 #ifndef PAGE_MANAGER_H_INCLUDED
 #define PAGE_MANAGER_H_INCLUDED
 
-#include "pman_conf.h"
+#include "gel_conf.h"
 #include "collections/stack.h"
 
 

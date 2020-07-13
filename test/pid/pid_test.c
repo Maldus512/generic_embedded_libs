@@ -1,5 +1,5 @@
 #include "pid/pid.h"
-#include "pid_conf.h"
+#include "gel_conf.h"
 #include "unity.h"
 
 pid_ctrl_t  _pid;

@@ -19,12 +19,12 @@
  * of total set period, starting time and elapsed time in between pauses, and
  * timer state (paused, stopped or running).
  */
-#include "generic_timer.h"
+#include "stopwatch.h"
 #include "timecheck.h"
 
 
 
-void init_generic_timer(generic_timer_t *timer) {
+void stopwatch_init(stopwatch_t *timer) {
     timer->starting_time = 0;
     timer->total_time    = 0;
     timer->elapsed_time  = 0;
@@ -33,7 +33,7 @@ void init_generic_timer(generic_timer_t *timer) {
 
 
 
-int start_timer(generic_timer_t *timer, unsigned long timestamp) {
+int stopwatch_start(stopwatch_t *timer, unsigned long timestamp) {
     switch (timer->state) {
         case TIMER_STOPPED:
         case TIMER_PAUSED:
@@ -50,7 +50,7 @@ int start_timer(generic_timer_t *timer, unsigned long timestamp) {
 
 
 
-int stop_timer(generic_timer_t *timer) {
+int stopwatch_stop(stopwatch_t *timer) {
     timer->starting_time = 0;
     timer->elapsed_time  = 0;
     timer->state         = TIMER_STOPPED;
@@ -59,7 +59,7 @@ int stop_timer(generic_timer_t *timer) {
 
 
 
-int pause_timer(generic_timer_t *timer, unsigned long timestamp) {
+int stopwatch_pause(stopwatch_t *timer, unsigned long timestamp) {
     switch (timer->state) {
         case TIMER_COUNTING:
             timer->state = TIMER_PAUSED;
@@ -74,20 +74,20 @@ int pause_timer(generic_timer_t *timer, unsigned long timestamp) {
 
 
 
-int restart_timer(generic_timer_t *timer, unsigned long timestamp) {
-    stop_timer(timer);
-    return start_timer(timer, timestamp);
+int stopwatch_restart(stopwatch_t *timer, unsigned long timestamp) {
+    stopwatch_stop(timer);
+    return stopwatch_start(timer, timestamp);
 }
 
 
 
-void change_timer(generic_timer_t *timer, unsigned long period) {
+void stopwatch_change(stopwatch_t *timer, unsigned long period) {
     timer->total_time = period;
 }
 
 
 
-int set_timer(generic_timer_t *timer, unsigned long period) {
+int stopwatch_set(stopwatch_t *timer, unsigned long period) {
     if (timer->state != TIMER_STOPPED)     // Can only set a stopped timer
         return -1;
 
@@ -97,13 +97,13 @@ int set_timer(generic_timer_t *timer, unsigned long period) {
 
 
 
-TIMER_STATE get_timer_state(generic_timer_t *timer) {
+STOPWATCH_STATE get_timer_state(stopwatch_t *timer) {
     return timer->state;
 }
 
 
 
-unsigned long get_elapsed_time(generic_timer_t *timer, unsigned long timestamp) {
+unsigned long stopwatch_get_elapsed(stopwatch_t *timer, unsigned long timestamp) {
     if (timer->state == TIMER_COUNTING)
         return timer->elapsed_time + time_interval(timer->starting_time, timestamp);
     else
@@ -112,20 +112,20 @@ unsigned long get_elapsed_time(generic_timer_t *timer, unsigned long timestamp) 
 
 
 
-unsigned long get_remaining_time(generic_timer_t *timer, unsigned long timestamp) {
-    unsigned long elapsed = get_elapsed_time(timer, timestamp);
+unsigned long stopwatch_get_remaining(stopwatch_t *timer, unsigned long timestamp) {
+    unsigned long elapsed = stopwatch_get_elapsed(timer, timestamp);
     return elapsed < timer->total_time ? timer->total_time - elapsed : 0;
 }
 
 
 
-unsigned long get_total_time(generic_timer_t *timer) {
+unsigned long stopwatch_get_total_time(stopwatch_t *timer) {
     return timer->total_time;
 }
 
 
 
-int is_timer_reached(generic_timer_t *t, unsigned long timestamp) {
+int stopwatch_is_timer_reached(stopwatch_t *t, unsigned long timestamp) {
     switch(t->state) {
         case TIMER_STOPPED:
             return 0;
