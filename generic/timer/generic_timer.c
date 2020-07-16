@@ -11,7 +11,7 @@
 /*                                                                            */
 /*  Data  : 31/01/2020      REV  : 00.0                                       */
 /*                                                                            */
-/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*  U.mod.: 15/07/2020      REV  : 01.0                                       */
 /*                                                                            */
 /******************************************************************************/
 /*
@@ -81,8 +81,9 @@ int restart_timer(generic_timer_t *timer, unsigned long timestamp) {
 
 
 
-void change_timer(generic_timer_t *timer, unsigned long period) {
+void change_timer(generic_timer_t *timer, unsigned long period, unsigned long timestamp) {
     timer->total_time = period;
+    restart_timer(timer, timestamp);
 }
 
 

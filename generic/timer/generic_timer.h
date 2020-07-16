@@ -11,7 +11,7 @@
 /*                                                                            */
 /*  Data  : 31/01/2020      REV  : 00.0                                       */
 /*                                                                            */
-/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*  U.mod.: 15/07/2020      REV  : 01.0                                       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -87,8 +87,9 @@ int set_timer(generic_timer_t *timer, unsigned long period);
  *  Similar to `set_timer` but with no restrictions on the timer's state.
  * timer: pointer to the timer struct to initialize
  * period: period of time the timer should run for
+ * timestamp: current time
  */
-void change_timer(generic_timer_t *timer, unsigned long period);
+void change_timer(generic_timer_t *timer, unsigned long period, unsigned long timestamp);
 
 /*
  *  Returns the state of the timer.
