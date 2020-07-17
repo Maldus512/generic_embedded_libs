@@ -12,6 +12,15 @@
         size;                                                                                                          \
     })
 
+
+#define UNPACK_UINT32_BE(var, buffer)                                                                                  \
+    ({                                                                                                                 \
+        uint32_t tmp;                                                                                                  \
+        int      size = deserialize_uint32_be(&tmp, (buffer));                                                         \
+        (var)         = tmp;                                                                                           \
+        size;                                                                                                          \
+    })
+
 #define UNPACK_UINT8(var, buffer)                                                                                  \
     ({                                                                                                                 \
         uint8_t tmp;                                                                                                  \

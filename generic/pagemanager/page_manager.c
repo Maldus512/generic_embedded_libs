@@ -13,6 +13,44 @@ pman_update_t pman_process_page_event(page_manager_t *pman, pman_model_t model, 
 }
 
 
+void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage, unsigned long timestamp) {
+    pman_page_t  page;
+    pman_page_t *current = &pman->current_page;
+
+    if (current->close_page)
+        current->close_page(current->data, timestamp);
+    if (current->destroy_page)
+        current->destroy_page(current->data, current->data);
+
+    // If the current page is a popup close also the previous one
+    if (current->popup) {
+        if (navigation_stack_pop(&pman->navq, &page) == POP_RESULT_SUCCESS) {
+            if (page.close_page)
+                page.close_page(page.data, timestamp);
+            if (page.destroy_page)
+                page.destroy_page(page.data, page.extra);
+        }
+    }
+
+    while (!navigation_stack_is_empty(&pman->navq)) {
+        if (navigation_stack_pop(&pman->navq, &page) == POP_RESULT_SUCCESS) {
+            if (page.destroy_page)
+                page.destroy_page(page.data, page.extra);
+        }
+    }
+
+    pman->current_page       = newpage;
+    pman->current_page.extra = NULL;
+    // Create the newpage
+    pman->current_page.data = pman->current_page.create_page(model, timestamp, NULL);
+    // Open the page
+    if (pman->current_page.open_page)
+        pman->current_page.open_page(model, pman->current_page.data, timestamp);
+    // Update the page
+    pman->current_page.update_page(model, pman->current_page.data);
+}
+
+
 void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, unsigned long timestamp,
                             void *extra) {
     // If it is the first page or a popup do not add it to the navigation stack

@@ -42,6 +42,7 @@ void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp
 void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp);
 void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp,
                             void *extra);
+void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage, unsigned long timestamp);
 void page_update(page_manager_t *pman, pman_model_t model);
 
 void null_update(pman_model_t model, pman_page_data_t data);
