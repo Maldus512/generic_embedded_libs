@@ -1,6 +1,6 @@
 #include <limits.h>
 #include "pagemanager/page_manager.h"
-#include "pman_conf.h"
+#include "gel_conf.h"
 #include "unity.h"
 
 #define PAGE1 1
