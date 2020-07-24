@@ -11,7 +11,7 @@
 /*                                                                            */
 /*  Data  : 31/01/2020      REV  : 00.0                                       */
 /*                                                                            */
-/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*  U.mod.: 15/07/2020      REV  : 01.0                                       */
 /*                                                                            */
 /******************************************************************************/
 /*
@@ -81,8 +81,9 @@ int stopwatch_restart(stopwatch_t *timer, unsigned long timestamp) {
 
 
 
-void stopwatch_change(stopwatch_t *timer, unsigned long period) {
+void stopwatch_change(stopwatch_t *timer, unsigned long period, unsigned long timestamp) {
     timer->total_time = period;
+    stopwatch_restart(timer, timestamp);
 }
 
 
@@ -97,7 +98,7 @@ int stopwatch_set(stopwatch_t *timer, unsigned long period) {
 
 
 
-STOPWATCH_STATE get_timer_state(stopwatch_t *timer) {
+STOPWATCH_STATE stopwatch_get_state(stopwatch_t *timer) {
     return timer->state;
 }
 

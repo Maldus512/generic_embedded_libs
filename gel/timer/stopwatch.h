@@ -11,7 +11,7 @@
 /*                                                                            */
 /*  Data  : 31/01/2020      REV  : 00.0                                       */
 /*                                                                            */
-/*  U.mod.: 04/04/2020      REV  : 01.0                                       */
+/*  U.mod.: 15/07/2020      REV  : 01.0                                       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -87,15 +87,16 @@ int stopwatch_set(stopwatch_t *timer, unsigned long period);
  *  Similar to `stopwatch_set` but with no restrictions on the timer's state.
  * timer: pointer to the timer struct to initialize
  * period: period of time the timer should run for
+ * timestamp: current time
  */
-void stopwatch_change(stopwatch_t *timer, unsigned long period);
+void stopwatch_change(stopwatch_t *timer, unsigned long period, unsigned long timestamp);
 
 /*
  *  Returns the state of the timer.
  * timer: pointer to the timer struct to initialize
  * return: current state of the timer
  */
-STOPWATCH_STATE get_timer_state(stopwatch_t *timer);
+STOPWATCH_STATE stopwatch_get_state(stopwatch_t *timer);
 
 /*
  *  Returns the set period for the timer

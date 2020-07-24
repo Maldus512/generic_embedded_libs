@@ -25,6 +25,7 @@ $ scons test
 
 - Add protocols (simple uart packets, hex packets)
 - Add `page_pause` and `page_resume` methods to page manager (to preserve page state)
+- Add a Kconfig for ESP-IDF components
 - In the page manager, manage popups separately (add a `popup` field and make sure every page that goes on the stack has been paused and closed)
 - if any callback is NULL it shouldn't be called (page manager)
 - Add the PRESS event to the keyboard

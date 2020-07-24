@@ -1,5 +1,5 @@
 idf_component_register(
-    SRC_DIRS "gel/keyboard" "gel/debounce" "gel/watcher"
+    SRC_DIRS CONFIG_GEL_COMPONENTS
     INCLUDE_DIRS "." "gel"
     )
 
