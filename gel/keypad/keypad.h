@@ -3,8 +3,9 @@
 
 #include <stdint.h>
 
-#define KEY_DEFINITION(b, c)                                                                                           \
+#define KEYPAD_KEY(b, c)                                                                                           \
     { .bitvalue = b, .code = c }
+#define KEYPAD_NULL_KEY {0}
 
 typedef enum {
     KEY_NOTHING,     // Nothing has happened
@@ -14,7 +15,7 @@ typedef enum {
     KEY_LONGCLICK,     // The button was pressed for "longclick" time. Not repeated
     KEY_LONGPRESS,     // The button was kept pressed after a longclick event
     KEY_RELEASE,       // The button was released after a click event (long or short)
-} key_event_t;
+} keypad_event_t;
 
 
 // Struct containing information about the key
@@ -28,20 +29,20 @@ typedef struct {
         uint8_t       value;
         uint8_t       oldvalue;
         uint8_t       ignore;
-        key_event_t   lastevent;
+        keypad_event_t   lastevent;
     } _state;
-} raw_key_t;
+} keypad_key_t;
 
 
 typedef struct {
     int         code;
-    key_event_t event;
-} keycode_event_t;
+    keypad_event_t event;
+} keypad_update_t;
 
-keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, unsigned long longclick,
+keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick,
                                  unsigned long timestamp, unsigned long bitvalue);
-unsigned char   get_key_state(raw_key_t *key);
-void            reset_keys(raw_key_t *keys, int num);
-unsigned long   get_click_time(raw_key_t *keys, int num, int code, unsigned long timestamp);
+unsigned char   keypad_get_key_state(keypad_key_t *key);
+void            keypad_reset_keys(keypad_key_t *keys);
+unsigned long   keypad_get_click_time(keypad_key_t *keys, int code, unsigned long timestamp);
 
 #endif

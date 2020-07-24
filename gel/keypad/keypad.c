@@ -1,20 +1,20 @@
-#include "keyboard.h"
-#include "timer/timecheck.h"
+#include "keypad.h"
+#include "../timer/timecheck.h"
 
 #define NTH(x, i) ((x >> i) & 0x1)
 
-unsigned char get_key_state(raw_key_t *key) {
+unsigned char keypad_get_key_state(keypad_key_t *key) {
     return key->_state.value;
 }
 
-keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, unsigned long longclick,
+keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick,
                                  unsigned long timestamp, unsigned long bitvalue) {
-    int             i, found = -1;
-    raw_key_t *     key;
-    keycode_event_t event   = {0};
-    key_event_t     current = 0;
+    int             i = 0, found = -1;
+    keypad_key_t *     key;
+    keypad_update_t event   = {0};
+    keypad_event_t     current = 0;
 
-    for (i = 0; i < num; i++) {
+    while (keys[i].bitvalue) {
         // If a key is found
         if (keys[i].bitvalue == bitvalue) {
             keys[i]._state.value = 1;
@@ -35,6 +35,8 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
             event.code = keys[i].code;
             break;
         }
+
+        i++;
     }
 
     if (found == -1)
@@ -71,23 +73,27 @@ keycode_event_t keyboard_routine(raw_key_t *keys, int num, unsigned long click, 
     return event;
 }
 
-void reset_keys(raw_key_t *keys, int num) {
-    int i;
-    for (i = 0; i < num; i++) {
+void keypad_reset_keys(keypad_key_t *keys) {
+    int i = 0;
+    while(keys[i].bitvalue) {
         keys[i]._state.time      = 0;
         keys[i]._state.lastevent = KEY_NOTHING;
         keys[i]._state.oldvalue  = keys[i]._state.value;
         keys[i]._state.ignore    = 1;
+
+        i++;
     }
 }
 
-unsigned long get_click_time(raw_key_t *keys, int num, int code, unsigned long timestamp) {
+unsigned long keypad_get_click_time(keypad_key_t *keys, int code, unsigned long timestamp) {
     int i = 0;
-    for (i = 0; i < num; i++) {
+    while(keys[i].bitvalue) {
         if (keys[i].code == code &&
             (keys[i]._state.lastevent == KEY_CLICK || keys[i]._state.lastevent == KEY_LONGCLICK ||
              keys[i]._state.lastevent == KEY_LONGPRESS))
             return time_interval(keys[i]._state.time, timestamp);
+
+        i++;
     }
 
     return 0;
