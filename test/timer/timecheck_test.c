@@ -8,7 +8,8 @@ void tearDown() {}
 
 void test_expired_timers() {
     TEST_ASSERT(!is_expired(0, 0, 1))
-    TEST_ASSERT(!is_expired(0, 1, 1))
+    TEST_ASSERT(!is_strictly_expired(0, 1, 1))
+    TEST_ASSERT(is_loosely_expired(0, 1, 1))
     TEST_ASSERT(is_expired(0, 2, 1))
 }
 
