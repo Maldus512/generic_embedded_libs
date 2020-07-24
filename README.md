@@ -26,3 +26,4 @@ $ scons test
 - fix the naming convention
 - Add `page_pause` and `page_resume` methods to page manager (to preserve page state)
 - Add the PRESS event to the keyboard
+- Add a Kconfig for ESP-IDF components
