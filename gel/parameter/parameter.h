@@ -92,9 +92,9 @@ typedef struct _parameter_data_t {
 
     // Strings to display. They should be char arrays
     struct {
-        char ** description;      // Description; array on languages
-        char ** format;           // Format; array on languages
-        char ***string_value;     // Values; array of values on array of languages.
+        const char ** description;      // Description; array on languages
+        const char ** format;           // Format; array on languages
+        const char ***string_value;     // Values; array of values on array of languages.
         // If string_value is not NULL the parameter's value is used to index this string array for the
         // value to display
         int (*special_format)(struct _parameter_data_t *, char *, int);
