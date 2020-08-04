@@ -2,7 +2,7 @@
 #define PAGE_MANAGER_H_INCLUDED
 
 #include "gel_conf.h"
-#include "collections/stack.h"
+#include "gel/collections/stack.h"
 
 
 typedef struct {
