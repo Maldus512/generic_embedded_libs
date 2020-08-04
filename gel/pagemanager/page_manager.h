@@ -2,14 +2,10 @@
 #define PAGE_MANAGER_H_INCLUDED
 
 #include "gel_conf.h"
-<<<<<<< HEAD
 #include "../collections/stack.h"
-=======
-#include "gel/collections/stack.h"
->>>>>>> cafae860dc738fb6cddf0d7bb50770ce5d25d949
 
 
-    typedef struct {
+typedef struct {
     int              id;
     pman_page_data_t data;
     void *           extra;

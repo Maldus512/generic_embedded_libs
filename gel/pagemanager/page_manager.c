@@ -8,7 +8,7 @@ void init_page_manager(page_manager_t *pman) {
 }
 
 pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model, pman_event_t event,
-                                      unsigned long timestamp) {
+                                       unsigned long timestamp) {
     return pman->current_page.process_event(model, pman->current_page.data, event, timestamp);
 }
 
@@ -20,7 +20,7 @@ void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newp
     if (current->close_page)
         current->close_page(current->data, timestamp);
     if (current->destroy_page)
-        current->destroy_page(current->data, current->data);
+        current->destroy_page(current->data, current->extra);
 
     // If the current page is a popup close also the previous one
     if (current->popup) {
@@ -47,7 +47,8 @@ void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newp
     if (pman->current_page.open_page)
         pman->current_page.open_page(model, pman->current_page.data, timestamp);
     // Update the page
-    pman->current_page.update_page(model, pman->current_page.data);
+    if (pman->current_page.update_page)
+        pman->current_page.update_page(model, pman->current_page.data);
 }
 
 
@@ -98,7 +99,8 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
     if (pman->current_page.open_page)
         pman->current_page.open_page(model, pman->current_page.data, timestamp);
     // Update the page
-    pman->current_page.update_page(model, pman->current_page.data);
+    if (pman->current_page.update_page)
+        pman->current_page.update_page(model, pman->current_page.data);
 }
 
 void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp) {
