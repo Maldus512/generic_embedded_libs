@@ -26,6 +26,8 @@ $ scons test
 - fix the naming convention
 - Add `page_close` and `page_open` methods to page manager (to preserve page state). Remember there was an issue where a one time event was fired during a popup, and the underlying page remained stuck). For IO operations I could have callbacks that act directly on the page data, it's the UI thread anyway. Possibly add a separate popup stack.
 - Add protocols (simple uart packets, hex packets)
+- Add `page_pause` and `page_resume` methods to page manager (to preserve page state)
+- Add a Kconfig for ESP-IDF components
 - In the page manager, manage popups separately (add a `popup` field and make sure every page that goes on the stack has been paused and closed)
 - if any callback is NULL it shouldn't be called (page manager)
 - Add the PRESS event to the keyboard
