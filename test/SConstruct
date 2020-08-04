@@ -30,7 +30,7 @@ if 'PATH' in os.environ.keys():
 
 env_options = {
     "ENV": externalEnvironment,
-    "CPPPATH": [UNITY, LIBS, '.'],
+    "CPPPATH": [UNITY, LIBS, '.', '../'],
     "CCFLAGS": CFLAGS,
 }
 

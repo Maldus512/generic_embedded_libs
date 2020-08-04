@@ -7,7 +7,7 @@ void init_page_manager(page_manager_t *pman) {
     navigation_stack_init(&pman->navq);
 }
 
-pman_update_t pman_process_page_event(page_manager_t *pman, pman_model_t model, pman_event_t event,
+pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model, pman_event_t event,
                                       unsigned long timestamp) {
     return pman->current_page.process_event(model, pman->current_page.data, event, timestamp);
 }
@@ -85,7 +85,7 @@ void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp
     }
 }
 
-void page_update(page_manager_t *pman, pman_model_t model) {
+void pman_page_update(page_manager_t *pman, pman_model_t model) {
     pman_page_t *curpage;
 
     curpage = &pman->current_page;

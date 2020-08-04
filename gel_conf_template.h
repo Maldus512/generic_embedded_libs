@@ -7,7 +7,7 @@
 
 #define PMAN_NAVIGATION_DEPTH 4
 
-typedef void *pman_update_t;
+typedef void *pman_message_t;
 
 typedef void *pman_event_t;
 

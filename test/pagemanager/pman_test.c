@@ -16,7 +16,7 @@ pman_page_data_t create_page1(pman_model_t model, unsigned long timestamp, void 
     return 0;
 }
 
-pman_update_t process_event1(pman_model_t model, pman_page_data_t data, pman_event_t event, unsigned long timestamp) {
+pman_message_t process_event1(pman_model_t model, pman_page_data_t data, pman_event_t event, unsigned long timestamp) {
     (void)model;
     (void)data;
     (void)event;

@@ -2,7 +2,7 @@
 #define PAGE_MANAGER_H_INCLUDED
 
 #include "gel_conf.h"
-#include "collections/stack.h"
+#include "../collections/stack.h"
 
 
 typedef struct {
@@ -24,7 +24,7 @@ typedef struct {
     // Called to update the page's content
     void (*update_page)(pman_model_t model, pman_page_data_t data);
     // Called to process an event
-    pman_update_t (*process_event)(pman_model_t model, pman_page_data_t data, pman_event_t event,
+    pman_message_t (*process_event)(pman_model_t model, pman_page_data_t data, pman_event_t event,
                                    unsigned long timestamp);
 } pman_page_t;
 
@@ -42,7 +42,7 @@ void pman_back(page_manager_t *pman, pman_model_t model, unsigned long timestamp
 void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp);
 void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t page, unsigned long timestamp,
                             void *extra);
-void page_update(page_manager_t *pman, pman_model_t model);
+void pman_page_update(page_manager_t *pman, pman_model_t model);
 
 void null_update(pman_model_t model, pman_page_data_t data);
 void null_destroy(pman_page_data_t data, void *extra);

@@ -3,7 +3,7 @@
 
 #define PMAN_NAVIGATION_DEPTH 5
 
-typedef int pman_update_t;
+typedef int pman_message_t;
 
 typedef int pman_event_t;
 
