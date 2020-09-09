@@ -9,40 +9,138 @@
 
 int model;
 
-pman_page_data_t create_page1(pman_model_t model, unsigned long timestamp, void *extra) {
-    (void)timestamp;
+int create1 = 0;
+int create2 = 0;
+int create3 = 0;
+
+pman_page_data_t create_page1(pman_model_t model, void *extra) {
     (void)extra;
-    TEST_ASSERT_EQUAL(1, model);
+    (void)model;
+    create1++;
     return 0;
 }
 
-pman_message_t process_event1(pman_model_t model, pman_page_data_t data, pman_event_t event, unsigned long timestamp) {
+pman_page_data_t create_page2(pman_model_t model, void *extra) {
+    (void)extra;
+    (void)model;
+    create2++;
+    return 0;
+}
+
+pman_page_data_t create_page3(pman_model_t model, void *extra) {
+    (void)extra;
+    (void)model;
+    create3++;
+    return 0;
+}
+
+int open1 = 0;
+int open2 = 0;
+int open3 = 0;
+
+pman_page_data_t open_page1(pman_model_t model, pman_page_data_t data) {
+    (void)model;
+    (void)data;
+    open1++;
+    return 0;
+}
+
+pman_page_data_t open_page2(pman_model_t model, pman_page_data_t data) {
+    (void)data;
+    (void)model;
+    open2++;
+    return 0;
+}
+
+pman_page_data_t open_page3(pman_model_t model, pman_page_data_t data) {
+    (void)data;
+    (void)model;
+    open3++;
+    return 0;
+}
+
+int close1 = 0;
+int close2 = 0;
+int close3 = 0;
+
+pman_page_data_t close_page1(pman_page_data_t data) {
+    (void)data;
+    close1++;
+    return 0;
+}
+
+pman_page_data_t close_page2(pman_page_data_t data) {
+    (void)data;
+    close2++;
+    return 0;
+}
+
+pman_page_data_t close_page3(pman_page_data_t data) {
+    (void)data;
+    close3++;
+    return 0;
+}
+
+int destroy1 = 0;
+int destroy2 = 0;
+int destroy3 = 0;
+
+pman_page_data_t destroy_page1(pman_page_data_t data, void *extra) {
+    (void)data;
+    (void)extra;
+    destroy1++;
+    return 0;
+}
+
+pman_page_data_t destroy_page2(pman_page_data_t data, void *extra) {
+    (void)data;
+    (void)extra;
+    destroy2++;
+    return 0;
+}
+
+pman_page_data_t destroy_page3(pman_page_data_t data, void *extra) {
+    (void)data;
+    (void)extra;
+    destroy3++;
+    return 0;
+}
+
+int event1 = 0;
+
+pman_message_t process_event1(pman_model_t model, pman_page_data_t data, pman_event_t event) {
     (void)model;
     (void)data;
     (void)event;
-    (void)timestamp;
+    event1++;
     return 0;
 }
 
 page_manager_t pman;
 
 pman_page_t pages[] = {{.id            = PAGE1,
-                        .create_page   = create_page1,
-                        .destroy_page  = null_destroy,
-                        .update_page   = null_update,
+                        .create        = create_page1,
+                        .open          = open_page1,
+                        .close         = close_page1,
+                        .destroy       = destroy_page1,
                         .process_event = process_event1},
                        {.id            = PAGE2,
-                        .create_page   = create_page1,
-                        .destroy_page  = null_destroy,
-                        .update_page   = null_update,
+                        .create        = create_page2,
+                        .open          = open_page2,
+                        .close         = close_page2,
+                        .destroy       = destroy_page2,
                         .process_event = process_event1},
                        {.id            = PAGE3,
-                        .create_page   = create_page1,
-                        .destroy_page  = null_destroy,
-                        .update_page   = null_update,
+                        .create        = create_page3,
+                        .open          = open_page3,
+                        .close         = close_page3,
+                        .destroy       = destroy_page3,
                         .process_event = process_event1}};
 
 void setUp() {
+    create1 = create2 = create3 = 0;
+    open1 = open2 = open3 = 0;
+    close1 = close2 = close3 = 0;
     init_page_manager(&pman);
     model = 1;
 }
@@ -50,15 +148,32 @@ void setUp() {
 void tearDown() {}
 
 void test_change_page() {
-    pman_change_page(&pman, model, pages[0], 0);
+    pman_change_page(&pman, model, pages[0]);
     TEST_ASSERT_EQUAL(PAGE1, pman.current_page.id);
-    pman_change_page(&pman, model, pages[1], 0);
-    TEST_ASSERT_EQUAL(PAGE2, pman.current_page.id);
-    pman_change_page(&pman, model, pages[2], 0);
-    TEST_ASSERT_EQUAL(PAGE3, pman.current_page.id);
+    TEST_ASSERT_EQUAL(1, create1);
+    TEST_ASSERT_EQUAL(1, open1);
 
-    pman_back(&pman, model, 0);
+    pman_change_page(&pman, model, pages[1]);
     TEST_ASSERT_EQUAL(PAGE2, pman.current_page.id);
-    pman_back(&pman, model, 0);
+    TEST_ASSERT_EQUAL(1, close1);
+    TEST_ASSERT_EQUAL(1, open2);
+
+    pman_change_page(&pman, model, pages[2]);
+    TEST_ASSERT_EQUAL(PAGE3, pman.current_page.id);
+    TEST_ASSERT_EQUAL(1, close2);
+    TEST_ASSERT_EQUAL(1, open3);
+
+    pman_back(&pman, model);
+    TEST_ASSERT_EQUAL(PAGE2, pman.current_page.id);
+    TEST_ASSERT_EQUAL(1, close3);
+    pman_back(&pman, model);
+    TEST_ASSERT_EQUAL(2, close2);
     TEST_ASSERT_EQUAL(PAGE1, pman.current_page.id);
+
+    TEST_ASSERT_EQUAL(1, create1);
+    TEST_ASSERT_EQUAL(1, create2);
+    TEST_ASSERT_EQUAL(1, create3);
+    TEST_ASSERT_EQUAL(0, destroy1);
+    TEST_ASSERT_EQUAL(1, destroy2);
+    TEST_ASSERT_EQUAL(1, destroy3);
 }
