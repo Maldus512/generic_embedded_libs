@@ -36,7 +36,6 @@ pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model,
 
 
 void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
-    pman_page_t  page;
     pman_page_t *current = &pman->current_page;
     assert(!newpage.popup);     // Can't rebase on a popup
 
@@ -137,7 +136,6 @@ void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page
 
 void pman_back(page_manager_t *pman, pman_model_t model) {
     pman_page_t page;
-    int         popup;
     assert(pman->initialized);
 
     if (pman->popup) {
