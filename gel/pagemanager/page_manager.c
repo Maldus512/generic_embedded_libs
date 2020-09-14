@@ -54,7 +54,7 @@ void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
     pman->current_page       = newpage;
     pman->current_page.extra = extra;
     // Create the newpage
-    pman->current_page.data = pman->current_page.create(model, NULL);
+    pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
     // Open the page
     if (pman->current_page.open)
         pman->current_page.open(model, pman->current_page.data);
