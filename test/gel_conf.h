@@ -16,4 +16,7 @@ typedef int pid_output_type_t;
 
 #define PID_HISTORY_SIZE 100
 
+#define GEL_MALLOC_AVAILABLE  0
+#define GEL_STATIC_BLOCK_SIZE 80
+
 #endif
