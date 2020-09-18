@@ -148,7 +148,6 @@ void setUp() {
 void tearDown() {}
 
 void test_change_page() {
-    return;
     pman_change_page(&pman, model, pages[0]);
     TEST_ASSERT_EQUAL(PAGE1, pman.current_page.id);
     TEST_ASSERT_EQUAL(1, create1);

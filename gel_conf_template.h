@@ -24,4 +24,10 @@ typedef int pid_output_type_t;
 #define GEL_PID_INTEGRAL_HISTORY_SIZE    1
 #define GEL_PID_DERIVATIVE_DELTA 1
 
+/*
+ *  Watcher
+ */
+#define GEL_MALLOC_AVAILABLE  0
+#define GEL_STATIC_BLOCK_SIZE 16
+
 #endif
