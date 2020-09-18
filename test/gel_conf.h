@@ -14,6 +14,7 @@ typedef int pman_model_t;
 typedef int pid_control_type_t;
 typedef int pid_output_type_t;
 
-#define PID_HISTORY_SIZE 100
+#define GEL_PID_INTEGRAL_HISTORY_SIZE    200
+#define GEL_PID_DERIVATIVE_DELTA 5
 
 #endif
