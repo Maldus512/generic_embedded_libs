@@ -5,8 +5,9 @@
 int wl_read(wear_leveled_memory_t* wlm, uint8_t* buffer){
   uint8_t tmp_buffer[WL_BLOCK_SIZE];
   int32_t err;
-
-  for(size_t i=0; i < wlm->blocks_in_page; i++){
+  size_t i;
+  
+  for( i=0; i < wlm->blocks_in_page; i++){
     if ((err = wlm->read_block(i,tmp_buffer))){
       return err;
     }
@@ -22,7 +23,8 @@ int wl_write(wear_leveled_memory_t* wlm, uint8_t* buffer){
   uint8_t tmp_buffer[WL_BLOCK_SIZE];
   int32_t err;
   size_t last_idx=0;
-  for(size_t i=0; i < wlm->blocks_in_page; i++){
+  size_t i;
+  for( i=0; i < wlm->blocks_in_page; i++){
     if ((err = wlm->read_block(i,tmp_buffer))){
       return err;
     }
@@ -31,9 +33,14 @@ int wl_write(wear_leveled_memory_t* wlm, uint8_t* buffer){
         break;
     }
   }
-  //TODO check that value has changed
-  err=memcmp(tmp_buffer+1, buffer, wlm->bytes_used_in_block);
-  if(err){
+  int flag;
+  if (i != wlm->blocks_in_page){
+      flag =memcmp(tmp_buffer+1, buffer, wlm->bytes_used_in_block);
+  }else{
+      flag =1;
+  }
+  
+  if(flag){
     tmp_buffer[0] = 1;
     memcpy(tmp_buffer+1, buffer, wlm->bytes_used_in_block);
 

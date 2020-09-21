@@ -10,7 +10,7 @@
 #ifndef WEARLEVELING_H_INCLUDED
 #define WEARLEVELING_H_INCLUDED
 
-#include <unistd.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
 
