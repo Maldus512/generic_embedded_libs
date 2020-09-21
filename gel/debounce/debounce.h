@@ -7,8 +7,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef __DEBOUNCE_H__
-#define __DEBOUNCE_H__
+#ifndef DEBOUNCE_H_INCLUDED
+#define DEBOUNCE_H_INCLUDED
 
 #define NUM_INPUTS ((int)sizeof(unsigned int) * 8)
 #define NTH(x, i)  ((x >> i) & 0x1)

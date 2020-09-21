@@ -20,4 +20,7 @@ typedef int pid_output_type_t;
 #define GEL_MALLOC_AVAILABLE  0
 #define GEL_STATIC_BLOCK_SIZE 80
 
+#define WL_BLOCK_SIZE 4
+
+
 #endif
