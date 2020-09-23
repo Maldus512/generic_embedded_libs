@@ -16,6 +16,10 @@
 
 #include "gel_conf.h"
 
+#define MOD_NEXT(x, mod) ((mod + x + 1) % mod)
+#define MOD_PREV(x, mod) ((mod + x - 1) % mod)
+
+
 typedef int (*memory_cb_t)(size_t block_num, uint8_t * buffer);
 
 typedef struct {
@@ -26,6 +30,8 @@ typedef struct {
     size_t bytes_used_in_block;
 
 } wear_leveled_memory_t;
+
+int search_last(wear_leveled_memory_t *wlm);
 
 int wl_read(wear_leveled_memory_t* wlm, uint8_t* buffer);
 
