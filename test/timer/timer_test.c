@@ -11,10 +11,10 @@ void tearDown() {}
 void test_start_timer() {
     stopwatch_t timer;
     stopwatch_init(&timer);
-    TEST_ASSERT_EQUAL(TIMER_STOPPED, get_timer_state(&timer));
+    TEST_ASSERT_EQUAL(TIMER_STOPPED, stopwatch_get_state(&timer));
 
     TEST_ASSERT_EQUAL(0, stopwatch_start(&timer, 0));
-    TEST_ASSERT_EQUAL(TIMER_COUNTING, get_timer_state(&timer));
+    TEST_ASSERT_EQUAL(TIMER_COUNTING, stopwatch_get_state(&timer));
 
     TEST_ASSERT_EQUAL(-1, stopwatch_start(&timer, 0));
 }
@@ -30,7 +30,7 @@ void test_count_timer() {
     TEST_ASSERT_EQUAL(200, stopwatch_get_elapsed(&timer, 200));
 
     stopwatch_stop(&timer);
-    TEST_ASSERT_EQUAL(TIMER_STOPPED, get_timer_state(&timer));
+    TEST_ASSERT_EQUAL(TIMER_STOPPED, stopwatch_get_state(&timer));
 
     TEST_ASSERT_EQUAL(0, stopwatch_get_elapsed(&timer, 0));
     TEST_ASSERT_EQUAL(0, stopwatch_get_elapsed(&timer, 10));
@@ -46,7 +46,7 @@ void test_set_timer() {
     TEST_ASSERT_EQUAL(0, stopwatch_set(&timer, 2000));
     TEST_ASSERT_EQUAL(2000, stopwatch_get_total_time(&timer));
 
-    TEST_ASSERT_EQUAL(TIMER_STOPPED, get_timer_state(&timer));
+    TEST_ASSERT_EQUAL(TIMER_STOPPED, stopwatch_get_state(&timer));
 
     // Cannot set a started timer; it has to be stopped first
     stopwatch_start(&timer, 0);
@@ -60,9 +60,9 @@ void test_set_timer() {
     TEST_ASSERT(stopwatch_is_timer_reached(&timer, 2001));
     TEST_ASSERT_EQUAL(0, stopwatch_get_remaining(&timer, 2500));
 
-    stopwatch_change(&timer, 42);
+    stopwatch_change(&timer, 42, 40);
     TEST_ASSERT(!stopwatch_is_timer_reached(&timer, 40));
-    TEST_ASSERT(stopwatch_is_timer_reached(&timer, 50));
+    TEST_ASSERT(stopwatch_is_timer_reached(&timer, 82));
     TEST_ASSERT_EQUAL(42, stopwatch_get_total_time(&timer));
 }
 
@@ -102,7 +102,7 @@ void test_stress() {
         unsigned long delay = rand() % 1000;
         time += delay;
 
-        if (get_timer_state(&timer) == TIMER_COUNTING)
+        if (stopwatch_get_state(&timer) == TIMER_COUNTING)
             elapsed += delay;
 
         switch (rand() % 2) {

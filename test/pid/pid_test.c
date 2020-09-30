@@ -52,13 +52,82 @@ void test_pi() {
         TEST_ASSERT_NOT_EQUAL(0, pid_compute(pid));
     }
 
-    pid_clear_history(pid);
+    pid_clear_integral_history(pid);
     pid_add_input(pid, 90);
     TEST_ASSERT_EQUAL(0, pid_compute(pid));
 
-    pid_clear_history(pid);
+    pid_clear_integral_history(pid);
     pid_add_input(pid, 0);
     TEST_ASSERT_NOT_EQUAL(0, pid_compute(pid));
+}
+
+
+void test_pi_threshold() {
+    pid_ctrl_tune(pid, 0, 0.01, 0);
+    pid_set_integral_low_threshold(pid, 50);
+    pid_enable_integral_low_threshold(pid, 1);
+    pid_set_integral_high_threshold(pid, 10);
+    pid_enable_integral_high_threshold(pid, 1);
+    pid_set_sp(pid, 100);
+
+    for (int i = 0; i < 100; i++) {
+        pid_add_input(pid, 0);
+        TEST_ASSERT_EQUAL(0, pid_compute(pid));
+    }
+
+    for (int i = 0; i < 2; i++) {
+        pid_add_input(pid, 60);
+        TEST_ASSERT_EQUAL(0, pid_compute(pid));
+    }
+
+    for (int i = 0; i < 10; i++) {
+        pid_add_input(pid, 60);
+        TEST_ASSERT_NOT_EQUAL(0, pid_compute(pid));
+    }
+
+    pid_ctrl_tune(pid, 0, 1, 0);
+    pid_add_input(pid, 120);
+    TEST_ASSERT_NOT_EQUAL(0, pid_compute(pid));
+    pid_set_auto_integral_clear(pid, 1);
+    pid_add_input(pid, 50);
+    TEST_ASSERT_EQUAL(0, pid_compute(pid));
+
+    for (int i = 0; i < 100; i++) {
+        pid_add_input(pid, 110 + i);
+        TEST_ASSERT_EQUAL(0, pid_compute(pid));
+    }
+
+    pid_add_input(pid, 109);
+    TEST_ASSERT_EQUAL(-9, pid_compute(pid));
+    pid_add_input(pid, 109);
+    TEST_ASSERT_EQUAL(-9 * 2, pid_compute(pid));
+    pid_add_input(pid, 110);
+    TEST_ASSERT_EQUAL(-9 * 2, pid_compute(pid));
+    pid_add_input(pid, 150);
+    TEST_ASSERT_EQUAL(-9 * 2, pid_compute(pid));
+}
+
+void test_pd() {
+    pid_ctrl_tune(pid, 0, 0, 1);
+    pid_set_sp(pid, 100);
+    int increase = 0;
+
+    pid_add_input(pid, 100);
+    TEST_ASSERT_EQUAL(0, pid_compute(pid));
+
+    for (size_t i = 0; i < GEL_PID_DERIVATIVE_DELTA; i++) {
+        increase += 10;
+        pid_add_input(pid, 100 + increase);
+        int test1 = -increase;
+        int test2 = pid_compute(pid);
+        TEST_ASSERT_EQUAL(test1, test2);
+    }
+
+    for (size_t i = 0; i < 20; i++) {
+        increase += 10;
+        pid_add_input(pid, 100 + increase);
+        TEST_ASSERT_EQUAL(-50, pid_compute(pid));
+    }
 }
 
 

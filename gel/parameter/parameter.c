@@ -278,49 +278,49 @@ int check_for_defaults(parameter_data_t *ps, int len) {
             case signed_char:
                 if (checkSCH(ps[i], (char)(*(ps[i].d.sch.var)))) {
                     (*(ps[i].d.sch.var)) = ps[i].d.sch.def;
-                    res                  = 1;
+                    res++;
                 }
                 break;
 
             case unsigned_char:
                 if (checkUCH(ps[i], *(ps[i].d.uch.var))) {
                     (*(ps[i].d.uch.var)) = ps[i].d.uch.def;
-                    res                  = 1;
+                    res++;
                 }
                 break;
 
             case signed_int:
                 if (checkSINT(ps[i], (int)(*(ps[i].d.sint.var)))) {
                     (*(ps[i].d.sint.var)) = ps[i].d.sint.def;
-                    res                   = 1;
+                    res++;
                 }
                 break;
 
             case unsigned_int:
                 if (checkUINT(ps[i], *(ps[i].d.uint.var))) {
                     (*(ps[i].d.uint.var)) = ps[i].d.uint.def;
-                    res                   = 1;
+                    res++;
                 }
                 break;
 
             case signed_long:
                 if (checkSL(ps[i], (long)(*(ps[i].d.sl.var)))) {
                     (*(ps[i].d.sl.var)) = ps[i].d.sl.def;
-                    res                 = 1;
+                    res++;
                 }
                 break;
 
             case unsigned_long:
                 if (checkUL(ps[i], *(ps[i].d.ul.var))) {
                     (*(ps[i].d.ul.var)) = ps[i].d.ul.def;
-                    res                 = 1;
+                    res++;
                 }
                 break;
 
             case signed_float:
                 if (checkFT(ps[i], *(ps[i].d.ft.var))) {
                     (*(ps[i].d.ft.var)) = ps[i].d.ft.def;
-                    res                 = 1;
+                    res++;
                 }
                 break;
         }

@@ -45,14 +45,14 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
     key = &keys[found];
 
     if (key->_state.value == key->_state.oldvalue && !key->_state.ignore) {
-        if (is_expired(key->_state.time, timestamp, longclick)) {
+        if (is_strictly_expired(key->_state.time, timestamp, longclick)) {
             if (key->_state.lastevent == KEY_LONGCLICK || key->_state.lastevent == KEY_LONGPRESS)
                 event.event = KEY_LONGPRESS;
             else
                 event.event = KEY_LONGCLICK;
 
             key->_state.lastevent = event.event;
-        } else if (is_expired(key->_state.time, timestamp, click)) {
+        } else if (is_strictly_expired(key->_state.time, timestamp, click)) {
             current = key->_state.value ? KEY_CLICK : KEY_RELEASE;
             if (current != key->_state.lastevent) {
                 event.event           = current;
