@@ -112,6 +112,15 @@ unsigned long stopwatch_get_elapsed(stopwatch_t *timer, unsigned long timestamp)
 }
 
 
+int stopwatch_set_elapsed(stopwatch_t *timer, unsigned long elapsed) {
+    if (timer->state == TIMER_STOPPED) {
+        timer->elapsed_time = elapsed;
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
 
 unsigned long stopwatch_get_remaining(stopwatch_t *timer, unsigned long timestamp) {
     unsigned long elapsed = stopwatch_get_elapsed(timer, timestamp);
