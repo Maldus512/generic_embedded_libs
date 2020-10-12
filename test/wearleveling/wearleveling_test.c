@@ -39,7 +39,6 @@ void test_init() {
         eeprom[i][j]=0;
     }
   }
-  int ret;
 
   wl_init(&memory, write_block, read_block, LEN, 3);
   TEST_ASSERT_EQUAL(write_block, memory.write_block);
@@ -74,7 +73,6 @@ void test_naive(){
 
 void test_multiple_write(){
   uint8_t buffer_in[3];
-  uint8_t buffer_out[3];
   int ret;
   int pos;
 

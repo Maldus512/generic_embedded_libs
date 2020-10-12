@@ -1,183 +1,60 @@
-#include <string.h>
+#include <stdint.h>
 #include "parameter/parameter.h"
 #include "unity.h"
 
-#ifndef LANGUAGES
-#define LANGUAGES 2
-#endif
+#define DEFAULT_AL 1
 
-#define NUM_PARAMETRI 8
 
-#define LVL_UTENTE 0x1
+void setUp() {}
 
-char *generic_format[LANGUAGES]       = {"Valore: %i", "Value:  %i"};
-char *abilitato[LANGUAGES]            = {"Abilitato: %s", "Enabled: %s"};
-char *generic_format_float[LANGUAGES] = {"Valore: %.2f", "Value:  %.2f"};
-char *sino[2][LANGUAGES]              = {{"no", "no"}, {"si", "yes"}};
+void tearDown() {}
 
-struct parametri_t {
-    int          intpar1, intpar2;
-    unsigned int uintpar1, uintpar2;
-    float        fpar1, fpar2;
-    char         ab1, ab2;
-} parametri;
 
-parameter_data_t p[NUM_PARAMETRI] = {
-    {signed_int, {.sint = {1, 10, 5, &parametri.intpar1}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
-    {signed_int, {.sint = {0, 100, 15, &parametri.intpar2}}, {0}, LVL_UTENTE, {0}, 0},
-    {unsigned_int, {.uint = {0, 1000, 200, &parametri.uintpar1}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
-    {unsigned_int, {.uint = {0, 3000, 512, &parametri.uintpar2}}, {.format = generic_format}, LVL_UTENTE, {0}, 0},
-    {signed_float, {.ft = {0.0, 100.0, 3.14, &parametri.fpar1}}, {.format = generic_format_float}, LVL_UTENTE, {0}, 0},
-    {signed_float, {.ft = {0.0, 1.0, .14, &parametri.fpar2}}, {.format = generic_format_float}, LVL_UTENTE, {0}, 0},
-    {signed_char,
-     {.sch = {0, 1, 0, &parametri.ab1}},
-     {.format = (const char**)abilitato, .string_value = (const char ***)sino},
-     LVL_UTENTE,
-     {0},
-     0},
-    {signed_char,
-     {.sch = {0, 1, 0, &parametri.ab2}},
-     {.format = (const char**)abilitato, .string_value = (const char ***)sino},
-     LVL_UTENTE,
-     {0},
-     0},
-};
+void test_basic() {
+    uint32_t           value = 5;
+    parameter_handle_t par1  = PARAMETER(&value, 0, 10, 2, 0, DEFAULT_AL);
+    TEST_ASSERT_EQUAL(10, par1.max.u32);
 
-void setUp() {
-    memset(&parametri, 0, sizeof(struct parametri_t));
+    PARAMETER_OPERATOR(par1, 1);
+    TEST_ASSERT_EQUAL(6, value);
+    PARAMETER_OPERATOR(par1, 1);
+    PARAMETER_OPERATOR(par1, 1);
+    PARAMETER_OPERATOR(par1, 1);
+    PARAMETER_OPERATOR(par1, 1);
+    PARAMETER_OPERATOR(par1, 1);
+    TEST_ASSERT_EQUAL(10, value);
+
+    uint32_t           max  = 12;
+    parameter_handle_t par2 = PARAMETER_DLIMITS(&value, NULL, &max, 1, 0, 0, 0, DEFAULT_AL);
+    TEST_ASSERT_EQUAL(0, par2.max.u32);
+    TEST_ASSERT_EQUAL(&max, par2.pmax);
 }
 
-void tearDown() {
-    init_to_default(p, NUM_PARAMETRI);
-}
 
-void assert_default() {
-    TEST_ASSERT_EQUAL(5, parametri.intpar1);
-    TEST_ASSERT_EQUAL(15, parametri.intpar2);
-    TEST_ASSERT_EQUAL(200, parametri.uintpar1);
-    TEST_ASSERT_EQUAL(512, parametri.uintpar2);
-    TEST_ASSERT_EQUAL_FLOAT(3.14, parametri.fpar1);
-    TEST_ASSERT_EQUAL_FLOAT(.14, parametri.fpar2);
-    TEST_ASSERT_EQUAL(0, parametri.ab1);
-    TEST_ASSERT_EQUAL(0, parametri.ab2);
-}
+void test_corrupted_value() {
+    int           value1 = 5;
+    unsigned char value2 = 10;
+    float         value3 = .5;
+    unsigned long value4 = 500000;
 
-void test_default() {
-    init_to_default(p, NUM_PARAMETRI);
-    assert_default();
-}
+    parameter_handle_t ps[] = {
+        PARAMETER(&value1, 0, 10, 1, 0, DEFAULT_AL),
+        PARAMETER(&value2, 0, 100, 2, 0, DEFAULT_AL),
+        PARAMETER(&value3, 0, 10, 3, 0, DEFAULT_AL),
+        PARAMETER(&value4, 0, 1000000, 4, 0, DEFAULT_AL),
+    };
 
-void test_types() {
-    int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(signed_int, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(signed_int, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(unsigned_int, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(unsigned_int, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(signed_float, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(signed_float, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(signed_char, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(signed_char, parameter_type(p, NUM_PARAMETRI, index));
-    next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-}
+    TEST_ASSERT_EQUAL(0, parameter_check_ranges(ps, 4));
+    value4 *= 4;
+    TEST_ASSERT_EQUAL(1, parameter_check_ranges(ps, 4));
+    TEST_ASSERT_EQUAL(0, parameter_check_ranges(ps, 4));
+    value1 = 1000;
+    value2 = 101;
+    value3 = 10.5;
+    TEST_ASSERT_EQUAL(3, parameter_check_ranges(ps, 4));
 
-void test_string_to_display() {
-    int  index = 0;
-    char string[64];
-
-    init_to_default(p, NUM_PARAMETRI);
-    index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(0, index);
-
-    string_to_display(p, NUM_PARAMETRI, index, string, 0);
-    TEST_ASSERT_EQUAL_STRING("Valore: 5", string);
-    string_to_display(p, NUM_PARAMETRI, index, string, 1);
-    TEST_ASSERT_EQUAL_STRING("Value:  5", string);
-
-    index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-
-    string_to_display(p, NUM_PARAMETRI, index, string, 0);
-    TEST_ASSERT_EQUAL_STRING("15", string);
-    string_to_display(p, NUM_PARAMETRI, index, string, 1);
-    TEST_ASSERT_EQUAL_STRING("15", string);
-
-    index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-
-    string_to_display(p, NUM_PARAMETRI, index, string, 0);
-    TEST_ASSERT_EQUAL_STRING("Valore: 3.14", string);
-    string_to_display(p, NUM_PARAMETRI, index, string, 1);
-    TEST_ASSERT_EQUAL_STRING("Value:  3.14", string);
-
-    index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    index = next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-
-    string_to_display(p, NUM_PARAMETRI, index, string, 0);
-    TEST_ASSERT_EQUAL_STRING("Abilitato: no", string);
-    string_to_display(p, NUM_PARAMETRI, index, string, 1);
-    TEST_ASSERT_EQUAL_STRING("Enabled: no", string);
-}
-
-void test_check() {
-    memset(&parametri, (int)0xFFFFFFFF, sizeof(struct parametri_t));
-    TEST_ASSERT(check_for_defaults(p, NUM_PARAMETRI));
-    assert_default();
-}
-
-void test_num_index() {
-    int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(0, index);
-
-    int num = get_parameter_num_from_index(p, NUM_PARAMETRI, index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(0, num);
-
-    index = get_parameter_index_from_num(p, NUM_PARAMETRI, 4, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(4, index);
-
-    TEST_ASSERT_EQUAL(-1, get_parameter_num_from_index(p, NUM_PARAMETRI, NUM_PARAMETRI, LVL_UTENTE));
-    TEST_ASSERT_EQUAL(-1, get_parameter_index_from_num(p, NUM_PARAMETRI, NUM_PARAMETRI, LVL_UTENTE));
-}
-
-void test_movement() {
-    int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
-
-    int num = number_of_parameters(p, NUM_PARAMETRI, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(NUM_PARAMETRI, num);
-
-    for (int i = 0; i < num; i++) {
-        next_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    }
-    TEST_ASSERT_EQUAL(0, index);
-
-    prev_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    TEST_ASSERT_EQUAL(num - 1, index);
-
-    for (int i = 0; i < num - 1; i++) {
-        prev_parameter(p, NUM_PARAMETRI, &index, LVL_UTENTE);
-    }
-    TEST_ASSERT_EQUAL(0, index);
-}
-
-void test_parameter_operator() {
-    int index = first_parameter(p, NUM_PARAMETRI, LVL_UTENTE);
-
-    init_to_default(p, NUM_PARAMETRI);
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
-    TEST_ASSERT_EQUAL(6, parametri.intpar1);
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
-    TEST_ASSERT_EQUAL(7, parametri.intpar1);
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
-    TEST_ASSERT_EQUAL(10, parametri.intpar1);
-
-    parameter_operator(p, NUM_PARAMETRI, index, +1);
-    TEST_ASSERT_EQUAL(1, parametri.intpar1);
+    TEST_ASSERT_EQUAL(1, value1);
+    TEST_ASSERT_EQUAL(2, value2);
+    TEST_ASSERT_EQUAL(3, value3);
+    TEST_ASSERT_EQUAL(4, value4);
 }
