@@ -35,6 +35,11 @@ void test_update() {
     struct_update_apply(&data, update4);
     TEST_ASSERT_EQUAL(data.value4, '4');
 
+    struct_update_free(update1);
+    struct_update_free(update2);
+    struct_update_free(update3);
+    struct_update_free(update4);
+
     /*char            other_string[] = "second string";
     struct_update_t update5        = STRUCT_UPDATE_ARRAY(data, value5, other_string, strlen(other_string));
     struct_update_apply(&data, update5);

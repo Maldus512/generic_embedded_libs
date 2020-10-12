@@ -32,6 +32,25 @@ int watcher_check_for_changes(watcher_t *list, int num) {
 }
 
 
+void watcher_clear_changes(watcher_t *list, int num, unsigned long timestamp) {
+    for (int i = 0; i < num; i++) {
+        if (memcmp((uint8_t *)list[i].old, (uint8_t *)list[i].current, list[i].size)) {
+            if (list[i].delay > 0) {
+                list[i].timestamp = timestamp;
+                list[i].moved     = 0;
+            }
+
+            memcpy((uint8_t *)list[i].old, (uint8_t *)list[i].current, list[i].size);
+        }
+    }
+}
+
+
+void watcher_trigger_cb(watcher_t *list, int num, int index) {
+    list[index].cb(list[index].current, list[index].data);
+}
+
+
 int watcher_process_changes(watcher_t *list, int num, unsigned long timestamp) {
     int res = 0;
 

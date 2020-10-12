@@ -37,5 +37,7 @@ typedef struct {
 void watcher_list_init(watcher_t *list, int num);
 int  watcher_check_for_changes(watcher_t *list, int num);
 int  watcher_process_changes(watcher_t *list, int num, unsigned long timestamp);
+void watcher_clear_changes(watcher_t *list, int num, unsigned long timestamp);
+void watcher_trigger_cb(watcher_t *list, int num, int index);
 
 #endif
