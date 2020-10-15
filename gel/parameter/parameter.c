@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "parameter.h"
@@ -46,10 +47,10 @@
         TYPE  max  = p.pmax != NULL ? *((TYPE *)p.pmax) : p.max.name;                                                  \
         TYPE  newv = *var + p.step.name * (mod);                                                                       \
         int   res  = CHECK_RANGE_AGAINST(p, newv, TYPE, name);                                                         \
-        if (res > 0)                                                                                                   \
-            *var = max;                                                                                                \
-        else if (res < 0)                                                                                              \
+        if (res != 0 && mod > 0)                                                                                       \
             *var = min;                                                                                                \
+        else if (res != 0 && mod < 0)                                                                                  \
+            *var = max;                                                                                                \
         else                                                                                                           \
             *var = newv;                                                                                               \
     }
@@ -72,6 +73,76 @@ parameter_handle_t *parameter_get_handle(parameter_handle_t *ps, size_t length, 
     }
 
     return NULL;
+}
+
+
+size_t parameter_to_index(parameter_handle_t *handle) {
+    if (handle) {
+        switch (handle->type) {
+            case PARAMETER_TYPE_UINT8:
+                return (size_t) * (uint8_t *)handle->pointer;
+            case PARAMETER_TYPE_INT8:
+                return (size_t) * (uint8_t *)handle->pointer;
+            case PARAMETER_TYPE_UINT16:
+                return (size_t) * (uint16_t *)handle->pointer;
+            case PARAMETER_TYPE_INT16:
+                return (size_t) * (int16_t *)handle->pointer;
+            case PARAMETER_TYPE_UINT32:
+                return (size_t) * (uint32_t *)handle->pointer;
+            case PARAMETER_TYPE_INT32:
+                return (size_t) * (int32_t *)handle->pointer;
+            case PARAMETER_TYPE_UINT64:
+                return (size_t) * (uint64_t *)handle->pointer;
+            case PARAMETER_TYPE_INT64:
+                return (size_t) * (int64_t *)handle->pointer;
+            case PARAMETER_TYPE_FLOAT:
+                return 0;
+            case PARAMETER_TYPE_DOUBLE:
+                return 0;
+        }
+
+        return 0;
+    } else {
+        return 0;
+    }
+}
+
+
+void parameter_to_string_format(parameter_handle_t *handle, char *result, char *format) {
+    if (handle) {
+        switch (handle->type) {
+            case PARAMETER_TYPE_UINT8:
+                sprintf(result, format, *(uint8_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_INT8:
+                sprintf(result, format, *(int8_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_UINT16:
+                sprintf(result, format, *(uint16_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_INT16:
+                sprintf(result, format, *(int16_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_UINT32:
+                sprintf(result, format, *(uint32_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_INT32:
+                sprintf(result, format, *(int32_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_UINT64:
+                sprintf(result, format, *(uint64_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_INT64:
+                sprintf(result, format, *(int64_t *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_FLOAT:
+                sprintf(result, format, *(float *)handle->pointer);
+                break;
+            case PARAMETER_TYPE_DOUBLE:
+                sprintf(result, format, *(double *)handle->pointer);
+                break;
+        }
+    }
 }
 
 

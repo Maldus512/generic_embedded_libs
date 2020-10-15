@@ -21,8 +21,8 @@
 
 #define _PARAMETER_LIMIT_VALUE_OPTION(ref, x)                                                                          \
     _Generic((ref), uint8_t                                                                                            \
-             : (parameter_type_union_t){.u8 = (uint8_t)x}, int8_t                                                      \
-             : (parameter_type_union_t){.i8 = (int8_t)x}, uint16_t                                                     \
+             : (parameter_type_union_t){.u8 = (uint8_t)(x & 0xFF)}, int8_t                                             \
+             : (parameter_type_union_t){.i8 = (int8_t)(x & 0xFF)}, uint16_t                                                     \
              : (parameter_type_union_t){.u16 = (uint16_t)x}, int16_t                                                   \
              : (parameter_type_union_t){.i16 = (int16_t)x}, uint32_t                                                   \
              : (parameter_type_union_t){.u32 = (uint32_t)x}, int32_t                                                   \
@@ -32,13 +32,15 @@
              : (parameter_type_union_t){.f = (float)x}, double                                                         \
              : (parameter_type_union_t){.d = (double)x})
 
-#define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                              \
+#define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
     ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), ptr, pmin, pmax, _PARAMETER_LIMIT_VALUE_OPTION(*ptr, min),      \
                           _PARAMETER_LIMIT_VALUE_OPTION(*ptr, max), _PARAMETER_LIMIT_VALUE_OPTION(*ptr, def),          \
                           _PARAMETER_LIMIT_VALUE_OPTION(*ptr, step), lvl, udata, runtime, arg})
 
 #define PARAMETER(ptr, min, max, def, udata, lvl)                                                                      \
     PARAMETER_FULL(ptr, NULL, NULL, min, max, def, 1, lvl, udata, NULL, NULL)
+#define PARAMETER_STEP(ptr, min, max, def, step, udata, lvl)                                                           \
+    PARAMETER_FULL(ptr, NULL, NULL, min, max, def, step, lvl, udata, NULL, NULL)
 #define PARAMETER_DLIMITS(ptr, pmin, pmax, min, max, def, udata, lvl)                                                  \
     PARAMETER_FULL(ptr, pmin, pmax, min, max, def, 1, lvl, udata, NULL, NULL)
 
@@ -93,5 +95,7 @@ parameter_handle_t *  parameter_get_handle(parameter_handle_t *ps, size_t length
 parameter_user_data_t parameter_get_user_data(parameter_handle_t *handle);
 void                  parameter_reset_to_defaults(parameter_handle_t *ps, size_t length);
 int                   parameter_check_ranges(parameter_handle_t *ps, size_t length);
+void                  parameter_to_string_format(parameter_handle_t *handle, char *result, char *format);
+size_t                parameter_to_index(parameter_handle_t *handle);
 
 #endif

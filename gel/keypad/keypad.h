@@ -3,9 +3,10 @@
 
 #include <stdint.h>
 
-#define KEYPAD_KEY(b, c)                                                                                           \
-    { .bitvalue = b, .code = c }
-#define KEYPAD_NULL_KEY {0}
+#define KEYPAD_KEY(b, c)                                                                                               \
+    { .bitvalue = (b), .code = (c) }
+#define KEYPAD_NULL_KEY                                                                                                \
+    { 0 }
 
 typedef enum {
     KEY_NOTHING,     // Nothing has happened
@@ -25,22 +26,22 @@ typedef struct {
 
     // Internal state, not to be handled outside
     struct {
-        unsigned long time;
-        uint8_t       value;
-        uint8_t       oldvalue;
-        uint8_t       ignore;
-        keypad_event_t   lastevent;
+        unsigned long  time;
+        uint8_t        value;
+        uint8_t        oldvalue;
+        uint8_t        ignore;
+        keypad_event_t lastevent;
     } _state;
 } keypad_key_t;
 
 
 typedef struct {
-    int         code;
+    int            code;
     keypad_event_t event;
 } keypad_update_t;
 
 keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick,
-                                 unsigned long timestamp, unsigned long bitvalue);
+                               unsigned long timestamp, unsigned long bitvalue);
 unsigned char   keypad_get_key_state(keypad_key_t *key);
 void            keypad_reset_keys(keypad_key_t *keys);
 unsigned long   keypad_get_click_time(keypad_key_t *keys, int code, unsigned long timestamp);
