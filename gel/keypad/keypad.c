@@ -7,8 +7,8 @@ unsigned char keypad_get_key_state(keypad_key_t *key) {
     return key->_state.value;
 }
 
-keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick,
-                                 unsigned long timestamp, unsigned long bitvalue) {
+keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick, 
+                                unsigned long press_period, unsigned long timestamp, unsigned long bitvalue) {
     int             i = 0, found = -1;
     keypad_key_t *     key;
     keypad_update_t event   = {0};
@@ -35,7 +35,6 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
             event.code = keys[i].code;
             break;
         }
-
         i++;
     }
 
@@ -45,27 +44,37 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
     key = &keys[found];
 
     if (key->_state.value == key->_state.oldvalue && !key->_state.ignore) {
-        if (is_strictly_expired(key->_state.time, timestamp, longclick)) {
-            if (key->_state.lastevent == KEY_LONGCLICK || key->_state.lastevent == KEY_LONGPRESS)
+        if (key->_state.lastevent == KEY_LONGCLICK || key->_state.lastevent == KEY_LONGPRESS){
+            if (is_strictly_expired(key->_state.time, timestamp, press_period)) {
                 event.event = KEY_LONGPRESS;
-            else
-                event.event = KEY_LONGCLICK;
-
+                key->_state.time     = timestamp;
+                key->_state.lastevent = event.event;
+            }
+        }
+        else if (is_strictly_expired(key->_state.time, timestamp, longclick)) {
+            event.event = KEY_LONGCLICK;
+            key->_state.time     = timestamp;
             key->_state.lastevent = event.event;
-        } else if (is_strictly_expired(key->_state.time, timestamp, click)) {
+        }
+        else if (is_strictly_expired(key->_state.time, timestamp, click)) {
             current = key->_state.value ? KEY_CLICK : KEY_RELEASE;
             if (current != key->_state.lastevent) {
                 event.event           = current;
                 key->_state.lastevent = event.event;
             }
         }
-    } else if (key->_state.value != key->_state.oldvalue) {
+    }
+    else if (key->_state.value != key->_state.oldvalue) {
         key->_state.ignore   = 0;
         key->_state.oldvalue = key->_state.value;
         key->_state.time     = timestamp;
 
         if (key->_state.value) {
             event.event           = KEY_PRESS;
+            key->_state.lastevent = event.event;
+        }
+        else{
+            event.event           = KEY_RELEASE;
             key->_state.lastevent = event.event;
         }
     }
