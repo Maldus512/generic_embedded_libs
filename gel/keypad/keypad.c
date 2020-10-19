@@ -44,7 +44,7 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
     key = &keys[found];
 
     if (key->_state.value == key->_state.oldvalue && !key->_state.ignore) {
-        if (key->_state.lastevent == KEY_LONGCLICK || key->_state.lastevent == KEY_LONGPRESS){
+        if ((key->_state.lastevent == KEY_LONGCLICK || key->_state.lastevent == KEY_LONGPRESS) && (key->_state.value == 1)){
             if (is_strictly_expired(key->_state.time, timestamp, press_period)) {
                 event.event = KEY_LONGPRESS;
                 key->_state.time     = timestamp;
@@ -73,9 +73,12 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
             event.event           = KEY_PRESS;
             key->_state.lastevent = event.event;
         }
-        else{
-            event.event           = KEY_RELEASE;
-            key->_state.lastevent = event.event;
+        else if (is_strictly_expired(key->_state.time, timestamp, click)) {
+            current =  KEY_RELEASE;
+            if (current != key->_state.lastevent) {
+                event.event           = current;
+                key->_state.lastevent = event.event;
+            }
         }
     }
 
@@ -94,16 +97,16 @@ void keypad_reset_keys(keypad_key_t *keys) {
     }
 }
 
-unsigned long keypad_get_click_time(keypad_key_t *keys, int code, unsigned long timestamp) {
-    int i = 0;
-    while(keys[i].bitvalue) {
-        if (keys[i].code == code &&
-            (keys[i]._state.lastevent == KEY_CLICK || keys[i]._state.lastevent == KEY_LONGCLICK ||
-             keys[i]._state.lastevent == KEY_LONGPRESS))
-            return time_interval(keys[i]._state.time, timestamp);
+// unsigned long keypad_get_click_time(keypad_key_t *keys, int code, unsigned long timestamp) {
+//     int i = 0;
+//     while(keys[i].bitvalue) {
+//         if (keys[i].code == code &&
+//             (keys[i]._state.lastevent == KEY_CLICK || keys[i]._state.lastevent == KEY_LONGCLICK ||
+//              keys[i]._state.lastevent == KEY_LONGPRESS))
+//             return time_interval(keys[i]._state.time, timestamp);
 
-        i++;
-    }
+//         i++;
+//     }
 
-    return 0;
-}
+//     return 0;
+// }

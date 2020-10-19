@@ -32,6 +32,7 @@ typedef struct {
         uint8_t        ignore;
         keypad_event_t lastevent;
     } _state;
+
 } keypad_key_t;
 
 
