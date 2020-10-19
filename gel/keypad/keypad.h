@@ -11,7 +11,7 @@
 typedef enum {
     KEY_NOTHING,     // Nothing has happened
     KEY_PRESS,       // The button was pressed initially. Not repeated
-    KEY_PRESSING,
+    KEY_PRESSING,    // the button is still pressed, repeated. 
     KEY_CLICK,         // The button was pressed for "click" time. Not repeated
     KEY_LONGCLICK,     // The button was pressed for "longclick" time. Not repeated
     KEY_LONGPRESS,     // The button was kept pressed after a longclick event
@@ -26,13 +26,14 @@ typedef struct {
 
     // Internal state, not to be handled outside
     struct {
-        unsigned long  time;
+        unsigned long  time_state;
+        unsigned long  time_period;
         uint8_t        value;
         uint8_t        oldvalue;
         uint8_t        ignore;
         keypad_event_t lastevent;
     } _state;
-
+    
 } keypad_key_t;
 
 
