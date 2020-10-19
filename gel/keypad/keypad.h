@@ -41,7 +41,8 @@ typedef struct {
 } keypad_update_t;
 
 keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick,
-                               unsigned long timestamp, unsigned long bitvalue);
+                               unsigned long press_period, unsigned long timestamp, unsigned long bitvalue);
+
 unsigned char   keypad_get_key_state(keypad_key_t *key);
 void            keypad_reset_keys(keypad_key_t *keys);
 unsigned long   keypad_get_click_time(keypad_key_t *keys, int code, unsigned long timestamp);
