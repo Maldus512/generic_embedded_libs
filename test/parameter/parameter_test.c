@@ -21,8 +21,9 @@ void test_basic() {
     PARAMETER_OPERATOR(par1, 1);
     PARAMETER_OPERATOR(par1, 1);
     PARAMETER_OPERATOR(par1, 1);
-    PARAMETER_OPERATOR(par1, 1);
     TEST_ASSERT_EQUAL(10, value);
+    PARAMETER_OPERATOR(par1, 1);
+    TEST_ASSERT_EQUAL(0, value);
 
     uint32_t           max  = 12;
     parameter_handle_t par2 = PARAMETER_DLIMITS(&value, NULL, &max, 1, 0, 0, 0, DEFAULT_AL);

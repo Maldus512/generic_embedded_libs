@@ -6,34 +6,42 @@
 #include "gel_conf.h"
 #include "../timer/timecheck.h"
 
-void watcher_list_init(watcher_t *list, int num) {
-    for (int i = 0; i < num; i++) {
+
+void watcher_list_init(watcher_t *list) {
+    size_t i = 0;
+
+    while (list[i].current != NULL) {
 #if GEL_MALLOC_AVAILABLE
         list[i].old = malloc(list[i].size);
 #else
         assert(GEL_STATIC_BLOCK_SIZE >= list[i].size);
 #endif
         memcpy(list[i].old, list[i].current, list[i].size);
+        i++;
     }
 }
 
 
-int watcher_check_for_changes(watcher_t *list, int num) {
-    int res = 0;
+int watcher_check_for_changes(watcher_t *list) {
+    int    res = 0;
+    size_t i   = 0;
 
-    for (int i = 0; i < num; i++) {
+    while (list[i].current != NULL) {
         if (memcmp(list[i].old, list[i].current, list[i].size)) {
             res = 1;
             break;
         }
+        i++;
     }
 
     return res;
 }
 
 
-void watcher_clear_changes(watcher_t *list, int num, unsigned long timestamp) {
-    for (int i = 0; i < num; i++) {
+void watcher_clear_changes(watcher_t *list, unsigned long timestamp) {
+    size_t i = 0;
+
+    while (list[i].current != NULL) {
         if (memcmp((uint8_t *)list[i].old, (uint8_t *)list[i].current, list[i].size)) {
             if (list[i].delay > 0) {
                 list[i].timestamp = timestamp;
@@ -42,19 +50,29 @@ void watcher_clear_changes(watcher_t *list, int num, unsigned long timestamp) {
 
             memcpy((uint8_t *)list[i].old, (uint8_t *)list[i].current, list[i].size);
         }
+        i++;
     }
 }
 
 
-void watcher_trigger_cb(watcher_t *list, int num, int index) {
-    list[index].cb(list[index].current, list[index].data);
+void watcher_trigger_cb(watcher_t *list, int index) {
+    size_t i = 0;
+
+    while (list[i].current != NULL) {
+        if (index == i) {
+            list[index].cb(list[index].current, list[index].data);
+            return;
+        }
+        i++;
+    }
 }
 
 
-int watcher_process_changes(watcher_t *list, int num, unsigned long timestamp) {
+int watcher_process_changes(watcher_t *list, unsigned long timestamp) {
     int res = 0;
+    size_t i = 0;
 
-    for (int i = 0; i < num; i++) {
+    while (list[i].current != NULL) {
         if (memcmp((uint8_t *)list[i].old, (uint8_t *)list[i].current, list[i].size)) {
             if (list[i].delay > 0) {
                 list[i].timestamp = timestamp;
@@ -72,6 +90,8 @@ int watcher_process_changes(watcher_t *list, int num, unsigned long timestamp) {
                 list[i].cb(list[i].current, list[i].data);
             }
         }
+        
+        i++;
     }
 
     return res;

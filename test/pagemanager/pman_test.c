@@ -38,72 +38,63 @@ int open1 = 0;
 int open2 = 0;
 int open3 = 0;
 
-pman_page_data_t open_page1(pman_model_t model, pman_page_data_t data) {
+void open_page1(pman_model_t model, pman_page_data_t data) {
     (void)model;
     (void)data;
     open1++;
-    return 0;
 }
 
-pman_page_data_t open_page2(pman_model_t model, pman_page_data_t data) {
+void open_page2(pman_model_t model, pman_page_data_t data) {
     (void)data;
     (void)model;
     open2++;
-    return 0;
 }
 
-pman_page_data_t open_page3(pman_model_t model, pman_page_data_t data) {
+void open_page3(pman_model_t model, pman_page_data_t data) {
     (void)data;
     (void)model;
     open3++;
-    return 0;
 }
 
 int close1 = 0;
 int close2 = 0;
 int close3 = 0;
 
-pman_page_data_t close_page1(pman_page_data_t data) {
+void close_page1(pman_page_data_t data) {
     (void)data;
     close1++;
-    return 0;
 }
 
-pman_page_data_t close_page2(pman_page_data_t data) {
+void close_page2(pman_page_data_t data) {
     (void)data;
     close2++;
-    return 0;
 }
 
-pman_page_data_t close_page3(pman_page_data_t data) {
+void close_page3(pman_page_data_t data) {
     (void)data;
     close3++;
-    return 0;
 }
 
 int destroy1 = 0;
 int destroy2 = 0;
 int destroy3 = 0;
 
-pman_page_data_t destroy_page1(pman_page_data_t data, void *extra) {
+void destroy_page1(pman_page_data_t data, void *extra) {
     (void)data;
     (void)extra;
     destroy1++;
-    return 0;
 }
 
-pman_page_data_t destroy_page2(pman_page_data_t data, void *extra) {
+void destroy_page2(pman_page_data_t data, void *extra) {
     (void)data;
     (void)extra;
     destroy2++;
-    return 0;
 }
 
-pman_page_data_t destroy_page3(pman_page_data_t data, void *extra) {
+void destroy_page3(pman_page_data_t data, void *extra) {
     (void)data;
     (void)extra;
     destroy3++;
-    return 0;
 }
 
 int event1 = 0;

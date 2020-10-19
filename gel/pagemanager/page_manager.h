@@ -9,7 +9,6 @@ typedef struct {
     int              id;
     pman_page_data_t data;
     void *           extra;
-    int              popup;
 
     // Called when the page is first created; it initializes and returns the data structures used by the page
     pman_page_data_t (*create)(pman_model_t model, void *extra);
@@ -36,11 +35,8 @@ STACK_DECLARATION(navigation_stack, pman_page_t, PMAN_NAVIGATION_DEPTH);
 
 typedef struct {
     int                     initialized;
-    int                     popup;
     pman_page_t             current_page;
-    pman_page_t             current_popup;
     struct navigation_stack page_stack;
-    struct navigation_stack popup_stack;
 } page_manager_t;
 
 void init_page_manager(page_manager_t *pman);
