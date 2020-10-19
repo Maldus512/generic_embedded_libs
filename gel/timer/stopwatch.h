@@ -11,7 +11,7 @@
 /*                                                                            */
 /*  Data  : 31/01/2020      REV  : 00.0                                       */
 /*                                                                            */
-/*  U.mod.: 15/07/2020      REV  : 01.0                                       */
+/*  U.mod.: 10/08/2020      REV  : 01.0                                       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -113,6 +113,11 @@ unsigned long stopwatch_get_total_time(stopwatch_t *timer);
  * return: elapsed time
  */
 unsigned long stopwatch_get_elapsed(stopwatch_t *timer, unsigned long timestamp);
+
+/*
+ *  Setting elapsed time 
+ */
+int stopwatch_set_elapsed(stopwatch_t *timer, unsigned long elapsed);
 
 /*
  *  Returns the remaining time from the set period. If the set period has been reached,
