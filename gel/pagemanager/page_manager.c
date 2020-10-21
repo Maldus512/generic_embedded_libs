@@ -65,9 +65,6 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
 
         // Save the current page
         current = &pman->current_page;
-        // Pause the page
-        if (current->pause)
-            current->pause(current->data);
 
         // Close the page
         if (current->close)
@@ -91,9 +88,6 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
     // Open the page
     if (dest->open)
         dest->open(model, dest->data);
-    // Resume the page
-    if (dest->resume)
-        dest->resume(dest->data);
     // Update the page
     if (dest->update)
         dest->update(model, dest->data);
@@ -130,23 +124,4 @@ void pman_page_update(page_manager_t *pman, pman_model_t model) {
     current = &pman->current_page;
     if (current && current->update)
         current->update(model, current->data);
-}
-
-void null_update(pman_model_t model, pman_page_data_t data) {
-    (void)model;
-    (void)data;
-}
-
-void null_destroy(pman_page_data_t data, void *extra) {
-    (void)data;
-    (void)extra;
-}
-
-void null_open(pman_model_t model, pman_page_data_t data) {
-    (void)model;
-    (void)data;
-}
-
-void null_close(pman_page_data_t data) {
-    (void)data;
 }
