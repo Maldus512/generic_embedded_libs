@@ -22,7 +22,7 @@ static void clear_popup_stack(page_manager_t *pman) {
     }
 }
 
-void init_page_manager(page_manager_t *pman) {
+void pman_init(page_manager_t *pman) {
     pman->initialized = 0;
     navigation_stack_init(&pman->page_stack);
     navigation_stack_init(&pman->popup_stack);

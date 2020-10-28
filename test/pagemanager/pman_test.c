@@ -141,7 +141,7 @@ void setUp() {
     create1 = create2 = create3 = 0;
     open1 = open2 = open3 = 0;
     close1 = close2 = close3 = 0;
-    init_page_manager(&pman);
+    pman_init(&pman);
     model = 1;
 }
 

@@ -3,3 +3,4 @@
 .vscode
 *_Runner.c
 *_test
+gel_conf.h
