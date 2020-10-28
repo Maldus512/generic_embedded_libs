@@ -43,7 +43,7 @@ typedef struct {
     struct navigation_stack popup_stack;
 } page_manager_t;
 
-void init_page_manager(page_manager_t *pman);
+void pman_init(page_manager_t *pman);
 
 void pman_back(page_manager_t *pman, pman_model_t model);
 void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page);

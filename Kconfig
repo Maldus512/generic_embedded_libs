@@ -1,0 +1,37 @@
+menu "GEL"
+    config GEL_COLLECTIONS
+        bool "Collections"
+
+    config GEL_CRC_ALGORITHMS
+        bool "CRC algorithms"
+
+    config GEL_DEBOUNCE
+        bool "Debounce signal control"
+
+    config GEL_KEYPAD
+        bool "Keypad control"
+
+    config GEL_PAGE_MANAGER
+        bool "Page manager"
+
+    config GEL_PARAMETER
+        bool "Parameter management"
+
+    config GEL_WATCHER
+        bool "Watcher data structure"
+
+    config GEL_TIMER
+        bool "Stopwatch module"
+
+    config GEL_WEARLEVELING
+        bool "Wear leveling module"
+
+    config GEL_CONF_INCLUDE_PATH
+        string "gel_conf.h include paths"
+        default "main/config"
+        help 
+            Include paths for gel_conf.h (relative to the project root).
+            Should be a whitespace separated list of folders where gel_conf.h and
+            other necessary headers are found
+
+endmenu
