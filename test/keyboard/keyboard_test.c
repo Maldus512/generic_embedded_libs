@@ -30,7 +30,7 @@ void click_release(unsigned long bitmap, int code, int period) {
     event = keypad_routine(keys, period, longclick, 1, 0, bitmap);
     TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
 
-    event = keypad_routine(keys, period, longclick, 1, period,  bitmap);
+    event = keypad_routine(keys, period, longclick, 1, period, bitmap);
     TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
 
     event = keypad_routine(keys, period, longclick, 1, period + 1, bitmap);
@@ -46,7 +46,6 @@ void click_release(unsigned long bitmap, int code, int period) {
     event = keypad_routine(keys, period, longclick, 1, period * 2 + 3, 0);
     TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
     TEST_ASSERT_EQUAL(code, event.code);
-
 }
 
 void test_click_release() {
@@ -68,7 +67,7 @@ void test_longclick() {
     event = keypad_routine(keys, 40, 2000, 5, 2001, 0x01);
     TEST_ASSERT_EQUAL(KEY_LONGCLICK, event.event);
 
-    event = keypad_routine(keys, 40, 2000, 5, 2006, 0x01);
+    event = keypad_routine(keys, 40, 2000, 5, 2007, 0x01);
     TEST_ASSERT_EQUAL(KEY_LONGPRESS, event.event);
 
     event = keypad_routine(keys, 40, 2000, 1, 2004, 0);
