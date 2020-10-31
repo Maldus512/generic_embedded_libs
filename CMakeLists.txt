@@ -28,7 +28,15 @@ if(CONFIG_GEL_WEARLEVELING)
 LIST(APPEND MODULES "gel/wearleveling")
 endif()
 
+SET(INCLUDES . gel)
+SET(EXTRA ${CONFIG_GEL_CONF_INCLUDE_PATH})
+separate_arguments(EXTRA)
+
+foreach(INCLUDE ${EXTRA})
+    LIST(APPEND INCLUDES ${PROJECT_DIR}/${INCLUDE})
+endforeach()
+
 idf_component_register(
     SRC_DIRS ${MODULES}
-    INCLUDE_DIRS . gel ${PROJECT_DIR}/${CONFIG_GEL_CONF_INCLUDE_PATH}
+    INCLUDE_DIRS ${INCLUDES} 
 )

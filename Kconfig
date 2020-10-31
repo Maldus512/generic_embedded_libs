@@ -27,9 +27,11 @@ menu "GEL"
         bool "Wear leveling module"
 
     config GEL_CONF_INCLUDE_PATH
-        string "gel_conf.h folder"
+        string "gel_conf.h include paths"
         default "main/config"
         help 
-            Include path for gel_conf.h (relative to the project root)
+            Include paths for gel_conf.h (relative to the project root).
+            Should be a whitespace separated list of folders where gel_conf.h and
+            other necessary headers are found
 
 endmenu
