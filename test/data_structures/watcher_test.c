@@ -31,7 +31,7 @@ void callback(void *var, void *data) {
 void test_watcher() {
     watcher_t list[] = {
         WATCHER(&var1, callback, NULL), WATCHER(&var2, callback, NULL),           WATCHER(&var3, callback, NULL),
-        WATCHER(&var4, callback, NULL), WATCHER_ARRAY(array, 10, callback, NULL),
+        WATCHER(&var4, callback, NULL), WATCHER_ARRAY(array, 10, callback, NULL), WATCHER_NULL,
     };
 
     watcher_list_init(list);
@@ -45,7 +45,7 @@ void test_watcher() {
 
 void test_watcher_delayed() {
     watcher_t list[] = {
-        WATCHER_DELAYED(&var1, 1, callback, NULL, 5000),
+        WATCHER_DELAYED(&var1, callback, NULL, 5000),
         WATCHER_NULL,
     };
 
