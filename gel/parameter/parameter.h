@@ -22,7 +22,7 @@
 #define _PARAMETER_LIMIT_VALUE_OPTION(ref, x)                                                                          \
     _Generic((ref), uint8_t                                                                                            \
              : (parameter_type_union_t){.u8 = (uint8_t)(x & 0xFF)}, int8_t                                             \
-             : (parameter_type_union_t){.i8 = (int8_t)(x & 0xFF)}, uint16_t                                                     \
+             : (parameter_type_union_t){.i8 = (int8_t)(x & 0xFF)}, uint16_t                                            \
              : (parameter_type_union_t){.u16 = (uint16_t)x}, int16_t                                                   \
              : (parameter_type_union_t){.i16 = (int16_t)x}, uint32_t                                                   \
              : (parameter_type_union_t){.u32 = (uint32_t)x}, int32_t                                                   \
@@ -33,9 +33,10 @@
              : (parameter_type_union_t){.d = (double)x})
 
 #define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
-    ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), ptr, pmin, pmax, _PARAMETER_LIMIT_VALUE_OPTION(*ptr, min),      \
-                          _PARAMETER_LIMIT_VALUE_OPTION(*ptr, max), _PARAMETER_LIMIT_VALUE_OPTION(*ptr, def),          \
-                          _PARAMETER_LIMIT_VALUE_OPTION(*ptr, step), lvl, udata, runtime, arg})
+    ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), (ptr), (pmin), (pmax),                                          \
+                          _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (min)), _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (max)),  \
+                          _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (def)), _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (step)), \
+                          (lvl), (udata), (runtime), (arg)})
 
 #define PARAMETER(ptr, min, max, def, udata, lvl)                                                                      \
     PARAMETER_FULL(ptr, NULL, NULL, min, max, def, 1, lvl, udata, NULL, NULL)

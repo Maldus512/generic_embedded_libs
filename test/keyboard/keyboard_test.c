@@ -62,13 +62,13 @@ void test_click_release() {
 void test_longclick() {
     keypad_update_t event;
 
-    event = keypad_routine(keys, 40, 2000, 1, 0, 0x01);
+    event = keypad_routine(keys, 40, 2000, 5, 0, 0x01);
     TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
 
-    event = keypad_routine(keys, 40, 2000, 1, 2001, 0x01);
+    event = keypad_routine(keys, 40, 2000, 5, 2001, 0x01);
     TEST_ASSERT_EQUAL(KEY_LONGCLICK, event.event);
 
-    event = keypad_routine(keys, 40, 2000, 1, 2003, 0x01);
+    event = keypad_routine(keys, 40, 2000, 5, 2006, 0x01);
     TEST_ASSERT_EQUAL(KEY_LONGPRESS, event.event);
 
     event = keypad_routine(keys, 40, 2000, 1, 2004, 0);
@@ -80,24 +80,6 @@ void test_longclick() {
     event = keypad_routine(keys, 40, 2000, 1, 2045, 0);
     TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
 }
-
-// void test_click_time() {
-//     keypad_routine(keys, 40, 2000, 1, 0, 0x01);
-//     // As long as the key was not clicked the click time is always 0
-//     TEST_ASSERT_EQUAL(0, keypad_get_click_time(keys, P_ONE, 0));
-//     TEST_ASSERT_EQUAL(0, keypad_get_click_time(keys, P_ONE, 30));
-//     TEST_ASSERT_EQUAL(0, keypad_get_click_time(keys, P_ONE, 100));
-
-//     keypad_routine(keys, 40, 2000, 1, 50, 0x01);
-//     TEST_ASSERT_EQUAL(0, keypad_get_click_time(keys, P_ONE, 0));
-//     TEST_ASSERT_EQUAL(30, keypad_get_click_time(keys, P_ONE, 30));
-//     TEST_ASSERT_EQUAL(100, keypad_get_click_time(keys, P_ONE, 100));
-
-//     keypad_routine(keys, 40, 2000, 1, 4000, 0x01);
-//     TEST_ASSERT_EQUAL(0, keypad_get_click_time(keys, P_ONE, 0));
-//     TEST_ASSERT_EQUAL(3000, keypad_get_click_time(keys, P_ONE, 3000));
-//     TEST_ASSERT_EQUAL(10000, keypad_get_click_time(keys, P_ONE, 10000));
-// }
 
 void test_multiclick() {
     keypad_update_t event;

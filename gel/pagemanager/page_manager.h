@@ -50,7 +50,7 @@ typedef struct {
  *
  * pman: pointer to the page manager struct to initialize
  */
-void init_page_manager(page_manager_t *pman);
+void pman_init(page_manager_t *pman);
 
 /*
  *  Closes and destroys the top page on the stack (if any), going back to the previous one.
