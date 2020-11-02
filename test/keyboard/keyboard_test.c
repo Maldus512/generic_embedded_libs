@@ -58,11 +58,62 @@ void test_click_release() {
     }
 }
 
+
+void test_event_chain() {
+    keypad_update_t event;
+
+    event = keypad_routine(keys, 40, 2000, 100, 0, 0);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 1, 0x01);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 20, 0x01);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42, 0x01);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 50, 0x01);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 101, 0x01);
+    TEST_ASSERT_EQUAL(KEY_PRESSING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 101 * 2, 0x01);
+    TEST_ASSERT_EQUAL(KEY_PRESSING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 2001, 0x01);
+    TEST_ASSERT_EQUAL(KEY_LONGCLICK, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 2001 + 101, 0x01);
+    TEST_ASSERT_EQUAL(KEY_LONGPRESS, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 2001 + 102, 0x01);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 42 + 2001 + 101 * 2, 0x01);
+    TEST_ASSERT_EQUAL(KEY_LONGPRESS, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 4000, 0x01);
+    TEST_ASSERT_EQUAL(KEY_LONGPRESS, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 4001, 0x0);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 100, 4042, 0x0);
+    TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
+}
+
+
 void test_longclick() {
     keypad_update_t event;
 
     event = keypad_routine(keys, 40, 2000, 5, 0, 0x01);
     TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
+
+    event = keypad_routine(keys, 40, 2000, 5, 2001, 0x01);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
 
     event = keypad_routine(keys, 40, 2000, 5, 2001, 0x01);
     TEST_ASSERT_EQUAL(KEY_LONGCLICK, event.event);
