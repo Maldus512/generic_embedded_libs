@@ -20,8 +20,8 @@ typedef void *pman_model_t;
 typedef int pid_control_type_t;
 typedef int pid_output_type_t;
 
-#define GEL_PID_INTEGRAL_HISTORY_SIZE    1
-#define GEL_PID_DERIVATIVE_DELTA 1
+#define GEL_PID_INTEGRAL_HISTORY_SIZE 1
+#define GEL_PID_DERIVATIVE_DELTA      1
 
 /*
  *  Watcher
@@ -30,8 +30,8 @@ typedef int pid_output_type_t;
 #define GEL_STATIC_BLOCK_SIZE 16
 
 /*
-* Wear leveling
-*/
+ * Wear leveling
+ */
 
 #define WL_BLOCK_SIZE 4
 
@@ -39,5 +39,10 @@ typedef int pid_output_type_t;
 // 1 no blocco
 // -1
 
+/*
+ * Parameter
+ */
+
+typedef int parameter_user_data_t;
 
 #endif

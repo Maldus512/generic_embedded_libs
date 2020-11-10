@@ -1,0 +1,42 @@
+SET(MODULES "")
+
+if(CONFIG_GEL_COLLECTIONS)
+LIST(APPEND MODULES "gel/collections")
+endif()
+if(CONFIG_GEL_CRC_ALGORITHMS)
+LIST(APPEND MODULES "gel/crc")
+endif()
+if(CONFIG_GEL_DEBOUNCE)
+LIST(APPEND MODULES "gel/debounce")
+endif()
+if(CONFIG_GEL_KEYPAD)
+LIST(APPEND MODULES "gel/keypad")
+endif()
+if(CONFIG_GEL_PAGE_MANAGER)
+LIST(APPEND MODULES "gel/pagemanager")
+endif()
+if(CONFIG_GEL_PARAMETER)
+LIST(APPEND MODULES "gel/parameter")
+endif()
+if(CONFIG_GEL_WATCHER)
+LIST(APPEND MODULES "gel/watcher")
+endif()
+if(CONFIG_GEL_TIMER)
+LIST(APPEND MODULES "gel/timer")
+endif()
+if(CONFIG_GEL_WEARLEVELING)
+LIST(APPEND MODULES "gel/wearleveling")
+endif()
+
+SET(INCLUDES . gel)
+SET(EXTRA ${CONFIG_GEL_CONF_INCLUDE_PATH})
+separate_arguments(EXTRA)
+
+foreach(INCLUDE ${EXTRA})
+    LIST(APPEND INCLUDES ${PROJECT_DIR}/${INCLUDE})
+endforeach()
+
+idf_component_register(
+    SRC_DIRS ${MODULES}
+    INCLUDE_DIRS ${INCLUDES} 
+)
