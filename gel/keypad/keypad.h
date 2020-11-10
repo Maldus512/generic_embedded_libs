@@ -9,13 +9,13 @@
     { 0 }
 
 typedef enum {
-    KEY_NOTHING,        // Nothing has happened
-    KEY_PRESS,          // The button was pressed initially. Not repeated
+    KEY_NOTHING,     // Nothing has happened
+    KEY_PRESS,       // The button was pressed initially. Not repeated
     KEY_PRESSING,    // the button is still pressed, repeated. 
-    KEY_CLICK,          // The button was pressed for "click" time. Not repeated
-    KEY_LONGCLICK,      // The button was pressed for "longclick" time. Not repeated
-    KEY_LONGPRESS,      // The button was kept pressed after a longclick event
-    KEY_RELEASE,        // The button was released after a click event (long or short)
+    KEY_CLICK,         // The button was pressed for "click" time. Not repeated
+    KEY_LONGCLICK,     // The button was pressed for "longclick" time. Not repeated
+    KEY_LONGPRESS,     // The button was kept pressed after a longclick event
+    KEY_RELEASE,       // The button was released after a click event (long or short)
 } keypad_event_t;
 
 
@@ -38,8 +38,8 @@ typedef struct {
 
 
 typedef struct {
-    int             code;
-    keypad_event_t  event;
+    int            code;
+    keypad_event_t event;
 } keypad_update_t;
 
 keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned long longclick,
