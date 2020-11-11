@@ -24,9 +24,6 @@ $ scons test
 ## TODO
 
 - fix the naming convention
-- Add `page_close` and `page_open` methods to page manager (to preserve page state). Remember there was an issue where a one time event was fired during a popup, and the underlying page remained stuck). For IO operations I could have callbacks that act directly on the page data, it's the UI thread anyway. Possibly add a separate popup stack.
 - Add protocols (simple uart packets, hex packets)
-- In the page manager, manage popups separately (add a `popup` field and make sure every page that goes on the stack has been paused and closed)
-- Add the PRESS event to the keyboard
 - heavily revise parameter structure and naming convention
-- the PID module should only store readings necessary for the derivative component; the integral accumulation can be stored as a sum.
+- Consider adding a third "original" value to the `watcher` structure to avoid firing the callback in delayed scenarios if the value changes back to start.

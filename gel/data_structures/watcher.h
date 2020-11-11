@@ -15,18 +15,18 @@
 
 #if GEL_MALLOC_AVAILABLE
 #define WATCHER_ARRAY(ptr, num, cb, data)                                                                              \
-    ((watcher_t){NULL, ptr, sizeof(*(ptr)) * num, (watcher_cb_t)cb, data, 0, 0, 0})
+    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)cb, data, 0, 0, 0})
 #define WATCHER_DELAYED_ARRAY(ptr, num, cb, data, delay)                                                               \
-    ((watcher_t){NULL, ptr, sizeof(*(ptr)) * num, (watcher_cb_t)cb, data, 0, delay, 0})
+    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, (delay), 0})
 #else
-#define WATCHER_ARRAY(ptr, num, cb, data) ((watcher_t){{0}, ptr, sizeof(*(ptr)) * num, (watcher_cb_t)cb, data, 0, 0, 0})
+#define WATCHER_ARRAY(ptr, num, cb, data) ((watcher_t){{0}, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, 0, 0})
 #define WATCHER_DELAYED_ARRAY(ptr, num, cb, data, delay)                                                               \
-    ((watcher_t){{0}, ptr, sizeof(*(ptr)) * num, (watcher_cb_t)cb, data, 0, delay, 0})
+    ((watcher_t){{0}, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, (delay), 0})
 #endif
 
-#define WATCHER(ptr, cb, data)                WATCHER_ARRAY(ptr, 1, cb, data)
-#define WATCHER_DELAYED(ptr, cb, data, delay) WATCHER_DELAYED_ARRAY(ptr, 1, cb, data, delay)
-#define WATCHER_NULL                          WATCHER(NULL, NULL, NULL)
+#define WATCHER(ptr, cb, data)                WATCHER_ARRAY((ptr), 1, (cb), (data))
+#define WATCHER_DELAYED(ptr, cb, data, delay) WATCHER_DELAYED_ARRAY((ptr), 1, (cb), (data), (delay))
+#define WATCHER_NULL                          WATCHER((uint8_t*)NULL, NULL, NULL)
 
 typedef void (*watcher_cb_t)(void *mem, void *data);
 

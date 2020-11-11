@@ -12,7 +12,6 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
     int             i = 0, found = -1;
     keypad_key_t *  key;
     keypad_update_t event   = {0};
-    keypad_event_t  current = 0;
 
     while (keys[i].bitvalue) {
         // If a key is found
