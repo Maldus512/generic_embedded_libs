@@ -2,10 +2,15 @@
 #define CIRCULAR_BUFFER_H_
 #include <stdint.h>
 #include <stdlib.h>
+#include "gel_conf.h"
+
+#ifndef GEL_CBUF_TYPE
+#define GEL_CBUF_TYPE uint8_t
+#endif
 
 typedef struct circular_buf_t {
-    uint8_t *buffer;
-    size_t   bufsize;     // Size of the buffer
+    GEL_CBUF_TYPE *buffer;
+    size_t         bufsize;     // Size of the buffer
     // The corresponding circular buffer capacity is bufsize - 1
     size_t head;     // Read only on the consumer side
     size_t tail;     // Read only on the producer side
@@ -20,7 +25,7 @@ typedef struct circular_buf_t {
  *  size: size in bytes for buffer
  *  returns: 0 on success, other on failure
  */
-int circular_buf_init(circular_buf_t *cbuf, uint8_t *buffer, size_t size);
+int circular_buf_init(circular_buf_t *cbuf, GEL_CBUF_TYPE *buffer, size_t size);
 
 /*
  * Resets a circular buffer as empty
@@ -39,7 +44,7 @@ void circular_buf_reset(circular_buf_t *cbuf);
  *  returns: the number of actual bytes written (can be less if there is
  * not enough room left)
  */
-int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len);
+int circular_buf_puts(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, size_t len);
 
 /*
  * Places a single byte into the circular buffer
@@ -47,7 +52,7 @@ int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len);
  *  data: byte to add
  *  returns: 0 on success, other on failure
  */
-int circular_buf_putc(circular_buf_t *cbuf, uint8_t data);
+int circular_buf_putc(circular_buf_t *cbuf, GEL_CBUF_TYPE data);
 
 /* CONSUMER THREAD */
 
@@ -59,7 +64,7 @@ int circular_buf_putc(circular_buf_t *cbuf, uint8_t data);
  *  returns: the number of actual bytes read (can be less if there is not
  * enough data in the buffer)
  */
-int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len);
+int circular_buf_gets(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, int len);
 
 /*
  *  Drops len bytes from the circular buffer. Same as using circular_buf_gets
@@ -76,7 +81,7 @@ int circular_buf_drop(circular_buf_t *cbuf, int len);
  *  data: pointer to where the byte will be written
  *  returns: 0 on success, other on failure
  */
-int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data);
+int circular_buf_getc(circular_buf_t *cbuf, GEL_CBUF_TYPE *data);
 
 /*
  * Retrieves len bytes from the circular buffer without consuming them
@@ -86,7 +91,7 @@ int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data);
  *  returns: the number of actual bytes read (can be less if there is not
  * enough data in the buffer)
  */
-int circular_buf_peek(circular_buf_t *cbuf, uint8_t *data, int len);
+int circular_buf_peek(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, int len);
 
 /* THREAD SAFE */
 

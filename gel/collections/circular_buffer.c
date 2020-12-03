@@ -27,7 +27,7 @@ static size_t retreat_pointer(circular_buf_t *cbuf, int step) {
     return cbuf->tail;
 }
 
-static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, int consume) {
+static int _circular_buf_get(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, size_t len, int consume) {
     int    read = 0, tail, head;
     size_t size = circular_buf_size(cbuf);
     if (!(cbuf && cbuf->buffer))
@@ -47,7 +47,7 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, in
         chunk = chunk > len ? len : chunk;
 
         if (data) {
-            memcpy(data, &cbuf->buffer[tail], chunk);
+            memcpy(data, &cbuf->buffer[tail], chunk * sizeof(GEL_CBUF_TYPE));
             data += chunk;
         }
         read += chunk;
@@ -66,7 +66,7 @@ static int _circular_buf_get(circular_buf_t *cbuf, uint8_t *data, size_t len, in
  * NEVER THREAD SAFE
  */
 
-int circular_buf_init(circular_buf_t *cbuf, uint8_t *buffer, size_t size) {
+int circular_buf_init(circular_buf_t *cbuf, GEL_CBUF_TYPE *buffer, size_t size) {
     if (!buffer || size <= 0)
         return 1;
 
@@ -132,7 +132,7 @@ size_t circular_buf_capacity(circular_buf_t *cbuf) {
  * Only reading the tail and writing the head
  */
 
-int circular_buf_putc(circular_buf_t *cbuf, uint8_t data) {
+int circular_buf_putc(circular_buf_t *cbuf, GEL_CBUF_TYPE data) {
     int r = -1;
 
     if (!(cbuf && cbuf->buffer))
@@ -147,7 +147,7 @@ int circular_buf_putc(circular_buf_t *cbuf, uint8_t data) {
     return r;
 }
 
-int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len) {
+int circular_buf_puts(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, size_t len) {
     size_t head, tail;
     int    written = 0;
     if (!(cbuf && cbuf->buffer))
@@ -166,7 +166,7 @@ int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len) {
             chunk = len > tail - head ? tail - head - 1 : len;
         }
 
-        memcpy(&cbuf->buffer[head], data, chunk);
+        memcpy(&cbuf->buffer[head], data, chunk * sizeof(GEL_CBUF_TYPE));
         head = advance_pointer(cbuf, chunk);
         data += chunk;
         written += chunk;
@@ -181,7 +181,7 @@ int circular_buf_puts(circular_buf_t *cbuf, uint8_t *data, size_t len) {
  *  Only reading the head and writing the tail
  */
 
-int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data) {
+int circular_buf_getc(circular_buf_t *cbuf, GEL_CBUF_TYPE *data) {
     if (!(cbuf && cbuf->buffer))
         return -1;
 
@@ -196,11 +196,11 @@ int circular_buf_getc(circular_buf_t *cbuf, uint8_t *data) {
     return 0;
 }
 
-int circular_buf_peek(circular_buf_t *cbuf, uint8_t *data, int len) {
+int circular_buf_peek(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, int len) {
     return _circular_buf_get(cbuf, data, len, 0);
 }
 
-int circular_buf_gets(circular_buf_t *cbuf, uint8_t *data, int len) {
+int circular_buf_gets(circular_buf_t *cbuf, GEL_CBUF_TYPE *data, int len) {
     return _circular_buf_get(cbuf, data, len, 1);
 }
 

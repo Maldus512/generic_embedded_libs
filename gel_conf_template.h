@@ -1,5 +1,5 @@
 #ifndef GEL_CONF_H_INCLUDED
-#define DEL_CONF_H_INCLUDED
+#define GEL_CONF_H_INCLUDED
 
 /*
  * Page manager
