@@ -9,6 +9,9 @@
 
 #define MAYBE(TYPE) maybe_##TYPE##_t
 
+#define MAYBE_NOTHING                                                                                                  \
+    { .nothing = 1 }
+
 #define MAYBE_DECLARATION(TYPE)                                                                                        \
     typedef struct {                                                                                                   \
         TYPE just;                                                                                                     \
