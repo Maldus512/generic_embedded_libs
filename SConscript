@@ -16,4 +16,6 @@ for c in components:
 objects = []
 for s in gel_selected:
     objects += gel_env.Object(sources[s])
-Return('objects')
+
+result = (objects, [os.getcwd()])
+Return('result')

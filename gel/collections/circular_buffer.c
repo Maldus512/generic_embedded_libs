@@ -2,6 +2,7 @@
  * Freely inspired by https://github.com/embeddedartistry/embedded-resources/tree/master/examples/c
  */
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include "circular_buffer.h"
 
@@ -109,11 +110,13 @@ size_t circular_buf_size(circular_buf_t *cbuf) {
 
     size_t size = cbuf->bufsize;
 
+    int tail = cbuf->tail;
+    int head = cbuf->head;
     if (!is_circular_buf_full(cbuf)) {
-        if (cbuf->head >= cbuf->tail) {
-            size = (cbuf->head - cbuf->tail);
+        if (head >= tail) {
+            size = (head - tail);
         } else {
-            size = (cbuf->bufsize + cbuf->head - cbuf->tail);
+            size = (cbuf->bufsize + head - tail);
         }
     }
 
