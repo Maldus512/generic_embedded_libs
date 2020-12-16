@@ -1,6 +1,11 @@
 #ifndef PAGE_MANAGER_H_INCLUDED
 #define PAGE_MANAGER_H_INCLUDED
 
+/*
+ *  Module that manages a stack of pages; to be used in tandem with some kind of view or display module.
+ *  It heavily relies on typedefs to know which types should be passed to the page callbacks
+ */
+
 #include "gel_conf.h"
 #include "../collections/stack.h"
 
@@ -9,7 +14,6 @@ typedef struct {
     int              id;
     pman_page_data_t data;
     void *           extra;
-    int              popup;
 
     // Called when the page is first created; it initializes and returns the data structures used by the page
     pman_page_data_t (*create)(pman_model_t model, void *extra);
@@ -22,9 +26,9 @@ typedef struct {
     void (*close)(pman_page_data_t data);
 
     // Called when the page is back in focus
-    void (*resume)(pman_page_data_t data);
+    void (*resume)(pman_page_data_t data);     // currently unused
     // Called when the page is still in view, but not the foremost element (e.g. a popup appeared)
-    void (*pause)(pman_page_data_t data);
+    void (*pause)(pman_page_data_t data);     // currently unused
 
     // Called to update the page's content
     void (*update)(pman_model_t model, pman_page_data_t data);
@@ -36,24 +40,70 @@ STACK_DECLARATION(navigation_stack, pman_page_t, PMAN_NAVIGATION_DEPTH);
 
 typedef struct {
     int                     initialized;
-    int                     popup;
     pman_page_t             current_page;
-    pman_page_t             current_popup;
     struct navigation_stack page_stack;
-    struct navigation_stack popup_stack;
 } page_manager_t;
 
-void init_page_manager(page_manager_t *pman);
 
+/*
+ *  Initializes the page manager, mostly setting fields to 0
+ *
+ * pman: pointer to the page manager struct to initialize
+ */
+void pman_init(page_manager_t *pman);
+
+/*
+ *  Closes and destroys the top page on the stack (if any), going back to the previous one.
+ *
+ * pman: pointer to the page manager struct
+ * model: external data type
+ */
 void pman_back(page_manager_t *pman, pman_model_t model);
+
+/*
+ *  Pushes the specified page on the stack, closing the one previously on top.
+ *
+ * pman: pointer to the page manager struct
+ * model: external data type
+ * page: page to be pushed
+ */
 void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page);
+
+/*
+ *  Pushes the specified page on the stack, closing the one previously on top.
+ *
+ * pman: pointer to the page manager struct
+ * model: external data type
+ * page: page to be pushed
+ * extra: argument that will be passed to the create callback of the page
+ */
 void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t page, void *extra);
+
+/*
+ *  Calls the update callback of the current page
+ *
+ * pman: pointer to the page manager struct
+ * model: external data type
+ */
 void pman_page_update(page_manager_t *pman, pman_model_t model);
+
+/*
+ *  Empty the stack and push the specified page as sole element.
+ *
+ * pman: pointer to the page manager struct
+ * model: external data type
+ * newpage: page to be pushed
+ */
 void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
+
+/*
+ *  Empty the stack and push the specified page as sole element.
+ *
+ * pman: pointer to the page manager struct
+ * model: external data type
+ * newpage: page to be pushed
+ * extra: argument that will be passed to the create callback of the page
+ */
 void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra);
 
-void null_update(pman_model_t model, pman_page_data_t data);
-void null_destroy(pman_page_data_t data, void *extra);
-void null_open(pman_model_t model, pman_page_data_t data);
-void null_close(pman_page_data_t data);
 #endif

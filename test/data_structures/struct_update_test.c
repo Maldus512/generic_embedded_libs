@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "parameter/struct_update.h"
+#include "data_structures/struct_update.h"
 #include "unity.h"
 
 #define DEFAULT_AL 1
