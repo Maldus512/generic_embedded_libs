@@ -26,10 +26,15 @@ typedef struct {
  *  filter: pointer to the debounce_filter_t struct
  *  return: 0 or 1
  */
-static inline int debounce_read(int i, debounce_filter_t *filter) {
+static inline int debounce_read(debounce_filter_t *filter, int i) {
     if (i < 0 || i >= NUM_INPUTS)
         return -1;
     return NTH(filter->value, i);
+}
+
+
+static inline unsigned int debounce_value(debounce_filter_t *filter) {
+    return filter->value;
 }
 
 /*
