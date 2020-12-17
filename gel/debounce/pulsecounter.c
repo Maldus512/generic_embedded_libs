@@ -48,7 +48,7 @@ int pulse_filter(pulse_filter_t *filter, unsigned int input, int debounce) {
 }
 
 
-int pulse_level(int i, pulse_filter_t *filter) {
+int pulse_level(pulse_filter_t *filter, int i) {
     if (i < 0 || i >= PULSE_NUM)
         return -1;
     return NTH(filter->old_input, i);

@@ -22,7 +22,7 @@ typedef struct {
  *  filter: pointer to the pulse_type_t struct
  *  return: the number of pulses counted
  */
-static inline int pulse_count(int i, pulse_filter_t *filter) {
+static inline int pulse_count(pulse_filter_t *filter, int i) {
     if (i < 0 || i >= PULSE_NUM)
         return -1;
     return filter->count[i];
@@ -35,7 +35,7 @@ static inline int pulse_count(int i, pulse_filter_t *filter) {
  *  filter: pointer to the pulse_type_t struct
  *  return: 0 or 1, or -1 if the index is out of range
  */
-int pulse_level(int i, pulse_filter_t *filter);
+int pulse_level(pulse_filter_t *filter, int i);
 
 /*
  *  Clears the pulse count for the i-th counter
@@ -43,7 +43,7 @@ int pulse_level(int i, pulse_filter_t *filter);
  *  i: i-th counter to clear
  *  filter: pointer to the pulse_type_t struct
  */
-static inline void pulse_clear(int i, pulse_filter_t *filter) {
+static inline void pulse_clear(pulse_filter_t *filter, int i) {
     if (i < 0 || i >= PULSE_NUM)
         return;
     filter->count[i] = 0;
