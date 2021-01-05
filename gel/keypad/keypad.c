@@ -19,7 +19,7 @@ keypad_update_t keypad_routine(keypad_key_t *keys, unsigned long click, unsigned
             keys[i]._state.value = 1;
             found                = i;
             event.code           = keys[i].code;
-            break;
+            //break;
         }
         // If the key was pressed but it's not anymore
         else if (keys[i]._state.oldvalue && keys[i].bitvalue != bitvalue) {

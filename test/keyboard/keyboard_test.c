@@ -3,11 +3,13 @@
 #include "keypad/keypad.h"
 #include "unity.h"
 
-#define ONEFIVEBMP 0x11
+#define ONEFIVEBMP    0x11
+#define ONETWOFIVEBMP 0x13
 
-enum { P_ONE = 0, P_TWO, P_THREE, P_FOUR, P_FIVE, P_ONEFIVE, P_NULL, P_NUM };
+enum { P_ONE = 0, P_TWO, P_THREE, P_FOUR, P_FIVE, P_ONEFIVE, P_ONETWOFIVE, P_NULL, P_NUM };
 
 keypad_key_t keys[P_NUM] = {
+    {.bitvalue = ONETWOFIVEBMP, .code = P_ONETWOFIVE},
     {.bitvalue = ONEFIVEBMP, .code = P_ONEFIVE},
     {.bitvalue = 0x01, .code = P_ONE},
     {.bitvalue = 0x02, .code = P_TWO},
@@ -131,7 +133,8 @@ void test_longclick() {
     TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
 }
 
-void test_multiclick() {
+
+void test_multiclick(void) {
     keypad_update_t event;
 
     event = keypad_routine(keys, 40, 2000, 1, 0, ONEFIVEBMP);
@@ -166,4 +169,39 @@ void test_multiclick() {
     event = keypad_routine(keys, 40, 2000, 1, 350, 0x1);
     TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
     TEST_ASSERT_EQUAL(P_ONE, event.code);
+}
+
+
+void test_comboclick(void) {
+    keypad_update_t event;
+
+    keypad_routine(keys, 40, 2000, 1, 0, ONEFIVEBMP);
+    event = keypad_routine(keys, 40, 2000, 1, 41, ONEFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+
+    event = keypad_routine(keys, 40, 2000, 1, 41, ONETWOFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+    event = keypad_routine(keys, 40, 2000, 1, 82, ONETWOFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+
+    event = keypad_routine(keys, 40, 2000, 1, 82, ONEFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+    event = keypad_routine(keys, 40, 2000, 1, 123, ONEFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+
+    event = keypad_routine(keys, 40, 2000, 1, 123, ONETWOFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_NOTHING, event.event);
+    event = keypad_routine(keys, 40, 2000, 1, 164, ONETWOFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_RELEASE, event.event);
+    TEST_ASSERT_EQUAL(P_ONEFIVE, event.code);
+    event = keypad_routine(keys, 40, 2000, 1, 165, ONETWOFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_PRESS, event.event);
+    TEST_ASSERT_EQUAL(P_ONETWOFIVE, event.code);
+    event = keypad_routine(keys, 40, 2000, 1, 206, ONETWOFIVEBMP);
+    TEST_ASSERT_EQUAL(KEY_CLICK, event.event);
+    TEST_ASSERT_EQUAL(P_ONETWOFIVE, event.code);
 }
