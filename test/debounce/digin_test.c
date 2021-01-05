@@ -14,7 +14,7 @@ void test_init() {
     debounce_filter_set(&filter, 0);
 
     for (i = 0; i < 16; i++)
-        TEST_ASSERT_EQUAL(0, debounce_read(i, &filter));
+        TEST_ASSERT_EQUAL(0, debounce_read(&filter, i));
 }
 
 void do_100_changes(int debounce) {
@@ -31,7 +31,7 @@ void do_100_changes(int debounce) {
                 res = debounce_filter(&filter, value << i, debounce);
 
             TEST_ASSERT(res);
-            TEST_ASSERT_EQUAL(value, debounce_read(i, &filter));
+            TEST_ASSERT_EQUAL(value, debounce_read(&filter, i));
         }
     }
 }

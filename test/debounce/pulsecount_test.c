@@ -4,18 +4,16 @@
 
 pulse_filter_t filter;
 
-void setUp() {
-}
+void setUp() {}
 
-void tearDown() {
-}
+void tearDown() {}
 
 void test_init() {
     int i = 0;
     pulse_filter_init(&filter, COUNT_HIGH_PULSE, 0);
 
     for (i = 0; i < 16; i++)
-        TEST_ASSERT_EQUAL(0, pulse_count(i, &filter));
+        TEST_ASSERT_EQUAL(0, pulse_count(&filter, i));
 }
 
 void do_100_pulses(pulse_type_t type, int debounce) {
@@ -29,13 +27,13 @@ void do_100_pulses(pulse_type_t type, int debounce) {
                 res = pulse_filter(&filter, type == COUNT_HIGH_PULSE ? 1 << i : 0, debounce);
 
             TEST_ASSERT(!res);
-            TEST_ASSERT_EQUAL(j, pulse_count(i, &filter));
+            TEST_ASSERT_EQUAL(j, pulse_count(&filter, i));
 
             for (z = 0; z < debounce + 1; z++)
                 res = pulse_filter(&filter, type == COUNT_HIGH_PULSE ? 0 : 1 << i, debounce);
 
             TEST_ASSERT(res);
-            TEST_ASSERT_EQUAL(j + 1, pulse_count(i, &filter));
+            TEST_ASSERT_EQUAL(j + 1, pulse_count(&filter, i));
         }
     }
 }
