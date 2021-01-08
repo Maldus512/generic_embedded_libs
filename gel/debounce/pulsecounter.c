@@ -9,7 +9,7 @@ void pulse_filter_init(pulse_filter_t *filter, pulse_type_t type, unsigned int i
     filter->old_input = init;
     filter->type      = type;
     for (i = 0; i < PULSE_NUM; i++)
-        pulse_clear(i, filter);
+        pulse_clear(filter, i);
 }
 
 int pulse_filter(pulse_filter_t *filter, unsigned int input, int debounce) {
