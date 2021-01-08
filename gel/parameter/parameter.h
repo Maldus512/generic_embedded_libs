@@ -21,8 +21,8 @@
 
 #define _PARAMETER_LIMIT_VALUE_OPTION(ref, x)                                                                          \
     _Generic((ref), uint8_t                                                                                            \
-             : (parameter_type_union_t){.u8 = (uint8_t)(x & 0xFF)}, int8_t                                             \
-             : (parameter_type_union_t){.i8 = (int8_t)(x & 0xFF)}, uint16_t                                            \
+             : (parameter_type_union_t){.u8 = (uint8_t)((uint8_t)x & 0xFF)}, int8_t                                    \
+             : (parameter_type_union_t){.i8 = (int8_t)((int8_t)x & 0xFF)}, uint16_t                                    \
              : (parameter_type_union_t){.u16 = (uint16_t)x}, int16_t                                                   \
              : (parameter_type_union_t){.i16 = (int16_t)x}, uint32_t                                                   \
              : (parameter_type_union_t){.u32 = (uint32_t)x}, int32_t                                                   \
