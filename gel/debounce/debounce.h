@@ -1,22 +1,15 @@
-/******************************************************************************/
-/*                                                                            */
-/*  HSW snc - Casalecchio di Reno (BO) ITALY                                  */
-/*  ----------------------------------------                                  */
-/*                                                                            */
-/*  Autore: Massimo ZANNA & Maldus (Mattia MALDINI)                           */
-/*                                                                            */
-/******************************************************************************/
-
 #ifndef DEBOUNCE_H_INCLUDED
 #define DEBOUNCE_H_INCLUDED
+
+#include <stdlib.h>
 
 #define NUM_INPUTS ((int)sizeof(unsigned int) * 8)
 #define NTH(x, i)  ((x >> i) & 0x1)
 
 typedef struct {
     unsigned int old_input;
-    unsigned int filters[NUM_INPUTS];
-    unsigned int value;
+    unsigned int buffered;
+    unsigned int debounce_count[NUM_INPUTS];
 } debounce_filter_t;
 
 /*
@@ -26,15 +19,14 @@ typedef struct {
  *  filter: pointer to the debounce_filter_t struct
  *  return: 0 or 1
  */
-static inline int debounce_read(debounce_filter_t *filter, int i) {
-    if (i < 0 || i >= NUM_INPUTS)
+static inline int debounce_read(debounce_filter_t *filter, size_t i) {
+    if (i >= NUM_INPUTS)
         return -1;
-    return NTH(filter->value, i);
+    return NTH(filter->buffered, i);
 }
 
-
 static inline unsigned int debounce_value(debounce_filter_t *filter) {
-    return filter->value;
+    return filter->buffered;
 }
 
 /*
@@ -60,7 +52,9 @@ void debounce_filter_init(debounce_filter_t *filter);
  * value to change.
  *  return: returns 1 if there was a change
  */
-int debounce_filter(debounce_filter_t *filter, unsigned int input, int debounce);
+unsigned int debounce_filter(debounce_filter_t *filter, unsigned int input, int debounce);
+
+unsigned int debounce_filter_single(debounce_filter_t *filter, unsigned int input, size_t i, int debounce);
 
 /*
  *  Sets the saved value for all inputs. Useful to reset the reading.
