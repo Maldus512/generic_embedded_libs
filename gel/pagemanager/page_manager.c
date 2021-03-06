@@ -38,7 +38,11 @@ void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
     pman->current_page       = newpage;
     pman->current_page.extra = extra;
     // Create the newpage
-    pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
+    if (pman->current_page.create)
+        pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
+    else
+        pman->current_page.data = NULL;
+
     // Open the page
     if (pman->current_page.open)
         pman->current_page.open(model, pman->current_page.data);
@@ -57,8 +61,6 @@ void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newp
 
 
 void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
-    assert(newpage.create);
-
     // If it is the first page do not add it to the navigation stack
     if (pman->initialized) {
         pman_page_t *current;
@@ -84,7 +86,11 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
     dest->extra = extra;
 
     // Create the newpage
-    dest->data = dest->create(model, extra);
+    if (dest->create)
+        dest->data = dest->create(model, extra);
+    else
+        dest->data = NULL;
+
     // Open the page
     if (dest->open)
         dest->open(model, dest->data);
