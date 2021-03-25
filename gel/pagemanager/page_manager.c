@@ -25,7 +25,7 @@ pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model,
 }
 
 
-void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
+pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
     pman_page_t *current = &pman->current_page;
 
     if (current->close)
@@ -47,16 +47,18 @@ void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
         pman->current_page.resume(pman->current_page.data);
     // Update the page
     if (pman->current_page.update)
-        pman->current_page.update(model, pman->current_page.data);
+        return pman->current_page.update(model, pman->current_page.data);
+    else
+        return PMAN_VIEW_NULL;
 }
 
 
-void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage) {
-    pman_rebase_page_extra(pman, model, newpage, NULL);
+pman_view_t pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage) {
+    return pman_rebase_page_extra(pman, model, newpage, NULL);
 }
 
 
-void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
+pman_view_t pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
     assert(newpage.create);
 
     // If it is the first page do not add it to the navigation stack
@@ -90,14 +92,16 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
         dest->open(model, dest->data);
     // Update the page
     if (dest->update)
-        dest->update(model, dest->data);
+        return dest->update(model, dest->data);
+    else
+        return PMAN_VIEW_NULL;
 }
 
-void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page) {
-    pman_change_page_extra(pman, model, page, NULL);
+pman_view_t pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page) {
+    return pman_change_page_extra(pman, model, page, NULL);
 }
 
-void pman_back(page_manager_t *pman, pman_model_t model) {
+pman_view_t pman_back(page_manager_t *pman, pman_model_t model) {
     pman_page_t page;
     assert(pman->initialized);
 
@@ -113,15 +117,19 @@ void pman_back(page_manager_t *pman, pman_model_t model) {
         if (current->open)
             current->open(model, pman->current_page.data);
         if (current->update)
-            current->update(model, pman->current_page.data);
+            return current->update(model, pman->current_page.data);
     }
+    
+    return PMAN_VIEW_NULL;
 }
 
-void pman_page_update(page_manager_t *pman, pman_model_t model) {
+pman_view_t pman_page_update(page_manager_t *pman, pman_model_t model) {
     pman_page_t *current;
     assert(pman->initialized);
 
     current = &pman->current_page;
     if (current && current->update)
-        current->update(model, current->data);
+        return current->update(model, current->data);
+    else
+        return PMAN_VIEW_NULL;
 }

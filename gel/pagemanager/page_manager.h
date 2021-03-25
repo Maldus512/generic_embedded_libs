@@ -31,7 +31,7 @@ typedef struct {
     void (*pause)(pman_page_data_t data);     // currently unused
 
     // Called to update the page's content
-    void (*update)(pman_model_t model, pman_page_data_t data);
+    pman_view_t (*update)(pman_model_t model, pman_page_data_t data);
     // Called to process an event
     pman_message_t (*process_event)(pman_model_t model, pman_page_data_t data, pman_event_t event);
 } pman_page_t;
@@ -58,7 +58,7 @@ void pman_init(page_manager_t *pman);
  * pman: pointer to the page manager struct
  * model: external data type
  */
-void pman_back(page_manager_t *pman, pman_model_t model);
+pman_view_t pman_back(page_manager_t *pman, pman_model_t model);
 
 /*
  *  Pushes the specified page on the stack, closing the one previously on top.
@@ -67,7 +67,7 @@ void pman_back(page_manager_t *pman, pman_model_t model);
  * model: external data type
  * page: page to be pushed
  */
-void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page);
+pman_view_t pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page);
 
 /*
  *  Pushes the specified page on the stack, closing the one previously on top.
@@ -77,7 +77,7 @@ void pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page
  * page: page to be pushed
  * extra: argument that will be passed to the create callback of the page
  */
-void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t page, void *extra);
+pman_view_t pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t page, void *extra);
 
 /*
  *  Calls the update callback of the current page
@@ -85,7 +85,7 @@ void pman_change_page_extra(page_manager_t *pman, pman_model_t model, pman_page_
  * pman: pointer to the page manager struct
  * model: external data type
  */
-void pman_page_update(page_manager_t *pman, pman_model_t model);
+pman_view_t pman_page_update(page_manager_t *pman, pman_model_t model);
 
 /*
  *  Empty the stack and push the specified page as sole element.
@@ -94,7 +94,7 @@ void pman_page_update(page_manager_t *pman, pman_model_t model);
  * model: external data type
  * newpage: page to be pushed
  */
-void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
+pman_view_t pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
 
 /*
  *  Empty the stack and push the specified page as sole element.
@@ -104,6 +104,6 @@ void pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page_t newp
  * newpage: page to be pushed
  * extra: argument that will be passed to the create callback of the page
  */
-void pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra);
+pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra);
 
 #endif

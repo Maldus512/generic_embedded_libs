@@ -68,7 +68,8 @@ typedef enum {
                                                                                                                        \
     void NAME##_dequeue(struct NAME *p_stack) {                                                                        \
         if (p_stack->idx > 0) {                                                                                        \
-            for (int i = 0; i < p_stack->idx - 1; i++)                                                                 \
+            int i;                                                                                                       \
+            for (i = 0; i < p_stack->idx - 1; i++)                                                                 \
                 p_stack->items[i] = p_stack->items[i + 1];                                                             \
                                                                                                                        \
             p_stack->idx--;                                                                                            \
