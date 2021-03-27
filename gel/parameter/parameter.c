@@ -64,7 +64,8 @@ parameter_handle_t *parameter_get_handle(parameter_handle_t *ps, size_t length, 
         if (ps[i].runtime)
             ps[i].runtime(&ps[i], ps[i].arg);
 
-        if ((ps[i].access_level & al) > 0) {
+        // A null access level means free access
+        if (ps[i].access_level == 0 || ((ps[i].access_level & al) > 0)) {
             if (num == 0)
                 return &ps[i];
             else
