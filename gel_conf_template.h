@@ -5,6 +5,8 @@
  * Page manager
  */
 #define PMAN_NAVIGATION_DEPTH 4
+#define PMAN_VIEW_NULL        0
+#define PMAN_DATA_NULL        NULL
 
 typedef void *pman_message_t;
 
@@ -13,6 +15,8 @@ typedef void *pman_event_t;
 typedef void *pman_page_data_t;
 
 typedef void *pman_model_t;
+
+typedef int pman_view_t;
 
 /*
  * PID
