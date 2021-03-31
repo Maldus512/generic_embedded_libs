@@ -41,7 +41,7 @@ pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pma
     if (pman->current_page.create)
         pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
     else
-        pman->current_page.data = NULL;
+        pman->current_page.data = PMAN_DATA_NULL;
 
     // Open the page
     if (pman->current_page.open)
@@ -91,7 +91,7 @@ pman_view_t pman_change_page_extra(page_manager_t *pman, pman_model_t model, pma
     if (dest->create)
         dest->data = dest->create(model, extra);
     else
-        dest->data = NULL;
+        dest->data = PMAN_DATA_NULL;
 
     // Open the page
     if (dest->open)
@@ -125,7 +125,7 @@ pman_view_t pman_back(page_manager_t *pman, pman_model_t model) {
         if (current->update)
             return current->update(model, pman->current_page.data);
     }
-    
+
     return PMAN_VIEW_NULL;
 }
 
