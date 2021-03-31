@@ -20,8 +20,9 @@ void debounce_filter_set(debounce_filter_t *filter, unsigned int set) {
 
 unsigned int debounce_filter(debounce_filter_t *filter, unsigned int input, int debounce) {
     unsigned int change = 0;
+    size_t i            = 0;
 
-    for (size_t i = 0; i < NUM_INPUTS; i++)
+    for (i = 0; i < NUM_INPUTS; i++)
         change |= debounce_filter_single(filter, NTH(input, i), i, debounce);
 
     return change;
