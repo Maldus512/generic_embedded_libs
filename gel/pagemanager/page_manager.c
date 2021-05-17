@@ -25,6 +25,41 @@ pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model,
 }
 
 
+pman_view_t pman_swap_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
+    pman_page_t *current = &pman->current_page;
+
+    if (current->close)
+        current->close(current->data);
+    if (current->destroy)
+        current->destroy(current->data, current->extra);
+
+    pman->current_page       = newpage;
+    pman->current_page.extra = extra;
+    // Create the newpage
+    if (pman->current_page.create)
+        pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
+    else
+        pman->current_page.data = PMAN_DATA_NULL;
+
+    // Open the page
+    if (pman->current_page.open)
+        pman->current_page.open(model, pman->current_page.data);
+    // Resume the page
+    if (pman->current_page.resume)
+        pman->current_page.resume(pman->current_page.data);
+    // Update the page
+    if (pman->current_page.update)
+        return pman->current_page.update(model, pman->current_page.data);
+    else
+        return PMAN_VIEW_NULL;
+}
+
+
+pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage) {
+    return pman_swap_page_extra(pman, model, newpage, NULL);
+}
+
+
 pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
     pman_page_t *current = &pman->current_page;
 
