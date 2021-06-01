@@ -15,14 +15,14 @@ void test_basic() {
     parameter_handle_t par1  = PARAMETER(&value, 0, 10, 2, 0, DEFAULT_AL);
     TEST_ASSERT_EQUAL(10, par1.max.u32);
 
-    PARAMETER_OPERATOR(par1, 1);
+    parameter_operator(&par1, 1);
     TEST_ASSERT_EQUAL(6, value);
-    PARAMETER_OPERATOR(par1, 1);
-    PARAMETER_OPERATOR(par1, 1);
-    PARAMETER_OPERATOR(par1, 1);
-    PARAMETER_OPERATOR(par1, 1);
+    parameter_operator(&par1, 1);
+    parameter_operator(&par1, 1);
+    parameter_operator(&par1, 1);
+    parameter_operator(&par1, 1);
     TEST_ASSERT_EQUAL(10, value);
-    PARAMETER_OPERATOR(par1, 1);
+    parameter_operator(&par1, 1);
     TEST_ASSERT_EQUAL(0, value);
 
     uint32_t           max  = 12;

@@ -162,11 +162,7 @@ size_t parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int a
 }
 
 
-int parameter_operator(parameter_handle_t *ps, size_t length, size_t num, int mod, unsigned int al) {
-    assert(num < length);
-
-    parameter_handle_t *handle = parameter_get_handle(ps, length, num, al);
-
+int parameter_operator(parameter_handle_t *handle, int mod) {
     if (handle) {
         switch (handle->type) {
             case PARAMETER_TYPE_UINT8:

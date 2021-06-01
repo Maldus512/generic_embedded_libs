@@ -46,8 +46,6 @@
     PARAMETER_FULL(ptr, pmin, pmax, min, max, def, 1, lvl, udata, NULL, NULL)
 
 
-#define PARAMETER_OPERATOR(handle, mod) parameter_operator(&handle, 1, 0, mod, handle.access_level)
-
 
 typedef enum {
     PARAMETER_TYPE_UINT8  = 0,
@@ -90,7 +88,7 @@ typedef struct _parameter_handle_t {
     void *arg;
 } parameter_handle_t;
 
-int                   parameter_operator(parameter_handle_t *ps, size_t length, size_t num, int mod, unsigned int al);
+int                   parameter_operator(parameter_handle_t *handle, int mod);
 size_t                parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int al);
 parameter_handle_t *  parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al);
 parameter_user_data_t parameter_get_user_data(parameter_handle_t *handle);
