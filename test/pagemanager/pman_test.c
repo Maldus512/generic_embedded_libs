@@ -132,6 +132,7 @@ void setUp() {
     create1 = create2 = create3 = 0;
     open1 = open2 = open3 = 0;
     close1 = close2 = close3 = 0;
+    destroy1 = destroy2 = destroy3 = 0;
     pman_init(&pman);
     model = 1;
 }
@@ -166,5 +167,40 @@ void test_change_page() {
     TEST_ASSERT_EQUAL(1, create3);
     TEST_ASSERT_EQUAL(0, destroy1);
     TEST_ASSERT_EQUAL(1, destroy2);
+    TEST_ASSERT_EQUAL(1, destroy3);
+}
+
+
+void test_swap_page(void) {
+    pman_change_page(&pman, model, pages[0]);
+    TEST_ASSERT_EQUAL(PAGE1, pman.current_page.id);
+    TEST_ASSERT_EQUAL(1, create1);
+    TEST_ASSERT_EQUAL(1, open1);
+
+    pman_change_page(&pman, model, pages[1]);
+    TEST_ASSERT_EQUAL(PAGE2, pman.current_page.id);
+    TEST_ASSERT_EQUAL(1, close1);
+    TEST_ASSERT_EQUAL(1, open2);
+
+    pman_swap_page(&pman, model, pages[2]);
+    TEST_ASSERT_EQUAL(PAGE3, pman.current_page.id);
+    TEST_ASSERT_EQUAL(1, close2);
+    TEST_ASSERT_EQUAL(1, open3);
+
+    TEST_ASSERT_EQUAL(1, create1);
+    TEST_ASSERT_EQUAL(1, create2);
+    TEST_ASSERT_EQUAL(1, create3);
+
+    TEST_ASSERT_EQUAL(1, close2);
+
+    TEST_ASSERT_EQUAL(0, destroy1);
+    TEST_ASSERT_EQUAL(1, destroy2);
+    TEST_ASSERT_EQUAL(0, destroy3);
+
+    pman_back(&pman, model);
+    TEST_ASSERT_EQUAL(1, close3);
+    TEST_ASSERT_EQUAL(PAGE1, pman.current_page.id);
+
+    TEST_ASSERT_EQUAL(0, destroy1);
     TEST_ASSERT_EQUAL(1, destroy3);
 }

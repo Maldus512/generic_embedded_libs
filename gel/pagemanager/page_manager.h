@@ -106,4 +106,28 @@ pman_view_t pman_rebase_page(page_manager_t *pman, pman_model_t model, pman_page
  */
 pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra);
 
+
+/**
+ * @brief Change the current page, closing and destroying the one already present. Passes `extra` to the create
+ * callback.
+ *
+ * @param pman
+ * @param model
+ * @param newpage
+ * @param extra
+ * @return pman_view_t
+ */
+pman_view_t pman_swap_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra);
+
+
+/**
+ * @brief Change the current page, closing and destroying the one already present
+ *
+ * @param pman
+ * @param model
+ * @param newpage
+ * @return pman_view_t
+ */
+pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
+
 #endif
