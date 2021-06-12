@@ -60,7 +60,8 @@
 parameter_handle_t *parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al) {
     assert(num < length);
 
-    for (size_t i = 0; i < length; i++) {
+    size_t i = 0;
+    for (i = 0; i < length; i++) {
         if (ps[i].runtime)
             ps[i].runtime(&ps[i], ps[i].arg);
 
@@ -150,7 +151,8 @@ void parameter_to_string_format(parameter_handle_t *handle, char *result, char *
 size_t parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int al) {
     size_t count = 0;
 
-    for (size_t i = 0; i < length; i++) {
+    size_t i = 0;
+    for (i = 0; i < length; i++) {
         if (ps[i].runtime)
             ps[i].runtime(&ps[i], ps[i].arg);
 
@@ -205,8 +207,9 @@ int parameter_operator(parameter_handle_t *handle, int mod) {
 
 
 void parameter_reset_to_defaults(parameter_handle_t *ps, size_t length) {
-    for (size_t i = 0; i < length; i++) {
-        parameter_handle_t *handle = parameter_get_handle(ps, length, i, 0xFFFFFFFF);
+    size_t i = 0;
+    for (i = 0; i < length; i++) {
+        parameter_handle_t *handle = parameter_get_handle(ps, length, i, (unsigned int)0xFFFFFFFF);
 
         if (handle) {
             switch (handle->type) {
@@ -249,8 +252,9 @@ void parameter_reset_to_defaults(parameter_handle_t *ps, size_t length) {
 int parameter_check_ranges(parameter_handle_t *ps, size_t length) {
     int counter = 0;
 
-    for (size_t i = 0; i < length; i++) {
-        parameter_handle_t *handle = parameter_get_handle(ps, length, i, 0xFFFFFFFF);
+    size_t i = 0;
+    for (i = 0; i < length; i++) {
+        parameter_handle_t *handle = parameter_get_handle(ps, length, i, (unsigned int)0xFFFFFFFF);
 
         if (handle) {
             int outofrange = 0;

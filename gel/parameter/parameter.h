@@ -32,6 +32,21 @@
              : (parameter_type_union_t){.f = (float)x}, double                                                         \
              : (parameter_type_union_t){.d = (double)x})
 
+#define PARAMETER_TYPE_UINT8_CAST(x) ((parameter_type_union_t){.u8 = x})
+#define PARAMETER_TYPE_INT8_CAST(x) ((parameter_type_union_t){.i8 = x})
+#define PARAMETER_TYPE_UINT16_CAST(x) ((parameter_type_union_t){.u16 = x})
+#define PARAMETER_TYPE_INT16_CAST(x) ((parameter_type_union_t){.i16 = x})
+#define PARAMETER_TYPE_UINT32_CAST(x) ((parameter_type_union_t){.u32 = x})
+#define PARAMETER_TYPE_INT32_CAST(x) ((parameter_type_union_t){.i32 = x})
+#define PARAMETER_TYPE_UINT64_CAST(x) ((parameter_type_union_t){.u64 = x})
+#define PARAMETER_TYPE_INT64_CAST(x) ((parameter_type_union_t){.i64 = x})
+#define PARAMETER_TYPE_FLOAT_CAST(x) ((parameter_type_union_t){.f = x})
+#define PARAMETER_TYPE_DOUBLE_CAST(x) ((parameter_type_union_t){.d = x})
+
+#define PARAMETER_C99(type, ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
+    ((parameter_handle_t){(type), (ptr), (pmin), (pmax), type##_CAST(min), type##_CAST(max), type##_CAST(def), type##_CAST(step), \
+                          (lvl), (udata), (runtime), (arg)})
+
 #define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
     ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), (ptr), (pmin), (pmax),                                          \
                           _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (min)), _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (max)),  \
