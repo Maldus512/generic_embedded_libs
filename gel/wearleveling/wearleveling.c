@@ -21,7 +21,7 @@
 #define NEXT_BLOCK(x, mod) ((x + 1) % mod)
 
 
-static int search_last(wear_leveled_memory_t *wlm);
+static int search_last(wear_leveled_memory_t *wlm, uint8_t *last_marker);
 
 
 /**
@@ -47,22 +47,17 @@ int wearleveling_read(wear_leveled_memory_t *wlm, uint8_t *buffer, size_t len) {
  */
 int wearleveling_write(wear_leveled_memory_t *wlm, uint8_t *buffer, size_t len) {
     uint8_t intermediate_buffer[len];
-    uint8_t last_marker;
     int     res;
-
-    if ((res = wlm->read_marker(wlm->last_active_block, &last_marker))) {
-        return res;
-    }
 
     if ((res = wlm->read_block(wlm->last_active_block, intermediate_buffer, len))) {
         return res;
     }
 
     if (memcmp(intermediate_buffer, buffer, len)) {
-        uint8_t next_marker    = NEXT_BLOCK(last_marker, MAX_BLOCKS_IN_PAGE);
+        wlm->last_marker       = NEXT_BLOCK(wlm->last_marker, MAX_BLOCKS_IN_PAGE);
         wlm->last_active_block = NEXT_BLOCK(wlm->last_active_block, wlm->blocks_in_page);
 
-        return wlm->write_block(wlm->last_active_block, next_marker, buffer, len);
+        return wlm->write_block(wlm->last_active_block, wlm->last_marker, buffer, len);
     }
     return 0;
 }
@@ -78,14 +73,14 @@ int wearleveling_write(wear_leveled_memory_t *wlm, uint8_t *buffer, size_t len) 
  * @param blocks_in_page Number of blocks in page
  */
 void wearleveling_init(wear_leveled_memory_t *wlm, wl_read_block_t read_block, wl_write_block_t write_block,
-             wl_read_marker_t read_marker, size_t blocks_in_page) {
+                       wl_read_marker_t read_marker, size_t blocks_in_page) {
     assert(blocks_in_page < MAX_BLOCKS_IN_PAGE);
     wlm->read_block     = read_block;
     wlm->write_block    = write_block;
     wlm->read_marker    = read_marker;
     wlm->blocks_in_page = blocks_in_page;
 
-    wlm->last_active_block = search_last(wlm);
+    wlm->last_active_block = search_last(wlm, &wlm->last_marker);
 }
 
 
@@ -95,12 +90,12 @@ void wearleveling_init(wear_leveled_memory_t *wlm, wl_read_block_t read_block, w
  * @param wlm Wear leveled memory data structure
  * @return int 0 if everything was ok, something else otherwise
  */
-static int search_last(wear_leveled_memory_t *wlm) {
-    uint8_t marker, last_marker;
+static int search_last(wear_leveled_memory_t *wlm, uint8_t *last_marker) {
+    uint8_t marker;
     int     err;
 
     // start from 0 and move on
-    if ((err = wlm->read_marker(0, &last_marker))) {
+    if ((err = wlm->read_marker(0, last_marker))) {
         return err;
     }
 
@@ -113,17 +108,17 @@ static int search_last(wear_leveled_memory_t *wlm) {
 
         // If the current marker is not the one that should follow from the previous one (i.e. last_marker + 1 with mod
         // limit) then we found the last active one
-        if (marker != NEXT_BLOCK(last_marker, MAX_BLOCKS_IN_PAGE)) {
+        if (marker != NEXT_BLOCK(*last_marker, MAX_BLOCKS_IN_PAGE)) {
             break;
         } else {
             // Otherwise keep looking
-            last_marker = marker;
+            *last_marker = marker;
         }
     }
 
-    if (i == wlm->blocks_in_page) {
-        // Something very wrong happened, fail
-        return -1;
+    if (i >= wlm->blocks_in_page) {
+        // Something very wrong happened, reset to 0
+        return 0;
     }
 
     // Return the index of the last active marker
