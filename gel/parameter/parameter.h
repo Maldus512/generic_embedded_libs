@@ -32,20 +32,20 @@
              : (parameter_type_union_t){.f = (float)x}, double                                                         \
              : (parameter_type_union_t){.d = (double)x})
 
-#define PARAMETER_TYPE_UINT8_CAST(x) ((parameter_type_union_t){.u8 = x})
-#define PARAMETER_TYPE_INT8_CAST(x) ((parameter_type_union_t){.i8 = x})
+#define PARAMETER_TYPE_UINT8_CAST(x)  ((parameter_type_union_t){.u8 = x})
+#define PARAMETER_TYPE_INT8_CAST(x)   ((parameter_type_union_t){.i8 = x})
 #define PARAMETER_TYPE_UINT16_CAST(x) ((parameter_type_union_t){.u16 = x})
-#define PARAMETER_TYPE_INT16_CAST(x) ((parameter_type_union_t){.i16 = x})
+#define PARAMETER_TYPE_INT16_CAST(x)  ((parameter_type_union_t){.i16 = x})
 #define PARAMETER_TYPE_UINT32_CAST(x) ((parameter_type_union_t){.u32 = x})
-#define PARAMETER_TYPE_INT32_CAST(x) ((parameter_type_union_t){.i32 = x})
+#define PARAMETER_TYPE_INT32_CAST(x)  ((parameter_type_union_t){.i32 = x})
 #define PARAMETER_TYPE_UINT64_CAST(x) ((parameter_type_union_t){.u64 = x})
-#define PARAMETER_TYPE_INT64_CAST(x) ((parameter_type_union_t){.i64 = x})
-#define PARAMETER_TYPE_FLOAT_CAST(x) ((parameter_type_union_t){.f = x})
+#define PARAMETER_TYPE_INT64_CAST(x)  ((parameter_type_union_t){.i64 = x})
+#define PARAMETER_TYPE_FLOAT_CAST(x)  ((parameter_type_union_t){.f = x})
 #define PARAMETER_TYPE_DOUBLE_CAST(x) ((parameter_type_union_t){.d = x})
 
-#define PARAMETER_C99(type, ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
-    ((parameter_handle_t){(type), (ptr), (pmin), (pmax), type##_CAST(min), type##_CAST(max), type##_CAST(def), type##_CAST(step), \
-                          (lvl), (udata), (runtime), (arg)})
+#define PARAMETER_C99(type, ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                            \
+    ((parameter_handle_t){(type), (ptr), (pmin), (pmax), type##_CAST(min), type##_CAST(max), type##_CAST(def),         \
+                          type##_CAST(step), (lvl), (udata), (runtime), (arg)})
 
 #define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
     ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), (ptr), (pmin), (pmax),                                          \
@@ -63,30 +63,50 @@
 
 
 typedef enum {
-    PARAMETER_TYPE_UINT8  = 0,
-    PARAMETER_TYPE_INT8   = 1,
+    PARAMETER_TYPE_UINT8 = 0,
+    PARAMETER_TYPE_INT8  = 1,
+#if GEL_PARAMETER_MAX_SIZE >= 2
     PARAMETER_TYPE_UINT16 = 2,
     PARAMETER_TYPE_INT16  = 3,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
     PARAMETER_TYPE_UINT32 = 4,
     PARAMETER_TYPE_INT32  = 5,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
     PARAMETER_TYPE_UINT64 = 6,
     PARAMETER_TYPE_INT64  = 7,
-    PARAMETER_TYPE_FLOAT  = 8,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+    PARAMETER_TYPE_FLOAT = 8,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
     PARAMETER_TYPE_DOUBLE = 9,
+#endif
 } parameter_type_t;
 
 
 typedef union {
-    uint8_t  u8;
-    int8_t   i8;
+    uint8_t u8;
+    int8_t  i8;
+#if GEL_PARAMETER_MAX_SIZE >= 2
     uint16_t u16;
     int16_t  i16;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
     uint32_t u32;
     int32_t  i32;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
     uint64_t u64;
     int64_t  i64;
-    float    f;
-    double   d;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+    float f;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+    double d;
+#endif
 } parameter_type_union_t;
 
 

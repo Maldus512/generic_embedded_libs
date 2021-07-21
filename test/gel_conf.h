@@ -1,6 +1,8 @@
 #ifndef PMAN_CONF_H_INCLUDED
 #define PMAN_CONF_H_INCLUDED
 
+#define GEL_PARAMETER_MAX_SIZE 8
+
 #define PMAN_NAVIGATION_DEPTH 5
 #define PMAN_VIEW_NULL        0
 #define PMAN_DATA_NULL        0
