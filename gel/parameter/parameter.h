@@ -32,6 +32,21 @@
              : (parameter_type_union_t){.f = (float)x}, double                                                         \
              : (parameter_type_union_t){.d = (double)x})
 
+#define PARAMETER_TYPE_UINT8_CAST(x)  ((parameter_type_union_t){.u8 = x})
+#define PARAMETER_TYPE_INT8_CAST(x)   ((parameter_type_union_t){.i8 = x})
+#define PARAMETER_TYPE_UINT16_CAST(x) ((parameter_type_union_t){.u16 = x})
+#define PARAMETER_TYPE_INT16_CAST(x)  ((parameter_type_union_t){.i16 = x})
+#define PARAMETER_TYPE_UINT32_CAST(x) ((parameter_type_union_t){.u32 = x})
+#define PARAMETER_TYPE_INT32_CAST(x)  ((parameter_type_union_t){.i32 = x})
+#define PARAMETER_TYPE_UINT64_CAST(x) ((parameter_type_union_t){.u64 = x})
+#define PARAMETER_TYPE_INT64_CAST(x)  ((parameter_type_union_t){.i64 = x})
+#define PARAMETER_TYPE_FLOAT_CAST(x)  ((parameter_type_union_t){.f = x})
+#define PARAMETER_TYPE_DOUBLE_CAST(x) ((parameter_type_union_t){.d = x})
+
+#define PARAMETER_C99(type, ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                            \
+    ((parameter_handle_t){(type), (ptr), (pmin), (pmax), type##_CAST(min), type##_CAST(max), type##_CAST(def),         \
+                          type##_CAST(step), (lvl), (udata), (runtime), (arg)})
+
 #define PARAMETER_FULL(ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                                 \
     ((parameter_handle_t){_PARAMETER_VALUE_TYPE(*ptr), (ptr), (pmin), (pmax),                                          \
                           _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (min)), _PARAMETER_LIMIT_VALUE_OPTION(*(ptr), (max)),  \
@@ -46,34 +61,52 @@
     PARAMETER_FULL(ptr, pmin, pmax, min, max, def, 1, lvl, udata, NULL, NULL)
 
 
-#define PARAMETER_OPERATOR(handle, mod) parameter_operator(&handle, 1, 0, mod, handle.access_level)
-
 
 typedef enum {
-    PARAMETER_TYPE_UINT8  = 0,
-    PARAMETER_TYPE_INT8   = 1,
+    PARAMETER_TYPE_UINT8 = 0,
+    PARAMETER_TYPE_INT8  = 1,
+#if GEL_PARAMETER_MAX_SIZE >= 2
     PARAMETER_TYPE_UINT16 = 2,
     PARAMETER_TYPE_INT16  = 3,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
     PARAMETER_TYPE_UINT32 = 4,
     PARAMETER_TYPE_INT32  = 5,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
     PARAMETER_TYPE_UINT64 = 6,
     PARAMETER_TYPE_INT64  = 7,
-    PARAMETER_TYPE_FLOAT  = 8,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+    PARAMETER_TYPE_FLOAT = 8,
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
     PARAMETER_TYPE_DOUBLE = 9,
+#endif
 } parameter_type_t;
 
 
 typedef union {
-    uint8_t  u8;
-    int8_t   i8;
+    uint8_t u8;
+    int8_t  i8;
+#if GEL_PARAMETER_MAX_SIZE >= 2
     uint16_t u16;
     int16_t  i16;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
     uint32_t u32;
     int32_t  i32;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
     uint64_t u64;
     int64_t  i64;
-    float    f;
-    double   d;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+    float f;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+    double d;
+#endif
 } parameter_type_union_t;
 
 
@@ -90,7 +123,7 @@ typedef struct _parameter_handle_t {
     void *arg;
 } parameter_handle_t;
 
-int                   parameter_operator(parameter_handle_t *ps, size_t length, size_t num, int mod, unsigned int al);
+int                   parameter_operator(parameter_handle_t *handle, int mod);
 size_t                parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int al);
 parameter_handle_t *  parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al);
 parameter_user_data_t parameter_get_user_data(parameter_handle_t *handle);

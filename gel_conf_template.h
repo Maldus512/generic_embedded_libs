@@ -2,6 +2,12 @@
 #define GEL_CONF_H_INCLUDED
 
 /*
+ * Parameter
+ */
+
+#define GEL_PARAMETER_MAX_SIZE 8
+
+/*
  * Page manager
  */
 #define PMAN_NAVIGATION_DEPTH 4
