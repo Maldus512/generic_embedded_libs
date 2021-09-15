@@ -5,6 +5,9 @@
 
 typedef unsigned long timestamp_t;
 
+#ifdef GEL_IGNORE_TIME_TYPECHECK
+#define typecheck(type, x) 1
+#else
 #define typecheck(type, x)                                                                                             \
     ({                                                                                                                 \
         type __dummy;                                                                                                  \
@@ -12,6 +15,7 @@ typedef unsigned long timestamp_t;
         (void)(&__dummy == &__dummy2);                                                                                 \
         1;                                                                                                             \
     })
+#endif
 
 #define time_after(a, b) (typecheck(unsigned long, a) && typecheck(unsigned long, b) && ((long)((b) - (a)) < 0))
 #define time_after_or_equal(a, b)                                                                                      \
