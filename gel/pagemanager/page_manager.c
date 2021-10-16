@@ -1,6 +1,14 @@
 #include <assert.h>
 #include "page_manager.h"
 
+#ifndef PMAN_VIEW_NULL
+#define PMAN_VIEW_NULL
+#endif
+
+#ifndef PMAN_DATA_NULL
+#define PMAN_DATA_NULL NULL
+#endif
+
 STACK_DEFINITION(navigation_stack, pman_page_t);
 
 static void clear_page_stack(page_manager_t *pman) {
