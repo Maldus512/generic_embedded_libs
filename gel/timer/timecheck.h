@@ -2,41 +2,47 @@
 #define TIMECHECK_H_INCLUDED
 
 #include <stdint.h>
+#ifdef GEL_TIMECHECK_CONFIGURATION_HEADER
+#include GEL_TIMECHECK_CONFIGURATION_HEADER
+#endif
 
-typedef unsigned long timestamp_t;
+#ifndef GEL_CUSTOM_TIMESTAMP_TYPE
+#define GEL_CUSTOM_TIMESTAMP_TYPE unsigned long
+#endif
+
+typedef GEL_CUSTOM_TIMESTAMP_TYPE timestamp_t;
 
 #define typecheck(type, x)                                                                                             \
     ({                                                                                                                 \
-        type __dummy;                                                                                                  \
+        type      __dummy;                                                                                             \
         typeof(x) __dummy2;                                                                                            \
         (void)(&__dummy == &__dummy2);                                                                                 \
         1;                                                                                                             \
     })
 
-#define time_after(a, b) (typecheck(unsigned long, a) && typecheck(unsigned long, b) && ((long)((b) - (a)) < 0))
-#define time_after_or_equal(a, b)                                                                                      \
-    (typecheck(unsigned long, a) && typecheck(unsigned long, b) && ((long)((b) - (a)) <= 0))
-#define time_before(a, b) time_after(b, a)
+#define time_after(a, b)          (typecheck(timestamp_t, a) && typecheck(timestamp_t, b) && ((long)((b) - (a)) < 0))
+#define time_after_or_equal(a, b) (typecheck(timestamp_t, a) && typecheck(timestamp_t, b) && ((long)((b) - (a)) <= 0))
+#define time_before(a, b)         time_after(b, a)
 
 #define is_expired(start, current, delay) is_loosely_expired(start, current, delay)
 
 
-static inline __attribute__((always_inline)) unsigned long time_interval(unsigned long a, unsigned long b) {
+static inline __attribute__((always_inline)) timestamp_t time_interval(timestamp_t a, timestamp_t b) {
     if (time_after(a, b))
-        return -((unsigned long)b - (unsigned long)a);
+        return -((timestamp_t)b - (timestamp_t)a);
     else
-        return (unsigned long)b - (unsigned long)a;
+        return (timestamp_t)b - (timestamp_t)a;
 }
 
 
-static inline __attribute__((always_inline)) int is_loosely_expired(unsigned long start, unsigned long current,
-                                                                    unsigned long delay) {
+static inline __attribute__((always_inline)) int is_loosely_expired(timestamp_t start, timestamp_t current,
+                                                                    timestamp_t delay) {
     return time_after_or_equal(current, start + delay);
 }
 
 
-static inline __attribute__((always_inline)) int is_strictly_expired(unsigned long start, unsigned long current,
-                                                                     unsigned long delay) {
+static inline __attribute__((always_inline)) int is_strictly_expired(timestamp_t start, timestamp_t current,
+                                                                     timestamp_t delay) {
     return time_after(current, start + delay);
 }
 

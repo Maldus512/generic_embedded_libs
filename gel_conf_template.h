@@ -53,6 +53,6 @@ typedef int pid_output_type_t;
  * Parameter
  */
 
-typedef int parameter_user_data_t;
+typedef int GEL_PARAMETER_USER_DATA;
 
 #endif
