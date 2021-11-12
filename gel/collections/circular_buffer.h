@@ -2,7 +2,6 @@
 #define CIRCULAR_BUFFER_H_
 #include <stdint.h>
 #include <stdlib.h>
-#include "gel_conf.h"
 
 #ifndef GEL_CBUF_TYPE
 #define GEL_CBUF_TYPE uint8_t

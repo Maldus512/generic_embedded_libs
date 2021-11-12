@@ -14,6 +14,10 @@ menu "GEL"
     config GEL_PAGE_MANAGER
         bool "Page manager"
 
+    config GEL_PAGEMANAGER_CONFIGURATION_HEADER
+        string "Configuration header for the page manager module"
+        depends on GEL_PAGE_MANAGER
+
     config GEL_PARAMETER
         bool "Parameter management"
 
