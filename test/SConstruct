@@ -6,7 +6,8 @@ LIBS = "../gel"
 UNITY = "Unity/src/"
 CFLAGS = ["-Wall", "-Wextra", "-g", "-O0"]
 MODULES = ["pid", "pagemanager", "collections", "serializer",
-           "debounce", "keyboard", "timer", "parameter", "data_structures", "wearleveling"]
+           "debounce", "keyboard", "timer", "parameter", "data_structures", "wearleveling",
+           "circular_event_log"]
 RBGEN = "ruby ./Unity/auto/generate_test_runner.rb"
 
 # Creates a Phony target
