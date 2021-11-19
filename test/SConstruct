@@ -4,7 +4,8 @@ import multiprocessing
 PROGRAM = "testsuite"
 LIBS = "../gel"
 UNITY = "Unity/src/"
-CFLAGS = ["-Wall", "-Wextra", "-g", "-O0"]
+CFLAGS = ["-Wall", "-Wextra", "-g", "-O0",
+          "-DGEL_PAGEMANAGER_CONFIGURATION_HEADER=\\\"gel_conf.h\\\""]
 MODULES = ["pid", "pagemanager", "collections", "serializer",
            "debounce", "keyboard", "timer", "parameter", "data_structures", "wearleveling",
            "circular_event_log"]
