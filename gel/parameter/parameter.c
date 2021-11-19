@@ -251,18 +251,18 @@ void parameter_reset_to_defaults(parameter_handle_t *ps, size_t length) {
                     break;
 #if GEL_PARAMETER_MAX_SIZE >= 2
                 case PARAMETER_TYPE_UINT16:
-                    SET_DEFAULT((*handle), uint16_t, u64);
+                    SET_DEFAULT((*handle), uint16_t, u16);
                     break;
                 case PARAMETER_TYPE_INT16:
-                    SET_DEFAULT((*handle), int16_t, u64);
+                    SET_DEFAULT((*handle), int16_t, i16);
                     break;
 #endif
 #if GEL_PARAMETER_MAX_SIZE >= 4
                 case PARAMETER_TYPE_UINT32:
-                    SET_DEFAULT((*handle), uint32_t, u64);
+                    SET_DEFAULT((*handle), uint32_t, u32);
                     break;
                 case PARAMETER_TYPE_INT32:
-                    SET_DEFAULT((*handle), int32_t, u64);
+                    SET_DEFAULT((*handle), int32_t, i32);
                     break;
 #endif
 #if GEL_PARAMETER_MAX_SIZE >= 8
@@ -315,13 +315,13 @@ int parameter_check_ranges(parameter_handle_t *ps, size_t length) {
 #if GEL_PARAMETER_MAX_SIZE >= 2
                 case PARAMETER_TYPE_UINT16:
                     if (CHECK_RANGE((*handle), uint16_t, u16)) {
-                        SET_DEFAULT((*handle), uint16_t, u64);
+                        SET_DEFAULT((*handle), uint16_t, u16);
                         outofrange = 1;
                     }
                     break;
                 case PARAMETER_TYPE_INT16:
                     if (CHECK_RANGE((*handle), int16_t, i16)) {
-                        SET_DEFAULT((*handle), int16_t, u64);
+                        SET_DEFAULT((*handle), int16_t, i16);
                         outofrange = 1;
                     }
                     break;
@@ -329,13 +329,13 @@ int parameter_check_ranges(parameter_handle_t *ps, size_t length) {
 #if GEL_PARAMETER_MAX_SIZE >= 4
                 case PARAMETER_TYPE_UINT32:
                     if (CHECK_RANGE((*handle), uint32_t, u32)) {
-                        SET_DEFAULT((*handle), uint32_t, u64);
+                        SET_DEFAULT((*handle), uint32_t, u32);
                         outofrange = 1;
                     }
                     break;
                 case PARAMETER_TYPE_INT32:
                     if (CHECK_RANGE((*handle), int32_t, i32)) {
-                        SET_DEFAULT((*handle), int32_t, u64);
+                        SET_DEFAULT((*handle), int32_t, i32);
                         outofrange = 1;
                     }
                     break;
@@ -381,6 +381,6 @@ int parameter_check_ranges(parameter_handle_t *ps, size_t length) {
 }
 
 
-parameter_user_data_t parameter_get_user_data(parameter_handle_t *handle) {
+GEL_PARAMETER_USER_DATA parameter_get_user_data(parameter_handle_t *handle) {
     return handle->data;
 }

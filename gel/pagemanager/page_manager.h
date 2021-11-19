@@ -6,8 +6,10 @@
  *  It heavily relies on typedefs to know which types should be passed to the page callbacks
  */
 
-#include "gel_conf.h"
 #include "../collections/stack.h"
+#ifdef GEL_PAGEMANAGER_CONFIGURATION_HEADER
+#include GEL_PAGEMANAGER_CONFIGURATION_HEADER
+#endif
 
 
 typedef struct {

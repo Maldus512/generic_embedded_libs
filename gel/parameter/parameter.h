@@ -3,45 +3,113 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#ifdef GEL_PARAMETER_CONFIGURATION_HEADER
+#include GEL_PARAMETER_CONFIGURATION_HEADER
+#endif
 
-#include "gel_conf.h"
+
+#ifndef GEL_PARAMETER_MAX_SIZE
+#define GEL_PARAMETER_MAX_SIZE 8
+#endif
+
+#ifndef GEL_PARAMETER_USER_DATA
+#define GEL_PARAMETER_USER_DATA void *
+#endif
+
+#if GEL_PARAMETER_MAX_SIZE == 0
+#error "Parameter size should be at least 1"
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 2
+#define _PARAMETER_TYPE_UINT16 PARAMETER_TYPE_UINT16
+#define _PARAMETER_TYPE_INT16  PARAMETER_TYPE_INT16
+#else
+#define _PARAMETER_TYPE_UINT16 PARAMETER_TYPE_UINT8
+#define _PARAMETER_TYPE_INT16  PARAMETER_TYPE_INT8
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+#define _PARAMETER_TYPE_UINT32 PARAMETER_TYPE_UINT32
+#define _PARAMETER_TYPE_INT32  PARAMETER_TYPE_INT32
+#define _PARAMETER_TYPE_FLOAT  PARAMETER_TYPE_FLOAT
+#else
+#define _PARAMETER_TYPE_UINT32 PARAMETER_TYPE_UINT8
+#define _PARAMETER_TYPE_INT32  PARAMETER_TYPE_INT8
+#define _PARAMETER_TYPE_FLOAT  PARAMETER_TYPE_INT8
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+#define _PARAMETER_TYPE_UINT64 PARAMETER_TYPE_UINT64
+#define _PARAMETER_TYPE_INT64  PARAMETER_TYPE_INT64
+#define _PARAMETER_TYPE_DOUBLE PARAMETER_TYPE_DOUBLE
+#else
+#define _PARAMETER_TYPE_UINT64 PARAMETER_TYPE_UINT8
+#define _PARAMETER_TYPE_INT64  PARAMETER_TYPE_INT8
+#define _PARAMETER_TYPE_DOUBLE PARAMETER_TYPE_INT8
+#endif
+
+
 
 #define _PARAMETER_VALUE_TYPE(x)                                                                                       \
     _Generic((x), uint8_t                                                                                              \
              : PARAMETER_TYPE_UINT8, int8_t                                                                            \
              : PARAMETER_TYPE_INT8, uint16_t                                                                           \
-             : PARAMETER_TYPE_UINT16, int16_t                                                                          \
-             : PARAMETER_TYPE_INT16, uint32_t                                                                          \
-             : PARAMETER_TYPE_UINT32, int32_t                                                                          \
-             : PARAMETER_TYPE_INT32, uint64_t                                                                          \
-             : PARAMETER_TYPE_UINT64, int64_t                                                                          \
-             : PARAMETER_TYPE_INT64, float                                                                             \
-             : PARAMETER_TYPE_FLOAT, double                                                                            \
-             : PARAMETER_TYPE_DOUBLE, default : 0)
+             : _PARAMETER_TYPE_UINT16, int16_t                                                                         \
+             : _PARAMETER_TYPE_INT16, uint32_t                                                                         \
+             : _PARAMETER_TYPE_UINT32, int32_t                                                                         \
+             : _PARAMETER_TYPE_INT32, uint64_t                                                                         \
+             : _PARAMETER_TYPE_UINT64, int64_t                                                                         \
+             : _PARAMETER_TYPE_INT64, float                                                                            \
+             : _PARAMETER_TYPE_FLOAT, double                                                                           \
+             : _PARAMETER_TYPE_DOUBLE, default : 0)
+
+
+#if GEL_PARAMETER_MAX_SIZE >= 2
+#define _PARAMETER_FIELD_UINT16 u16
+#define _PARAMETER_FIELD_INT16  i16
+#else
+#define _PARAMETER_FIELD_UINT16 u8
+#define _PARAMETER_FIELD_INT16  u16
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+#define _PARAMETER_FIELD_UINT32 u32
+#define _PARAMETER_FIELD_INT32  i32
+#define _PARAMETER_FIELD_FLOAT  f
+#else
+#define _PARAMETER_FIELD_UINT32 u8
+#define _PARAMETER_FIELD_INT32  i8
+#define _PARAMETER_FIELD_FLOAT  i8
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+#define _PARAMETER_FIELD_UINT64 u64
+#define _PARAMETER_FIELD_INT64  i64
+#define _PARAMETER_FIELD_DOUBLE d
+#else
+#define _PARAMETER_FIELD_UINT64 u8
+#define _PARAMETER_FIELD_INT64  i8
+#define _PARAMETER_FIELD_DOUBLE i8
+#endif
 
 #define _PARAMETER_LIMIT_VALUE_OPTION(ref, x)                                                                          \
     _Generic((ref), uint8_t                                                                                            \
              : (parameter_type_union_t){.u8 = (uint8_t)((uint8_t)x & 0xFF)}, int8_t                                    \
              : (parameter_type_union_t){.i8 = (int8_t)((int8_t)x & 0xFF)}, uint16_t                                    \
-             : (parameter_type_union_t){.u16 = (uint16_t)x}, int16_t                                                   \
-             : (parameter_type_union_t){.i16 = (int16_t)x}, uint32_t                                                   \
-             : (parameter_type_union_t){.u32 = (uint32_t)x}, int32_t                                                   \
-             : (parameter_type_union_t){.i32 = (int32_t)x}, uint64_t                                                   \
-             : (parameter_type_union_t){.u64 = (uint64_t)x}, int64_t                                                   \
-             : (parameter_type_union_t){.i64 = (int64_t)x}, float                                                      \
-             : (parameter_type_union_t){.f = (float)x}, double                                                         \
-             : (parameter_type_union_t){.d = (double)x})
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT16 = (uint16_t)x}, int16_t                               \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT16 = (int16_t)x}, uint32_t                                \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT32 = (uint32_t)x}, int32_t                               \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT32 = (int32_t)x}, uint64_t                                \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT64 = (uint64_t)x}, int64_t                               \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT64 = (int64_t)x}, float                                   \
+             : (parameter_type_union_t){._PARAMETER_FIELD_FLOAT = (float)x}, double                                    \
+             : (parameter_type_union_t){._PARAMETER_FIELD_DOUBLE = (double)x})
 
 #define PARAMETER_TYPE_UINT8_CAST(x)  ((parameter_type_union_t){.u8 = x})
 #define PARAMETER_TYPE_INT8_CAST(x)   ((parameter_type_union_t){.i8 = x})
-#define PARAMETER_TYPE_UINT16_CAST(x) ((parameter_type_union_t){.u16 = x})
-#define PARAMETER_TYPE_INT16_CAST(x)  ((parameter_type_union_t){.i16 = x})
-#define PARAMETER_TYPE_UINT32_CAST(x) ((parameter_type_union_t){.u32 = x})
-#define PARAMETER_TYPE_INT32_CAST(x)  ((parameter_type_union_t){.i32 = x})
-#define PARAMETER_TYPE_UINT64_CAST(x) ((parameter_type_union_t){.u64 = x})
-#define PARAMETER_TYPE_INT64_CAST(x)  ((parameter_type_union_t){.i64 = x})
-#define PARAMETER_TYPE_FLOAT_CAST(x)  ((parameter_type_union_t){.f = x})
-#define PARAMETER_TYPE_DOUBLE_CAST(x) ((parameter_type_union_t){.d = x})
+#define PARAMETER_TYPE_UINT16_CAST(x) ((parameter_type_union_t){._PARAMETER_FIELD_UINT16 = x})
+#define PARAMETER_TYPE_INT16_CAST(x)  ((parameter_type_union_t){._PARAMETER_FIELD_INT16 = x})
+#define PARAMETER_TYPE_UINT32_CAST(x) ((parameter_type_union_t){._PARAMETER_FIELD_UINT32 = x})
+#define PARAMETER_TYPE_INT32_CAST(x)  ((parameter_type_union_t){._PARAMETER_FIELD_INT32 = x})
+#define PARAMETER_TYPE_UINT64_CAST(x) ((parameter_type_union_t){._PARAMETER_FIELD_UINT64 = x})
+#define PARAMETER_TYPE_INT64_CAST(x)  ((parameter_type_union_t){._PARAMETER_FIELD_INT64 = x})
+#define PARAMETER_TYPE_FLOAT_CAST(x)  ((parameter_type_union_t){._PARAMETER_FIELD_FLOAT = x})
+#define PARAMETER_TYPE_DOUBLE_CAST(x) ((parameter_type_union_t){._PARAMETER_FIELD_DOUBLE = x})
 
 #define PARAMETER_C99(type, ptr, pmin, pmax, min, max, def, step, lvl, udata, runtime, arg)                            \
     ((parameter_handle_t){(type), (ptr), (pmin), (pmax), type##_CAST(min), type##_CAST(max), type##_CAST(def),         \
@@ -117,19 +185,19 @@ typedef struct _parameter_handle_t {
     parameter_type_union_t min, max, defaultv, step;
     unsigned int           access_level;
 
-    parameter_user_data_t data;
+    GEL_PARAMETER_USER_DATA data;
 
     void (*runtime)(struct _parameter_handle_t *, void *);
     void *arg;
 } parameter_handle_t;
 
-int                   parameter_operator(parameter_handle_t *handle, int mod);
-size_t                parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int al);
-parameter_handle_t *  parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al);
-parameter_user_data_t parameter_get_user_data(parameter_handle_t *handle);
-void                  parameter_reset_to_defaults(parameter_handle_t *ps, size_t length);
-int                   parameter_check_ranges(parameter_handle_t *ps, size_t length);
-void                  parameter_to_string_format(parameter_handle_t *handle, char *result, char *format);
-size_t                parameter_to_index(parameter_handle_t *handle);
+int                     parameter_operator(parameter_handle_t *handle, int mod);
+size_t                  parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int al);
+parameter_handle_t *    parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al);
+GEL_PARAMETER_USER_DATA parameter_get_user_data(parameter_handle_t *handle);
+void                    parameter_reset_to_defaults(parameter_handle_t *ps, size_t length);
+int                     parameter_check_ranges(parameter_handle_t *ps, size_t length);
+void                    parameter_to_string_format(parameter_handle_t *handle, char *result, char *format);
+size_t                  parameter_to_index(parameter_handle_t *handle);
 
 #endif
