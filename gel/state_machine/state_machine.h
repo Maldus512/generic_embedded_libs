@@ -20,7 +20,7 @@
         int res = sm->managers[sm->state].event(pmodel, event);                                                        \
                                                                                                                        \
         if (res >= 0) {                                                                                                \
-            if (sm->managers[res].guard(pmodel) == 0) {                                                                \
+            if (sm->managers[res].guard == NULL || sm->managers[res].guard(pmodel) == 0) {                             \
                 sm->state = res;                                                                                       \
                 return 1;                                                                                              \
             }                                                                                                          \
