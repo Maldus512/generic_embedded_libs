@@ -3,7 +3,11 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#ifdef GEL_PARAMETER_CONFIGURATION_HEADER
+
+
+#ifdef GEL_SIMPLE_CONFIG_INCLUSION
+#include "gel_conf.h"
+#elif defined GEL_PARAMETER_CONFIGURATION_HEADER
 #include GEL_PARAMETER_CONFIGURATION_HEADER
 #endif
 
