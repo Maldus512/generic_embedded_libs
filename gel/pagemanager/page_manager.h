@@ -7,7 +7,10 @@
  */
 
 #include "../collections/stack.h"
-#ifdef GEL_PAGEMANAGER_CONFIGURATION_HEADER
+
+#ifdef GEL_SIMPLE_CONFIG_INCLUSION
+#include "gel_conf.h"
+#elif defined GEL_PAGEMANAGER_CONFIGURATION_HEADER
 #include GEL_PAGEMANAGER_CONFIGURATION_HEADER
 #endif
 

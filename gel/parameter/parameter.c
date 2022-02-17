@@ -56,6 +56,15 @@
     }
 
 
+#define GET_RANGE(p, TYPE, name)                                                                                       \
+    ({                                                                                                                 \
+        TYPE min = p.pmin != NULL ? *((TYPE *)p.pmin) : p.min.name;                                                    \
+        TYPE max = p.pmax != NULL ? *((TYPE *)p.pmax) : p.max.name;                                                    \
+        max - min + 1;                                                                                                 \
+    })
+
+
+
 
 parameter_handle_t *parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al) {
     assert(num < length);
@@ -383,4 +392,56 @@ int parameter_check_ranges(parameter_handle_t *ps, size_t length) {
 
 GEL_PARAMETER_USER_DATA parameter_get_user_data(parameter_handle_t *handle) {
     return handle->data;
+}
+
+
+size_t parameter_get_total_values(parameter_handle_t *handle) {
+    size_t len = 0;
+
+    if (handle != NULL) {
+        switch (handle->type) {
+            case PARAMETER_TYPE_UINT8:
+                len = GET_RANGE((*handle), uint8_t, u8);
+                break;
+            case PARAMETER_TYPE_INT8:
+                len = GET_RANGE((*handle), int8_t, i8);
+                break;
+#if GEL_PARAMETER_MAX_SIZE >= 2
+            case PARAMETER_TYPE_UINT16:
+                len = GET_RANGE((*handle), uint16_t, u16);
+                break;
+            case PARAMETER_TYPE_INT16:
+                len = GET_RANGE((*handle), int16_t, i16);
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_UINT32:
+                len = GET_RANGE((*handle), uint32_t, u32);
+                break;
+            case PARAMETER_TYPE_INT32:
+                len = GET_RANGE((*handle), int32_t, i32);
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_UINT64:
+                len = GET_RANGE((*handle), uint64_t, u64);
+                break;
+            case PARAMETER_TYPE_INT64:
+                len = GET_RANGE((*handle), int64_t, i64);
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_FLOAT:
+                len = GET_RANGE((*handle), float, f);
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_DOUBLE:
+                len = GET_RANGE((*handle), double, d);
+                break;
+#endif
+        }
+    }
+
+    return len;
 }

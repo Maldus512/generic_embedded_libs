@@ -3,7 +3,11 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#ifdef GEL_PARAMETER_CONFIGURATION_HEADER
+
+
+#ifdef GEL_SIMPLE_CONFIG_INCLUSION
+#include "gel_conf.h"
+#elif defined GEL_PARAMETER_CONFIGURATION_HEADER
 #include GEL_PARAMETER_CONFIGURATION_HEADER
 #endif
 
@@ -180,8 +184,8 @@ typedef union {
 
 typedef struct _parameter_handle_t {
     parameter_type_t       type;
-    void *                 pointer;
-    void *                 pmin, *pmax;
+    void                  *pointer;
+    void                  *pmin, *pmax;
     parameter_type_union_t min, max, defaultv, step;
     unsigned int           access_level;
 
@@ -193,11 +197,12 @@ typedef struct _parameter_handle_t {
 
 int                     parameter_operator(parameter_handle_t *handle, int mod);
 size_t                  parameter_get_count(parameter_handle_t *ps, size_t length, unsigned int al);
-parameter_handle_t *    parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al);
+parameter_handle_t     *parameter_get_handle(parameter_handle_t *ps, size_t length, size_t num, unsigned int al);
 GEL_PARAMETER_USER_DATA parameter_get_user_data(parameter_handle_t *handle);
 void                    parameter_reset_to_defaults(parameter_handle_t *ps, size_t length);
 int                     parameter_check_ranges(parameter_handle_t *ps, size_t length);
 void                    parameter_to_string_format(parameter_handle_t *handle, char *result, char *format);
 size_t                  parameter_to_index(parameter_handle_t *handle);
+size_t                  parameter_get_total_values(parameter_handle_t *handle);
 
 #endif
