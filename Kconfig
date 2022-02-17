@@ -21,6 +21,10 @@ menu "GEL"
     config GEL_PARAMETER
         bool "Parameter management"
 
+    config GEL_PARAMETER_CONFIGURATION_HEADER
+        string "Configuration header for the parameter module"
+        depends on GEL_PARAMETER
+
     config GEL_DATA_STRUCTURES
         bool "Various data structures (watcher, maybe, struct_update)"
 
