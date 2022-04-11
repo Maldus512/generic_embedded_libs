@@ -2,7 +2,8 @@
 #include "timecheck.h"
 
 
-gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsigned long timestamp, gel_timer_callback_t cb, void *arg) {
+gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsigned long timestamp,
+                                gel_timer_callback_t cb, void *arg) {
     stopwatch_init(&timer->stopwatch);
     timer->active     = 1;
     timer->callback   = cb;
@@ -10,6 +11,13 @@ gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsign
     timer->arg        = arg;
     stopwatch_setngo(&timer->stopwatch, period, timestamp);
     return timer;
+}
+
+
+void gel_timer_reset(gel_timer_t *timer, unsigned long timestamp) {
+    if (timer->active) {
+        stopwatch_restart(&timer->stopwatch, timestamp);
+    }
 }
 
 
