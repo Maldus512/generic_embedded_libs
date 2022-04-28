@@ -18,7 +18,7 @@
 typedef struct {
     int              id;
     pman_page_data_t data;
-    void *           extra;
+    void            *extra;
 
     // Called when the page is first created; it initializes and returns the data structures used by the page
     pman_page_data_t (*create)(pman_model_t model, void *extra);
@@ -134,5 +134,8 @@ pman_view_t pman_swap_page_extra(page_manager_t *pman, pman_model_t model, pman_
  * @return pman_view_t
  */
 pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
+
+
+pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id);
 
 #endif

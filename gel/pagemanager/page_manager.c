@@ -15,8 +15,9 @@ static void clear_page_stack(page_manager_t *pman) {
     pman_page_t page;
 
     while (navigation_stack_pop(&pman->page_stack, &page) == POP_RESULT_SUCCESS) {
-        if (page.destroy)
+        if (page.destroy) {
             page.destroy(page.data, page.extra);
+        }
     }
 }
 
@@ -68,13 +69,47 @@ pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t
 }
 
 
+pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id) {
+    pman_page_t *current = &pman->current_page;
+
+    if (current->close) {
+        current->close(current->data);
+    }
+    if (current->destroy) {
+        current->destroy(current->data, current->extra);
+    }
+
+    pman_page_t page;
+
+    while (navigation_stack_pop(&pman->page_stack, &page) == POP_RESULT_SUCCESS) {
+        if (page.id == id) {
+            *current = page;
+            if (current->open) {
+                current->open(model, pman->current_page.data);
+            }
+            if (current->update) {
+                return current->update(model, pman->current_page.data);
+            } else {
+                return PMAN_VIEW_NULL;
+            }
+        } else if (page.destroy) {
+            page.destroy(page.data, page.extra);
+        }
+    }
+
+    return PMAN_VIEW_NULL;
+}
+
+
 pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
     pman_page_t *current = &pman->current_page;
 
-    if (current->close)
+    if (current->close) {
         current->close(current->data);
-    if (current->destroy)
+    }
+    if (current->destroy) {
         current->destroy(current->data, current->extra);
+    }
 
     clear_page_stack(pman);
 
