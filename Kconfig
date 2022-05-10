@@ -34,6 +34,9 @@ menu "GEL"
     config GEL_WEARLEVELING
         bool "Wear leveling module"
 
+    config GEL_PID
+        bool "PID control module"
+
     config GEL_CONF_INCLUDE_PATH
         string "gel_conf.h include paths"
         default "main/config"
