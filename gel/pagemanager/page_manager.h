@@ -7,11 +7,14 @@
  */
 
 #include "../collections/stack.h"
+#include "../gel_internal_conf.h"
 
 #ifdef GEL_SIMPLE_CONFIG_INCLUSION
 #include "gel_conf.h"
 #elif defined GEL_PAGEMANAGER_CONFIGURATION_HEADER
 #include GEL_PAGEMANAGER_CONFIGURATION_HEADER
+#else
+#error "Configuration not defined"
 #endif
 
 

@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include "../gel_internal_conf.h"
 
 
 #ifdef GEL_SIMPLE_CONFIG_INCLUSION
