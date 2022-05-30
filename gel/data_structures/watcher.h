@@ -15,9 +15,9 @@
 
 #if GEL_MALLOC_AVAILABLE
 #define WATCHER_ARRAY(ptr, num, cb, data)                                                                              \
-    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)cb, data, 0, 0, 0})
+    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)cb, (void *)(data), 0, 0, 0})
 #define WATCHER_DELAYED_ARRAY(ptr, num, cb, data, delay)                                                               \
-    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, (delay), 0})
+    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (void *)(data), 0, (delay), 0})
 #else
 #define WATCHER_ARRAY(ptr, num, cb, data)                                                                              \
     ((watcher_t){{0}, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, 0, 0})
@@ -41,10 +41,10 @@ typedef struct {
 #else
     uint8_t old[GEL_STATIC_BLOCK_SIZE];
 #endif
-    void * current;
+    void  *current;
     size_t size;
     void (*cb)(void *, void *);
-    void *        data;
+    void         *data;
     unsigned long timestamp, delay;
     int           moved;
 } watcher_t;
