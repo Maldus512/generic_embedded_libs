@@ -45,14 +45,18 @@ void gel_timer_pause(gel_timer_t *timer, unsigned long timestamp) {
 int gel_timer_manage_callbacks(gel_timer_t *timers, size_t num, unsigned long timestamp, void *user_pointer) {
     int res = 0;
     for (size_t i = 0; i < num; i++) {
+        if (!timers[i].active) {
+            continue;
+        }
+
         if (stopwatch_is_timer_reached(&timers[i].stopwatch, timestamp)) {
             timers[i].callback(&timers[i], user_pointer, timers[i].arg);
             res = 1;
-            if (!timers[i].autoreload) {
-                timers[i].active = 0;
-            } else if (timers[i].autoreload) {
+            if (timers[i].autoreload) {
                 timers[i].active = 1;
-                stopwatch_setngo(&timers[i].stopwatch, stopwatch_get_total_time(&timers[i].stopwatch), timestamp);
+                stopwatch_restart(&timers[i].stopwatch, timestamp);
+            } else {
+                timers[i].active = 0;
             }
         }
     }
