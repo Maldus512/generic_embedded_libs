@@ -46,7 +46,7 @@ typedef struct {
     void (*cb)(void *, void *);
     void         *data;
     unsigned long timestamp, delay;
-    int           moved;
+    uint8_t       moved;
 } watcher_t;
 
 
