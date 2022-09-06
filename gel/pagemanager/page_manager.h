@@ -139,6 +139,6 @@ pman_view_t pman_swap_page_extra(page_manager_t *pman, pman_model_t model, pman_
 pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
 
 
-pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id);
+pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id, uint8_t *found);
 
 #endif

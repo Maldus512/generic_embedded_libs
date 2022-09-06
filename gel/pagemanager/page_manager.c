@@ -69,7 +69,7 @@ pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t
 }
 
 
-pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id) {
+pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id, uint8_t *found) {
     pman_page_t *current = &pman->current_page;
 
     if (current->close) {
@@ -83,6 +83,7 @@ pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id)
 
     while (navigation_stack_pop(&pman->page_stack, &page) == POP_RESULT_SUCCESS) {
         if (page.id == id) {
+            *found   = 1;
             *current = page;
             if (current->open) {
                 current->open(model, pman->current_page.data);
@@ -97,6 +98,7 @@ pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id)
         }
     }
 
+    *found = 0;
     return PMAN_VIEW_NULL;
 }
 
