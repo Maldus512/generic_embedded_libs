@@ -141,4 +141,6 @@ pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t
 
 pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id, uint8_t *found);
 
+pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model, pman_event_t event);
+
 #endif
