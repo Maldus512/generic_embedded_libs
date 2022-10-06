@@ -78,11 +78,16 @@ pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id,
     if (current->destroy) {
         current->destroy(current->data, current->extra);
     }
+    // Deinitialize the stack, we currently have no page
+    pman->initialized = 0;
 
     pman_page_t page;
 
     while (navigation_stack_pop(&pman->page_stack, &page) == POP_RESULT_SUCCESS) {
         if (page.id == id) {
+            // We found a new page; reinitialize
+            pman->initialized = 1;
+
             *found   = 1;
             *current = page;
             if (current->open) {
@@ -154,9 +159,7 @@ pman_view_t pman_change_page_extra(page_manager_t *pman, pman_model_t model, pma
         if (current->close)
             current->close(current->data);
 
-        if (navigation_stack_is_full(&pman->page_stack))
-            navigation_stack_pop(&pman->page_stack, NULL);
-        navigation_stack_push(&pman->page_stack, current);
+        assert(navigation_stack_push(&pman->page_stack, current) != PUSH_RESULT_FULL);
     } else {
         pman->initialized = 1;
     }
