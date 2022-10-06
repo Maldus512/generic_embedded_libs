@@ -16,7 +16,19 @@ gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsign
 
 void gel_timer_reset(gel_timer_t *timer, unsigned long timestamp) {
     if (timer->active) {
-        stopwatch_restart(&timer->stopwatch, timestamp);
+        switch (stopwatch_get_state(&timer->stopwatch)) {
+            case TIMER_COUNTING:
+                stopwatch_restart(&timer->stopwatch, timestamp);
+                break;
+
+            case TIMER_PAUSED:
+                stopwatch_restart(&timer->stopwatch, timestamp);
+                stopwatch_pause(&timer->stopwatch, timestamp);
+                break;
+
+            case TIMER_STOPPED:
+                break;
+        }
     }
 }
 
@@ -39,6 +51,23 @@ void gel_timer_set_autoreload(gel_timer_t *timer, int autoreload) {
 
 void gel_timer_pause(gel_timer_t *timer, unsigned long timestamp) {
     stopwatch_pause(&timer->stopwatch, timestamp);
+}
+
+
+void gel_timer_change_period(gel_timer_t *timer, unsigned long period, unsigned long timestamp) {
+    switch (stopwatch_get_state(&timer->stopwatch)) {
+        case TIMER_COUNTING:
+            stopwatch_change(&timer->stopwatch, period, timestamp);
+            break;
+
+        case TIMER_PAUSED:
+            stopwatch_change(&timer->stopwatch, period, timestamp);
+            stopwatch_pause(&timer->stopwatch, timestamp);
+            break;
+
+        case TIMER_STOPPED:
+            break;
+    }
 }
 
 

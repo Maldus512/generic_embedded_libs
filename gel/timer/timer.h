@@ -36,5 +36,6 @@ void         gel_timer_pause_all(gel_timer_t *timers, size_t num, unsigned long 
 void         gel_timer_resume(gel_timer_t *timer, unsigned long timestamp);
 void         gel_timer_resume_all(gel_timer_t *timers, size_t num, unsigned long timestamp);
 void         gel_timer_reset(gel_timer_t *timer, unsigned long timestamp);
+void         gel_timer_change_period(gel_timer_t *timer, unsigned long period, unsigned long timestamp);
 
 #endif
