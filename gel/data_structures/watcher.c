@@ -53,6 +53,16 @@ void watcher_clear_changes(watcher_t *list, unsigned long timestamp) {
 }
 
 
+void watcher_trigger_all_cb(watcher_t *list) {
+    size_t i = 0;
+
+    while (list[i].current) {
+        watcher_trigger_cb(list, i);
+        i++;
+    }
+}
+
+
 void watcher_trigger_cb(watcher_t *list, int index) {
     list[index].cb(list[index].current, list[index].data);
 }
