@@ -37,30 +37,34 @@ pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model,
 pman_view_t pman_swap_page_extra(page_manager_t *pman, pman_model_t model, pman_page_t newpage, void *extra) {
     pman_page_t *current = &pman->current_page;
 
-    if (current->close)
+    if (current->close) {
         current->close(current->data);
-    if (current->destroy)
+    }
+    if (current->destroy) {
         current->destroy(current->data, current->extra);
+    }
 
     pman->current_page       = newpage;
     pman->current_page.extra = extra;
     // Create the newpage
-    if (pman->current_page.create)
+    if (pman->current_page.create) {
         pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
-    else
+    } else {
         pman->current_page.data = PMAN_DATA_NULL;
+    }
 
     // Open the page
     if (pman->current_page.open)
         pman->current_page.open(model, pman->current_page.data);
-    // Resume the page
-    if (pman->current_page.resume)
-        pman->current_page.resume(pman->current_page.data);
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
     // Update the page
-    if (pman->current_page.update)
+    if (pman->current_page.update) {
         return pman->current_page.update(model, pman->current_page.data);
-    else
+    } else {
         return PMAN_VIEW_NULL;
+    }
+#endif
+    return PMAN_VIEW_NULL;
 }
 
 
@@ -93,11 +97,13 @@ pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id,
             if (current->open) {
                 current->open(model, pman->current_page.data);
             }
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
             if (current->update) {
                 return current->update(model, pman->current_page.data);
             } else {
                 return PMAN_VIEW_NULL;
             }
+#endif
         } else if (page.destroy) {
             page.destroy(page.data, page.extra);
         }
@@ -123,22 +129,25 @@ pman_view_t pman_rebase_page_extra(page_manager_t *pman, pman_model_t model, pma
     pman->current_page       = newpage;
     pman->current_page.extra = extra;
     // Create the newpage
-    if (pman->current_page.create)
+    if (pman->current_page.create) {
         pman->current_page.data = pman->current_page.create(model, pman->current_page.extra);
-    else
+    } else {
         pman->current_page.data = PMAN_DATA_NULL;
+    }
 
     // Open the page
-    if (pman->current_page.open)
+    if (pman->current_page.open) {
         pman->current_page.open(model, pman->current_page.data);
-    // Resume the page
-    if (pman->current_page.resume)
-        pman->current_page.resume(pman->current_page.data);
+    }
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
     // Update the page
-    if (pman->current_page.update)
+    if (pman->current_page.update) {
         return pman->current_page.update(model, pman->current_page.data);
-    else
+    } else {
         return PMAN_VIEW_NULL;
+    }
+#endif
+    return PMAN_VIEW_NULL;
 }
 
 
@@ -171,19 +180,25 @@ pman_view_t pman_change_page_extra(page_manager_t *pman, pman_model_t model, pma
     dest->extra = extra;
 
     // Create the newpage
-    if (dest->create)
+    if (dest->create) {
         dest->data = dest->create(model, extra);
-    else
+    } else {
         dest->data = PMAN_DATA_NULL;
+    }
 
     // Open the page
-    if (dest->open)
+    if (dest->open) {
         dest->open(model, dest->data);
+    }
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
     // Update the page
-    if (dest->update)
+    if (dest->update) {
         return dest->update(model, dest->data);
-    else
+    } else {
         return PMAN_VIEW_NULL;
+    }
+#endif
+    return PMAN_VIEW_NULL;
 }
 
 pman_view_t pman_change_page(page_manager_t *pman, pman_model_t model, pman_page_t page) {
@@ -197,28 +212,38 @@ pman_view_t pman_back(page_manager_t *pman, pman_model_t model) {
     if (navigation_stack_pop(&pman->page_stack, &page) == POP_RESULT_SUCCESS) {
         pman_page_t *current = &pman->current_page;
 
-        if (current->close)
+        if (current->close) {
             current->close(pman->current_page.data);
-        if (current->destroy)
+        }
+        if (current->destroy) {
             current->destroy(current->data, current->extra);
+        }
 
         *current = page;
-        if (current->open)
+        if (current->open) {
             current->open(model, pman->current_page.data);
-        if (current->update)
+        }
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
+        if (current->update) {
             return current->update(model, pman->current_page.data);
+        }
+#endif
+        return PMAN_VIEW_NULL;
     }
 
     return PMAN_VIEW_NULL;
 }
 
 pman_view_t pman_page_update(page_manager_t *pman, pman_model_t model) {
-    pman_page_t *current;
     assert(pman->initialized);
 
-    current = &pman->current_page;
-    if (current && current->update)
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
+    pman_page_t *current = &pman->current_page;
+    if (current && current->update) {
         return current->update(model, current->data);
-    else
+    } else {
         return PMAN_VIEW_NULL;
+    }
+#endif
+    return PMAN_VIEW_NULL;
 }
