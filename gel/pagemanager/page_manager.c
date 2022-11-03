@@ -103,6 +103,8 @@ pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id,
             } else {
                 return PMAN_VIEW_NULL;
             }
+#else
+            return PMAN_VIEW_NULL;
 #endif
         } else if (page.destroy) {
             page.destroy(page.data, page.extra);
