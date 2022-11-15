@@ -20,7 +20,8 @@
 
 #define STOPWATCH_NULL  {.starting_time = 0, .elapsed_time = 0, .total_time = 0, .state = TIMER_STOPPED}
 
-#define stopwatch_setngo(timer, duration, timestamp) stopwatch_set(timer, duration); stopwatch_start(timer, timestamp)
+//#define stopwatch_setngo(timer, duration, timestamp) stopwatch_set(timer, duration); stopwatch_start(timer, timestamp)
+#define stopwatch_setngo(timer, duration, timestamp) stopwatch_change(timer, duration,timestamp); stopwatch_start(timer, timestamp)
 
 // Three possible states of a timer
 typedef enum {
