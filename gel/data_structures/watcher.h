@@ -15,9 +15,9 @@
 
 #if GEL_MALLOC_AVAILABLE
 #define WATCHER_ARRAY(ptr, num, cb, data)                                                                              \
-    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)cb, data, 0, 0, 0})
+    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)cb, (void *)(data), 0, 0, 0})
 #define WATCHER_DELAYED_ARRAY(ptr, num, cb, data, delay)                                                               \
-    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, (delay), 0})
+    ((watcher_t){NULL, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (void *)(data), 0, (delay), 0})
 #else
 #define WATCHER_ARRAY(ptr, num, cb, data)                                                                              \
     ((watcher_t){{0}, (ptr), sizeof(*(ptr)) * (num), (watcher_cb_t)(cb), (data), 0, 0, 0})
@@ -35,18 +35,31 @@ typedef void (*watcher_cb_t)(void *mem, void *data);
 /*
  *  Watcher struct. Its fields should not be directly accessed
  */
-typedef struct {
+typedef struct
+#ifdef GEL_WATCHER_REDUCE_RAM_FOOTPRINT
+    __attribute__((packed))
+#endif
+{
 #if GEL_MALLOC_AVAILABLE
     void *old;
 #else
-    uint8_t old[GEL_STATIC_BLOCK_SIZE];
+    uint8_t       old[GEL_STATIC_BLOCK_SIZE];
 #endif
-    void * current;
-    size_t size;
+    void *current;
+#ifdef GEL_WATCHER_REDUCE_RAM_FOOTPRINT
+    uint8_t size;
+#else
+    size_t        size;
+#endif
     void (*cb)(void *, void *);
-    void *        data;
-    unsigned long timestamp, delay;
-    int           moved;
+    void         *data;
+    unsigned long timestamp;
+#ifdef GEL_WATCHER_REDUCE_RAM_FOOTPRINT
+    uint16_t delay;
+#else
+    unsigned long delay;
+#endif
+    uint8_t moved;
 } watcher_t;
 
 

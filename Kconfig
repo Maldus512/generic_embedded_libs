@@ -21,6 +21,10 @@ menu "GEL"
     config GEL_PARAMETER
         bool "Parameter management"
 
+    config GEL_PARAMETER_CONFIGURATION_HEADER
+        string "Configuration header for the parameter module"
+        depends on GEL_PARAMETER
+
     config GEL_DATA_STRUCTURES
         bool "Various data structures (watcher, maybe, struct_update)"
 
@@ -29,6 +33,9 @@ menu "GEL"
 
     config GEL_WEARLEVELING
         bool "Wear leveling module"
+
+    config GEL_PID
+        bool "PID control module"
 
     config GEL_CONF_INCLUDE_PATH
         string "gel_conf.h include paths"
