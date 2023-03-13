@@ -108,4 +108,6 @@ void watcher_clear_changes(watcher_t *list, unsigned long timestamp);
  */
 void watcher_trigger_cb(watcher_t *list, int index);
 
+void watcher_trigger_all(watcher_t *list);
+
 #endif
