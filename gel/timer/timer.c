@@ -2,10 +2,9 @@
 #include "timecheck.h"
 
 
-gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsigned long timestamp,
-                                gel_timer_callback_t cb, void *arg) {
+gel_timer_t *gel_timer_init(gel_timer_t *timer, unsigned long period, unsigned long timestamp, gel_timer_callback_t cb,
+                            void *arg) {
     stopwatch_init(&timer->stopwatch);
-    timer->active     = 1;
     timer->callback   = cb;
     timer->autoreload = 0;
     timer->arg        = arg;
@@ -15,26 +14,23 @@ gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsign
 
 
 void gel_timer_reset(gel_timer_t *timer, unsigned long timestamp) {
-    if (timer->active) {
-        switch (stopwatch_get_state(&timer->stopwatch)) {
-            case TIMER_COUNTING:
-                stopwatch_restart(&timer->stopwatch, timestamp);
-                break;
+    switch (stopwatch_get_state(&timer->stopwatch)) {
+        case TIMER_COUNTING:
+            stopwatch_restart(&timer->stopwatch, timestamp);
+            break;
 
-            case TIMER_PAUSED:
-                stopwatch_restart(&timer->stopwatch, timestamp);
-                stopwatch_pause(&timer->stopwatch, timestamp);
-                break;
+        case TIMER_PAUSED:
+            stopwatch_restart(&timer->stopwatch, timestamp);
+            stopwatch_pause(&timer->stopwatch, timestamp);
+            break;
 
-            case TIMER_STOPPED:
-                break;
-        }
+        case TIMER_STOPPED:
+            break;
     }
 }
 
 
-void gel_timer_deactivate(gel_timer_t *timer) {
-    timer->active = 0;
+void gel_timer_stop(gel_timer_t *timer) {
     stopwatch_stop(&timer->stopwatch);
 }
 
@@ -44,7 +40,7 @@ void gel_timer_resume(gel_timer_t *timer, unsigned long timestamp) {
 }
 
 
-void gel_timer_set_autoreload(gel_timer_t *timer, int autoreload) {
+void gel_timer_set_autoreload(gel_timer_t *timer, uint8_t autoreload) {
     timer->autoreload = autoreload;
 }
 
@@ -71,63 +67,21 @@ void gel_timer_change_period(gel_timer_t *timer, unsigned long period, unsigned 
 }
 
 
-int gel_timer_manage_callbacks(gel_timer_t *timers, size_t num, unsigned long timestamp, void *user_pointer) {
-    int res = 0;
-    for (size_t i = 0; i < num; i++) {
-        if (!timers[i].active) {
-            continue;
+uint8_t gel_timer_manage_callback(gel_timer_t *timer, unsigned long timestamp, void *user_pointer) {
+    if (stopwatch_is_timer_reached(&timer->stopwatch, timestamp)) {
+        timer->callback(timer, user_pointer, timer->arg);
+        if (timer->autoreload) {
+            stopwatch_restart(&timer->stopwatch, timestamp);
+        } else {
+            stopwatch_stop(&timer->stopwatch);
         }
-
-        if (stopwatch_is_timer_reached(&timers[i].stopwatch, timestamp)) {
-            timers[i].callback(&timers[i], user_pointer, timers[i].arg);
-            res = 1;
-            if (timers[i].autoreload) {
-                timers[i].active = 1;
-                stopwatch_restart(&timers[i].stopwatch, timestamp);
-            } else {
-                timers[i].active = 0;
-            }
-        }
+        return 1;
+    } else {
+        return 0;
     }
-    return res;
-}
-
-
-int gel_timer_get_first_available(gel_timer_t *timers, size_t num) {
-    for (size_t i = 0; i < num; i++) {
-        if (timers[i].active == 0) {
-            return i;
-        }
-    }
-    return -1;
 }
 
 
 unsigned long gel_timer_get_remaining(gel_timer_t *timer, unsigned long timestamp) {
     return stopwatch_get_remaining(&timer->stopwatch, timestamp);
-}
-
-
-void gel_timer_deactivate_all(gel_timer_t *timers, size_t num) {
-    for (size_t i = 0; i < num; i++) {
-        gel_timer_deactivate(&timers[i]);
-    }
-}
-
-
-void gel_timer_pause_all(gel_timer_t *timers, size_t num, unsigned long timestamp) {
-    for (size_t i = 0; i < num; i++) {
-        if (timers[i].active) {
-            gel_timer_pause(&timers[i], timestamp);
-        }
-    }
-}
-
-
-void gel_timer_resume_all(gel_timer_t *timers, size_t num, unsigned long timestamp) {
-    for (size_t i = 0; i < num; i++) {
-        if (timers[i].active) {
-            gel_timer_resume(&timers[i], timestamp);
-        }
-    }
 }
