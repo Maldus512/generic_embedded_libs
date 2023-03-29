@@ -34,7 +34,7 @@ void scheduler_init(scheduler_t *scheduler
 #endif
 
     for (size_t i = 0; i < NUM_ENTRIES(scheduler); i++) {
-        scheduler->entries[i].enabled = 0;
+        memset(&scheduler->entries[i], 0, sizeof(scheduler_entry_t));
     }
 }
 
@@ -57,39 +57,12 @@ scheduler_entry_t *scheduler_get_entry_mut(scheduler_t *scheduler, size_t entry_
 }
 
 
-void scheduler_zero_entry(scheduler_t *scheduler, size_t entry_index) {
-    if (entry_index >= NUM_ENTRIES(scheduler)) {
-        return;
-    }
-    scheduler->entries[entry_index].days         = 0;
-    scheduler->entries[entry_index].start_second = 0;
-    scheduler->entries[entry_index].duration     = 0;
-}
-
-
 int scheduler_set_entry(scheduler_t *scheduler, size_t entry_index, scheduler_entry_t entry) {
     if (entry_index >= NUM_ENTRIES(scheduler)) {
         return -1;
     }
     scheduler->entries[entry_index] = entry;
 
-    return 0;
-}
-
-
-int scheduler_enable_entry(scheduler_t *scheduler, size_t entry_index, uint8_t days, uint32_t start_second,
-                           uint32_t duration, int value) {
-    if (entry_index >= NUM_ENTRIES(scheduler)) {
-        return -1;
-    }
-
-    scheduler_entry_t *entry = &scheduler->entries[entry_index];
-
-    entry->enabled      = 1;
-    entry->days         = days;
-    entry->start_second = start_second;
-    entry->duration     = duration;
-    entry->value        = value;
     return 0;
 }
 
@@ -120,7 +93,7 @@ static uint8_t is_entry_active(const scheduler_entry_t *entry, struct tm *tm_inf
 
     unsigned long current = to_seconds(tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec);
     unsigned long start   = entry->start_second;
-    unsigned long end     = start + entry->duration;
+    unsigned long end     = entry->end_second;
 
     // TODO: manage a scheduler entry that overflows in the next day
     if (end > seconds_in_day) {
@@ -163,6 +136,30 @@ int scheduler_get_active_entry_number(scheduler_t *scheduler, struct tm *tm_info
     }
 
     return foundid;
+}
+
+
+size_t scheduler_are_there_overlapping_entries(scheduler_t *scheduler, const scheduler_entry_t *entry) {
+#define INCLUDED(instant, entry) (instant >= entry->start_second && instant <= entry->end_second)
+    size_t found = 0;
+
+    for (size_t i = 0; i < NUM_ENTRIES(scheduler); i++) {
+        scheduler_entry_t *overlapping_entry = &scheduler->entries[i];
+
+        if (!overlapping_entry->enabled) {
+            continue;
+        }
+
+        if ((overlapping_entry->days & entry->days) > 0) {
+            if (INCLUDED(entry->start_second, overlapping_entry) || INCLUDED(entry->end_second, overlapping_entry) ||
+                INCLUDED(overlapping_entry->start_second, entry) || INCLUDED(overlapping_entry->end_second, entry)) {
+                found++;
+            }
+        }
+    }
+
+    return found;
+#undef INCLUDED
 }
 
 
@@ -225,7 +222,7 @@ unsigned long scheduler_get_schedule_remaining_duration(scheduler_t *scheduler, 
     }
 
     unsigned long current = to_seconds(tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec);
-    unsigned long end     = entry->start_second + entry->duration;
+    unsigned long end     = entry->end_second;
 
     return end - current;
 }
@@ -252,7 +249,7 @@ size_t scheduler_entry_serialize(uint8_t *buffer, const scheduler_entry_t *entry
     i += serialize_uint8(&buffer[i], entry->enabled);
     i += serialize_uint8(&buffer[i], entry->days);
     i += serialize_uint32_le(&buffer[i], entry->start_second);
-    i += serialize_uint32_le(&buffer[i], entry->duration);
+    i += serialize_uint32_le(&buffer[i], entry->end_second);
     i += serialize_uint8(&buffer[i], (uint8_t)entry->value);
 
     assert(i == SCHEDULER_ENTRY_SERIALIZED_SIZE);
@@ -265,32 +262,26 @@ size_t scheduler_entry_deserialize(scheduler_entry_t *entry, uint8_t *buffer) {
     i += deserialize_uint8(&entry->enabled, &buffer[i]);
     i += deserialize_uint8(&entry->days, &buffer[i]);
     i += deserialize_uint32_le(&entry->start_second, &buffer[i]);
-    i += deserialize_uint32_le(&entry->duration, &buffer[i]);
+    i += deserialize_uint32_le(&entry->end_second, &buffer[i]);
     uint8_t value;
     i += deserialize_uint8(&value, &buffer[i]);
     entry->value = value;
 
-    assert(i == SCHEDULER_ENTRY_DESERIALIZED_SIZE);
+    assert(i == SCHEDULER_ENTRY_SERIALIZED_SIZE);
     return i;
 }
 
 
-void scheduler_enable_entry_from_start_and_end(scheduler_t *scheduler, size_t entry_index, uint8_t days,
-                                               uint32_t start_second, uint32_t end_second, int value) {
-    if (entry_index >= NUM_ENTRIES(scheduler)) {
-        return;
+unsigned long scheduler_get_entry_duration(const scheduler_entry_t *entry) {
+    if (entry == NULL) {
+        return 0;
     }
 
-    uint32_t duration = 0;
-
-    if (start_second > end_second) {
-        // Inverted schedule
-        duration = end_second + (seconds_in_day - start_second);
+    if (entry->start_second < entry->end_second) {
+        return entry->end_second - entry->start_second;
     } else {
-        duration = end_second - start_second;
+        return entry->start_second - entry->end_second;
     }
-
-    scheduler_enable_entry(scheduler, entry_index, days, start_second, duration, value);
 }
 
 
@@ -310,5 +301,5 @@ static unsigned long total_week_timespan(scheduler_entry_t *entry) {
         num_days += is_day_included(entry->days, (uint8_t)i);
     }
 
-    return entry->duration * num_days;
+    return scheduler_get_entry_duration(entry) * num_days;
 }
