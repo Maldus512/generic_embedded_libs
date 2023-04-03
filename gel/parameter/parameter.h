@@ -199,6 +199,9 @@ void                    parameter_reset_to_defaults(parameter_handle_t *ps, size
 int                     parameter_check_ranges(parameter_handle_t *ps, size_t length);
 void                    parameter_to_string_format(parameter_handle_t *handle, char *result, char *format);
 size_t                  parameter_to_index(parameter_handle_t *handle);
+long                    parameter_to_long(parameter_handle_t *handle);
 size_t                  parameter_get_total_values(parameter_handle_t *handle);
+int                     parameter_to_bool(parameter_handle_t *handle);
+void                    parameter_clone(parameter_handle_t *dest, parameter_handle_t *src, void *pointer);
 
 #endif

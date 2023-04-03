@@ -87,6 +87,102 @@ parameter_handle_t *parameter_get_handle(parameter_handle_t *ps, size_t length, 
 }
 
 
+void parameter_clone(parameter_handle_t *dest, parameter_handle_t *src, void *pointer) {
+    if (src != NULL && dest != NULL && pointer != NULL) {
+        *dest         = *src;
+        dest->pointer = pointer;
+
+        /* Also clone the pointer value */
+        switch (src->type) {
+            case PARAMETER_TYPE_UINT8:
+                *(uint8_t *)dest->pointer = *(uint8_t *)src->pointer;
+                break;
+            case PARAMETER_TYPE_INT8:
+                *(int8_t *)dest->pointer = *(int8_t *)src->pointer;
+                break;
+#if GEL_PARAMETER_MAX_SIZE >= 2
+            case PARAMETER_TYPE_UINT16:
+                *(uint16_t *)dest->pointer = *(uint16_t *)src->pointer;
+                break;
+            case PARAMETER_TYPE_INT16:
+                *(int16_t *)dest->pointer = *(int16_t *)src->pointer;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_UINT32:
+                *(uint32_t *)dest->pointer = *(uint32_t *)src->pointer;
+                break;
+            case PARAMETER_TYPE_INT32:
+                *(int32_t *)dest->pointer = *(int32_t *)src->pointer;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_UINT64:
+                *(uint64_t *)dest->pointer = *(uint64_t *)src->pointer;
+                break;
+            case PARAMETER_TYPE_INT64:
+                *(int64_t *)dest->pointer = *(int64_t *)src->pointer;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_FLOAT:
+                *(float *)dest->pointer = *(float *)src->pointer;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_DOUBLE:
+                *(double *)dest->pointer = *(double *)src->pointer;
+                break;
+#endif
+        }
+    }
+}
+
+
+
+long parameter_to_long(parameter_handle_t *handle) {
+    if (handle) {
+        switch (handle->type) {
+            case PARAMETER_TYPE_UINT8:
+                return (long)*(uint8_t *)handle->pointer;
+            case PARAMETER_TYPE_INT8:
+                return (long)*(uint8_t *)handle->pointer;
+#if GEL_PARAMETER_MAX_SIZE >= 2
+            case PARAMETER_TYPE_UINT16:
+                return (long)*(uint16_t *)handle->pointer;
+            case PARAMETER_TYPE_INT16:
+                return (long)*(int16_t *)handle->pointer;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_UINT32:
+                return (long)*(uint32_t *)handle->pointer;
+            case PARAMETER_TYPE_INT32:
+                return (long)*(int32_t *)handle->pointer;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_UINT64:
+                return (long)*(uint64_t *)handle->pointer;
+            case PARAMETER_TYPE_INT64:
+                return (long)*(int64_t *)handle->pointer;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_FLOAT:
+                return 0;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_DOUBLE:
+                return 0;
+#endif
+        }
+
+        return 0;
+    } else {
+        return 0;
+    }
+}
+
+
+
 size_t parameter_to_index(parameter_handle_t *handle) {
     if (handle) {
         switch (handle->type) {
@@ -126,6 +222,11 @@ size_t parameter_to_index(parameter_handle_t *handle) {
     } else {
         return 0;
     }
+}
+
+
+int parameter_to_bool(parameter_handle_t *handle) {
+    return parameter_to_index(handle) > 0;
 }
 
 
