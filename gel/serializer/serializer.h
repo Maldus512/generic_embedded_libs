@@ -22,7 +22,6 @@
         size;                                                                                                          \
     })
 
-
 #define UNPACK_UINT32_BE(var, buffer)                                                                                  \
     ({                                                                                                                 \
         uint32_t tmp;                                                                                                  \
@@ -36,6 +35,21 @@
         uint8_t tmp;                                                                                                   \
         size_t  size = deserialize_uint8(&tmp, (buffer));                                                              \
         (var)        = tmp;                                                                                            \
+        size;                                                                                                          \
+    })
+
+
+#define PACK_UINT16_BE(buffer, var)                                                                                    \
+    ({                                                                                                                 \
+        uint16_t tmp  = (uint16_t)(var);                                                                               \
+        size_t   size = serialize_uint16_be((buffer), tmp);                                                            \
+        size;                                                                                                          \
+    })
+
+#define PACK_UINT8(buffer, var)                                                                                        \
+    ({                                                                                                                 \
+        uint8_t tmp  = (uint8_t)(var);                                                                                 \
+        size_t  size = serialize_uint8((buffer), tmp);                                                                 \
         size;                                                                                                          \
     })
 

@@ -1,3 +1,4 @@
+#include <string.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -545,4 +546,59 @@ size_t parameter_get_total_values(parameter_handle_t *handle) {
     }
 
     return len;
+}
+
+
+parameter_handle_t parameter_clone_with_buffer(parameter_handle_t *source, uint8_t *buffer) {
+    parameter_handle_t clone = *source;
+    clone.pointer            = buffer;
+    parameter_copy_value(&clone, source);
+    return clone;
+}
+
+
+int parameter_copy_value(parameter_handle_t *destination, parameter_handle_t *source) {
+    if (source != NULL && destination != NULL && source->type == destination->type) {
+        size_t len = 0;
+
+        switch (source->type) {
+            case PARAMETER_TYPE_UINT8:
+            case PARAMETER_TYPE_INT8:
+                len = 1;
+                break;
+#if GEL_PARAMETER_MAX_SIZE >= 2
+            case PARAMETER_TYPE_UINT16:
+            case PARAMETER_TYPE_INT16:
+                len = 2;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_UINT32:
+            case PARAMETER_TYPE_INT32:
+                len = 4;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_UINT64:
+            case PARAMETER_TYPE_INT64:
+                len = 8;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 4
+            case PARAMETER_TYPE_FLOAT:
+                len = 4;
+                break;
+#endif
+#if GEL_PARAMETER_MAX_SIZE >= 8
+            case PARAMETER_TYPE_DOUBLE:
+                len = 8;
+                break;
+#endif
+        }
+
+        memcpy(destination->pointer, source->pointer, len);
+        return 0;
+    } else {
+        return -1;
+    }
 }

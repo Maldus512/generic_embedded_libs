@@ -7,15 +7,21 @@
  */
 
 #include "../collections/stack.h"
-#ifdef GEL_PAGEMANAGER_CONFIGURATION_HEADER
+#include "../gel_internal_conf.h"
+
+#ifdef GEL_SIMPLE_CONFIG_INCLUSION
+#include "gel_conf.h"
+#elif defined GEL_PAGEMANAGER_CONFIGURATION_HEADER
 #include GEL_PAGEMANAGER_CONFIGURATION_HEADER
+#else
+#error "Configuration not defined"
 #endif
 
 
 typedef struct {
     int              id;
     pman_page_data_t data;
-    void *           extra;
+    void            *extra;
 
     // Called when the page is first created; it initializes and returns the data structures used by the page
     pman_page_data_t (*create)(pman_model_t model, void *extra);
@@ -28,12 +34,14 @@ typedef struct {
     void (*close)(pman_page_data_t data);
 
     // Called when the page is back in focus
-    void (*resume)(pman_page_data_t data);     // currently unused
+    // void (*resume)(pman_page_data_t data);
     // Called when the page is still in view, but not the foremost element (e.g. a popup appeared)
-    void (*pause)(pman_page_data_t data);     // currently unused
+    // void (*pause)(pman_page_data_t data);
 
+#ifdef GEL_PAGEMANAGER_UPDATE_CALLBACK
     // Called to update the page's content
     pman_view_t (*update)(pman_model_t model, pman_page_data_t data);
+#endif
     // Called to process an event
     pman_message_t (*process_event)(pman_model_t model, pman_page_data_t data, pman_event_t event);
 } pman_page_t;
@@ -131,5 +139,10 @@ pman_view_t pman_swap_page_extra(page_manager_t *pman, pman_model_t model, pman_
  * @return pman_view_t
  */
 pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t newpage);
+
+
+pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id, uint8_t *found);
+
+pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model, pman_event_t event);
 
 #endif

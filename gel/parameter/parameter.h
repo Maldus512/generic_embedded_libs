@@ -3,10 +3,18 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#ifdef GEL_PARAMETER_CONFIGURATION_HEADER
+#include "../gel_internal_conf.h"
+
+
+#ifdef GEL_SIMPLE_CONFIG_INCLUSION
+#include "gel_conf.h"
+#elif defined GEL_PARAMETER_CONFIGURATION_HEADER
 #include GEL_PARAMETER_CONFIGURATION_HEADER
 #endif
 
+#ifndef GEL_PARAMETER_HANDLE_ATTRIBUTES
+#define GEL_PARAMETER_HANDLE_ATTRIBUTES
+#endif
 
 #ifndef GEL_PARAMETER_MAX_SIZE
 #define GEL_PARAMETER_MAX_SIZE 8
@@ -64,41 +72,53 @@
 #if GEL_PARAMETER_MAX_SIZE >= 2
 #define _PARAMETER_FIELD_UINT16 u16
 #define _PARAMETER_FIELD_INT16  i16
+#define CAST16(x)               ((uint16_t)(x)&0xFFFF)
 #else
 #define _PARAMETER_FIELD_UINT16 u8
-#define _PARAMETER_FIELD_INT16  u16
+#define _PARAMETER_FIELD_INT16  u8
+#define CAST16(x)               ((uint8_t)(x)&0xFF)
 #endif
+
 #if GEL_PARAMETER_MAX_SIZE >= 4
 #define _PARAMETER_FIELD_UINT32 u32
 #define _PARAMETER_FIELD_INT32  i32
 #define _PARAMETER_FIELD_FLOAT  f
+#define CAST32(x)               ((uint32_t)(x)&0xFFFFFFFF)
+#define CASTFLOAT(x)            ((float)(x))
 #else
 #define _PARAMETER_FIELD_UINT32 u8
 #define _PARAMETER_FIELD_INT32  i8
 #define _PARAMETER_FIELD_FLOAT  i8
+#define CAST32(x)               ((uint8_t)(x)&0xFF)
+#define CASTFLOAT(x)            ((uint8_t)(x)&0xFF)
 #endif
+
 #if GEL_PARAMETER_MAX_SIZE >= 8
 #define _PARAMETER_FIELD_UINT64 u64
 #define _PARAMETER_FIELD_INT64  i64
 #define _PARAMETER_FIELD_DOUBLE d
+#define CAST64(x)               ((uint32_t)(x)&0xFFFFFFFFFFFFFFFF)
+#define CASTDOUBLE(x)           ((double)(x))
 #else
 #define _PARAMETER_FIELD_UINT64 u8
 #define _PARAMETER_FIELD_INT64  i8
 #define _PARAMETER_FIELD_DOUBLE i8
+#define CAST64(x)               ((uint8_t)(x)&0xFF)
+#define CASTDOUBLE(x)           ((uint8_t)(x)&0xFF)
 #endif
 
 #define _PARAMETER_LIMIT_VALUE_OPTION(ref, x)                                                                          \
     _Generic((ref), uint8_t                                                                                            \
              : (parameter_type_union_t){.u8 = (uint8_t)((uint8_t)x & 0xFF)}, int8_t                                    \
              : (parameter_type_union_t){.i8 = (int8_t)((int8_t)x & 0xFF)}, uint16_t                                    \
-             : (parameter_type_union_t){._PARAMETER_FIELD_UINT16 = (uint16_t)x}, int16_t                               \
-             : (parameter_type_union_t){._PARAMETER_FIELD_INT16 = (int16_t)x}, uint32_t                                \
-             : (parameter_type_union_t){._PARAMETER_FIELD_UINT32 = (uint32_t)x}, int32_t                               \
-             : (parameter_type_union_t){._PARAMETER_FIELD_INT32 = (int32_t)x}, uint64_t                                \
-             : (parameter_type_union_t){._PARAMETER_FIELD_UINT64 = (uint64_t)x}, int64_t                               \
-             : (parameter_type_union_t){._PARAMETER_FIELD_INT64 = (int64_t)x}, float                                   \
-             : (parameter_type_union_t){._PARAMETER_FIELD_FLOAT = (float)x}, double                                    \
-             : (parameter_type_union_t){._PARAMETER_FIELD_DOUBLE = (double)x})
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT16 = (uint16_t)CAST16(x)}, int16_t                       \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT16 = (int16_t)CAST16(x)}, uint32_t                        \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT32 = (uint32_t)CAST32(x)}, int32_t                       \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT32 = (int32_t)CAST32(x)}, uint64_t                        \
+             : (parameter_type_union_t){._PARAMETER_FIELD_UINT64 = (uint64_t)CAST64(x)}, int64_t                       \
+             : (parameter_type_union_t){._PARAMETER_FIELD_INT64 = (int64_t)CAST64(x)}, float                           \
+             : (parameter_type_union_t){._PARAMETER_FIELD_FLOAT = CASTFLOAT(x)}, double                                \
+             : (parameter_type_union_t){._PARAMETER_FIELD_DOUBLE = CASTDOUBLE(x)})
 
 #define PARAMETER_TYPE_UINT8_CAST(x)  ((parameter_type_union_t){.u8 = x})
 #define PARAMETER_TYPE_INT8_CAST(x)   ((parameter_type_union_t){.i8 = x})
@@ -178,7 +198,7 @@ typedef union {
 } parameter_type_union_t;
 
 
-typedef struct _parameter_handle_t {
+typedef struct GEL_PARAMETER_HANDLE_ATTRIBUTES _parameter_handle_t {
     parameter_type_t       type;
     void                  *pointer;
     void                  *pmin, *pmax;
@@ -202,6 +222,7 @@ size_t                  parameter_to_index(parameter_handle_t *handle);
 long                    parameter_to_long(parameter_handle_t *handle);
 size_t                  parameter_get_total_values(parameter_handle_t *handle);
 int                     parameter_to_bool(parameter_handle_t *handle);
-void                    parameter_clone(parameter_handle_t *dest, parameter_handle_t *src, void *pointer);
+int                     parameter_copy_value(parameter_handle_t *destination, parameter_handle_t *source);
+parameter_handle_t      parameter_clone_with_buffer(parameter_handle_t *source, uint8_t *buffer);
 
 #endif
