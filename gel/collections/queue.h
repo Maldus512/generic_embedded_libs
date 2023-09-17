@@ -23,6 +23,7 @@ typedef enum {
         ITEM_TYPE items[NUM_ITEMS];                                                                                    \
     };                                                                                                                 \
     void             NAME##_init(struct NAME *p_queue);                                                                \
+    size_t           NAME##_count(struct NAME *p_queue);                                                               \
     enqueue_result_t NAME##_enqueue(struct NAME *p_queue, ITEM_TYPE *p_new_item);                                      \
     dequeue_result_t NAME##_dequeue(struct NAME *p_queue, ITEM_TYPE *p_item_out);                                      \
     dequeue_result_t NAME##_drop(struct NAME *p_queue);                                                                \
@@ -33,6 +34,10 @@ typedef enum {
     void NAME##_init(struct NAME *p_queue) {                                                                           \
         p_queue->read_idx  = 0;                                                                                        \
         p_queue->write_idx = 0;                                                                                        \
+    }                                                                                                                  \
+                                                                                                                       \
+    size_t NAME##_count(struct NAME *p_queue) {                                                                        \
+        return p_queue->write_idx - p_queue->read_idx;                                                                 \
     }                                                                                                                  \
                                                                                                                        \
     enqueue_result_t NAME##_enqueue(struct NAME *p_queue, ITEM_TYPE *p_new_item) {                                     \

@@ -12,8 +12,7 @@
 
 
 typedef struct gel_timer_struct {
-    int         active;
-    int         autoreload;
+    uint8_t     autoreload;
     stopwatch_t stopwatch;
     void (*callback)(struct gel_timer_struct *, void *, void *);
     void *arg;
@@ -24,17 +23,14 @@ typedef void (*gel_timer_callback_t)(gel_timer_t *, void *, void *);
 
 
 
-gel_timer_t *gel_timer_activate(gel_timer_t *timer, unsigned long period, unsigned long millis, gel_timer_callback_t cb,
-                                void *arg);
-void         gel_timer_deactivate(gel_timer_t *timer);
-void         gel_timer_set_autoreload(gel_timer_t *timer, int autoreload);
-int          gel_timer_manage_callbacks(gel_timer_t *timers, size_t num, unsigned long timestamp, void *user_pointer);
-int          gel_timer_get_first_available(gel_timer_t *timers, size_t num);
-void         gel_timer_deactivate_all(gel_timer_t *timers, size_t num);
+gel_timer_t *gel_timer_init(gel_timer_t *timer, unsigned long period, unsigned long millis, gel_timer_callback_t cb,
+                            void *arg);
+void         gel_timer_stop(gel_timer_t *timer);
+void         gel_timer_set_autoreload(gel_timer_t *timer, uint8_t autoreload);
+uint8_t      gel_timer_manage_callback(gel_timer_t *timer, unsigned long timestamp, void *user_pointer);
 void         gel_timer_pause(gel_timer_t *timer, unsigned long timestamp);
-void         gel_timer_pause_all(gel_timer_t *timers, size_t num, unsigned long timestamp);
 void         gel_timer_resume(gel_timer_t *timer, unsigned long timestamp);
-void         gel_timer_resume_all(gel_timer_t *timers, size_t num, unsigned long timestamp);
 void         gel_timer_reset(gel_timer_t *timer, unsigned long timestamp);
+void         gel_timer_change_period(gel_timer_t *timer, unsigned long period, unsigned long timestamp);
 
 #endif

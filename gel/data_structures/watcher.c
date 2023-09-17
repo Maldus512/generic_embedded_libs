@@ -68,6 +68,16 @@ void watcher_trigger_cb(watcher_t *list, int index) {
 }
 
 
+void watcher_trigger_all(watcher_t *list) {
+    size_t i = 0;
+
+    while (list[i].current) {
+        watcher_trigger_cb(list, i);
+        i++;
+    }
+}
+
+
 int watcher_process_changes(watcher_t *list, unsigned long timestamp) {
     int    res = 0;
     size_t i   = 0;
