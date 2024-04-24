@@ -1,5 +1,5 @@
-#ifndef PAGE_MANAGER_H_INCLUDED
-#define PAGE_MANAGER_H_INCLUDED
+#ifndef GEL_PAGE_MANAGER_H_INCLUDED
+#define GEL_PAGE_MANAGER_H_INCLUDED
 
 /*
  *  Module that manages a stack of pages; to be used in tandem with some kind of view or display module.
@@ -17,6 +17,7 @@
 #error "Configuration not defined"
 #endif
 
+#if 0
 
 typedef struct {
     int              id;
@@ -53,7 +54,6 @@ typedef struct {
     pman_page_t             current_page;
     struct navigation_stack page_stack;
 } page_manager_t;
-
 
 /*
  *  Initializes the page manager, mostly setting fields to 0
@@ -144,5 +144,6 @@ pman_view_t pman_swap_page(page_manager_t *pman, pman_model_t model, pman_page_t
 pman_view_t pman_reset_to_page(page_manager_t *pman, pman_model_t model, int id, uint8_t *found);
 
 pman_message_t pman_process_page_event(page_manager_t *pman, pman_model_t model, pman_event_t event);
+#endif
 
 #endif

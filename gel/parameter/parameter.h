@@ -223,6 +223,7 @@ long                    parameter_to_long(parameter_handle_t *handle);
 size_t                  parameter_get_total_values(parameter_handle_t *handle);
 int                     parameter_to_bool(parameter_handle_t *handle);
 int                     parameter_copy_value(parameter_handle_t *destination, parameter_handle_t *source);
+void                    parameter_clone(parameter_handle_t *dest, parameter_handle_t *src, void *pointer);
 parameter_handle_t      parameter_clone_with_buffer(parameter_handle_t *source, uint8_t *buffer);
 
 #endif

@@ -2,6 +2,7 @@
 #define GEL_TIMER_H_INCLUDED
 
 #include <stdlib.h>
+#include <stdint.h>
 #include "stopwatch.h"
 
 
